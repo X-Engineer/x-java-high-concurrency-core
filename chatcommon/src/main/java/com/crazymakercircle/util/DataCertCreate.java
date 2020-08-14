@@ -175,7 +175,7 @@ public class DataCertCreate
             while (enums.hasMoreElements())
             {
                 String keyAlias = (String) enums.nextElement();
-                System.out.println("alias=[" + keyAlias + "]");
+                Print.tcfo("alias=[" + keyAlias + "]");
                 if (inputKeyStore.isKeyEntry(keyAlias))
                 {
                     Key key = inputKeyStore.getKey(keyAlias, nPassword);
@@ -190,7 +190,7 @@ public class DataCertCreate
         } catch (Exception e)
         {
             e.printStackTrace();
-            System.out.println("toPFX :" + e.getMessage());
+            Print.tcfo("toPFX :" + e.getMessage());
             return false;
         }
     }
@@ -206,14 +206,14 @@ public class DataCertCreate
             FileOutputStream fos = new FileOutputStream(certPath);
             BASE64Encoder encoder = new BASE64Encoder();
             String string = encoder.encode(cert.getEncoded());
-            System.out.println(string);
+            Print.tcfo(string);
             fos.write(cert.getEncoded());
             fos.close();
             return true;
         } catch (Exception e)
         {
             e.printStackTrace();
-            System.out.println("public key :" + e.getMessage());
+            Print.tcfo("public key :" + e.getMessage());
             return false;
         }
     }
@@ -238,7 +238,7 @@ public class DataCertCreate
         } catch (Exception e)
         {
             e.printStackTrace();
-            System.out.println("public key :" + e.getMessage());
+            Print.tcfo("public key :" + e.getMessage());
             return false;
         }
     }
@@ -255,7 +255,7 @@ public class DataCertCreate
         } catch (Exception ex)
         {
 
-            System.out.println(ex.getMessage());
+            Print.tcfo(ex.getMessage());
         }
         return null;
     }
@@ -272,7 +272,7 @@ public class DataCertCreate
         } catch (NoSuchAlgorithmException e)
         {
             e.printStackTrace();
-            System.out.println("private key :" + e.getMessage());
+            Print.tcfo("private key :" + e.getMessage());
             return false;
         }
     }
@@ -284,15 +284,15 @@ public class DataCertCreate
         String[] info = {"huahua_user", "hnu", "university", "china", "hunan", "changsha", "111111", "11111111", "1"};
         // 生成公钥
         boolean createPublicKey = dataCertCreate.createPublicKey(info);
-        System.out.println("PUBLIC KEY CREATE OK, result==" + createPublicKey);
+        Print.tcfo("PUBLIC KEY CREATE OK, result==" + createPublicKey);
 
         boolean createPublicKeyBYDecode = dataCertCreate.createPublicKeyBYDecode(info);
-        System.out.println("PUBLIC KEY BY BASE64Encoder CREATE OK, result==" + createPublicKeyBYDecode);
+        Print.tcfo("PUBLIC KEY BY BASE64Encoder CREATE OK, result==" + createPublicKeyBYDecode);
 
         boolean createPrivateKey = dataCertCreate.createPrivateKey(info);
-        System.out.println("PRIVATE KEY CREATE OK, result==" + createPrivateKey);
+        Print.tcfo("PRIVATE KEY CREATE OK, result==" + createPrivateKey);
 
         Boolean pfx = dataCertCreate.toPFX(info);
-        System.out.println("transToPFX OK, result==" + pfx);
+        Print.tcfo("transToPFX OK, result==" + pfx);
     }
 }

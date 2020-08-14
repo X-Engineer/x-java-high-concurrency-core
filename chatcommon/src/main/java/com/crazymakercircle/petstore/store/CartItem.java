@@ -4,7 +4,7 @@ package com.crazymakercircle.petstore.store;
 import com.crazymakercircle.petstore.goods.IGoods;
 
 /**
- * Created by nienwoo on 2017/4/4.
+ * Created by 尼恩@疯狂创客圈.
  */
 
 public class CartItem {

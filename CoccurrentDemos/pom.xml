@@ -9,7 +9,7 @@
 
 
     <parent>
-        <artifactId>crazyCircleDemos</artifactId>
+        <artifactId>Java-high-concurrency-core-Programming</artifactId>
         <groupId>com.crazymakercircle</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>

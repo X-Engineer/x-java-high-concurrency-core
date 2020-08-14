@@ -5,18 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.crazymakercircle</groupId>
-    <artifactId>crazyCircleDemos</artifactId>
+    <artifactId>Java-high-concurrency-core-Programming</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>NIODemos</module>
-        <module>ZookeeperDemos</module>
-        <module>RedisDemos</module>
         <module>CoccurrentDemos</module>
         <module>chatCommon</module>
-        <module>NettyDemos</module>
-        <module>NettyHttpServerDemo</module>
-        <module>NettyWebSocketServerDemo</module>
-        <module>SecureTransferDemo</module>
+        <module>thread-demos</module>
+        <module>lock-demos</module>
     </modules>
     <packaging>pom</packaging>
     <!-- 依赖版本集中管理 -->
@@ -58,6 +53,17 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.10</version>
+        </dependency>
+
     </dependencies>
     </dependencyManagement>
 
@@ -66,7 +72,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+
         </dependency>
 <!--
 

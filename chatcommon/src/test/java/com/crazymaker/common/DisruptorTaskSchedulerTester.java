@@ -1,10 +1,9 @@
 package com.crazymaker.common;
 
 import com.crazymakercircle.cocurrent.DisruptorTaskScheduler;
-import com.crazymakercircle.util.HttpClientHelper;
+import com.crazymakercircle.util.Print;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +29,7 @@ public class DisruptorTaskSchedulerTester
                 try
                 {
                     Thread.sleep(200);
-                    System.out.println("index = " + finalIndex);
+                    Print.tcfo("index = " + finalIndex);
                 } catch (InterruptedException e)
                 {
                     e.printStackTrace();

@@ -15,7 +15,7 @@ public class Print
      */
     public static void o(Object s)
     {
-        System.out.println(s);
+        Print.tcfo(s);
     }
 
     /**
@@ -25,7 +25,7 @@ public class Print
      */
     public static void fo(Object s)
     {
-        System.out.println(ReflectionUtil.getCallMethod() + ":" + s);
+        Print.tcfo(ReflectionUtil.getCallMethod() + ":" + s);
     }
 
     /**
@@ -35,7 +35,7 @@ public class Print
      */
     synchronized public static void cfo(Object s)
     {
-        System.out.println(ReflectionUtil.getCallClassMethod() + ":" + s);
+        Print.tcfo(ReflectionUtil.getCallClassMethod() + ":" + s);
     }
 
     /**
@@ -56,6 +56,6 @@ public class Print
      */
     public static void hint(Object s)
     {
-        System.out.println("/--" + s + "--/");
+        Print.tcfo("/--" + s + "--/");
     }
 }

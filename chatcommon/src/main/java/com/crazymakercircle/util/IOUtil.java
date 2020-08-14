@@ -1,7 +1,5 @@
 /**
- * Created by nien woo
- * Date: 17-12-30
- * Time: 下午4:50
+ * Created by 尼恩@疯狂创客圈
  */
 package com.crazymakercircle.util;
 

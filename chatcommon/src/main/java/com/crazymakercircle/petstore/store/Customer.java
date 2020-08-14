@@ -6,7 +6,7 @@ import com.crazymakercircle.util.RandomUtil;
 import java.util.Comparator;
 
 /**
- * Created by nienwoo on 2017/4/4.
+ * Created by 尼恩@疯狂创客圈.
  */
 public class Customer implements Comparable {
 

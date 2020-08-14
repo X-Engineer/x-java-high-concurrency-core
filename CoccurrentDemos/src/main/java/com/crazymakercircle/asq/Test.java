@@ -36,8 +36,8 @@ public class Test
                 {
                     for (int j = 0; j < TURNS; j++)
                     {
-//                        increment();
-                        incrementTypically();
+//                        increase();
+                        increaseTypically();
                     }
                     Print.tcfo("本线程累加完成");
                 } catch (Exception e)
@@ -62,14 +62,14 @@ public class Test
         Print.tcfo("累加结果为：" + sum);
     }
 
-    public void increment()
+    public void increase()
     {
         lock.lock();
         sum++;
         lock.unlock();
     }
 
-    public void incrementTypically()
+    public void increaseTypically()
     {
         SelfLock lock = Test.lock;
         if (lock.tryLock())

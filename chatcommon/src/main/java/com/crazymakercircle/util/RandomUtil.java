@@ -1,10 +1,9 @@
 package com.crazymakercircle.util;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomUtil
 {
-    private static Random random = new Random();
 
     /**
      * 按照范围，生成随机的整数
@@ -14,7 +13,7 @@ public class RandomUtil
      */
     public static int randInMod(int mod)
     {
-        return Math.abs(random.nextInt(mod)) + 1;
+        return Math.abs(ThreadLocalRandom.current().nextInt(mod)) + 1;
     }
 
     /**

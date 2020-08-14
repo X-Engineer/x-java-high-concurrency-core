@@ -1,5 +1,5 @@
 /**
- * Created by nien woo
+ * Created by 尼恩@疯狂创客圈
  * Date: 17-12-30
  * Time: 下午4:50
  */
@@ -26,7 +26,7 @@ public class Logger
         }
 
         String out = String.format("%20s |>  %s ", ReflectionUtil.getCallMethod(), content);
-        System.out.println(out);
+        Print.tcfo(out);
     }
 
 
@@ -48,7 +48,7 @@ public class Logger
         String cft = "[" + Thread.currentThread().getName() + "|" + ReflectionUtil.getNakeCallClassMethod() + "]";
 
         String out = String.format("%20s |>  %s ", cft, content);
-        System.out.println(out);
+        Print.tcfo(out);
 
     }
 
@@ -70,7 +70,7 @@ public class Logger
         String cft = "[" + Thread.currentThread().getName() + "|" + ReflectionUtil.getNakeCallClassMethod() + "]";
 
         String out = String.format("%20s |>  %s ", cft, content.toString());
-        System.out.println(out);
+        Print.tcfo(out);
 
     }
 
@@ -103,6 +103,6 @@ public class Logger
      */
     public static void hint(Object s)
     {
-        System.out.println("/--" + s + "--/");
+        Print.tcfo("/--" + s + "--/");
     }
 }

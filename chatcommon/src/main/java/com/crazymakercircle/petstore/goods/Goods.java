@@ -40,7 +40,7 @@ public class Goods implements IGoods{
     public static IGoods produceByType(Type type) {
         switch (type) {
             case PET:
-                return new GoodsFood();
+                return new GoodsPet();
             case FOOD:
                 return new GoodsFood();
             case CLOTHES:

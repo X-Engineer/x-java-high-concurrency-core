@@ -1,5 +1,6 @@
 package com.crazymaker.common;
 
+import com.crazymakercircle.util.Print;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 
@@ -60,9 +61,9 @@ public class ByteBufTest
         print("writeBytes(6)", buffer);
 
         // get 方法不改变读写指针
-        System.out.println("getByte(3) return: " + buffer.getByte(3));
-        System.out.println("getShort(3) return: " + buffer.getShort(3));
-        System.out.println("getInt(3) return: " + buffer.getInt(3));
+        Print.tcfo("getByte(3) return: " + buffer.getByte(3));
+        Print.tcfo("getShort(3) return: " + buffer.getShort(3));
+        Print.tcfo("getInt(3) return: " + buffer.getInt(3));
         print("getByte()", buffer);
 
 
@@ -85,16 +86,15 @@ public class ByteBufTest
 
     private static void print(String action, ByteBuf buffer)
     {
-        System.out.println("after ===========" + action + "============");
-        System.out.println("capacity(): " + buffer.capacity());
-        System.out.println("maxCapacity(): " + buffer.maxCapacity());
-        System.out.println("readerIndex(): " + buffer.readerIndex());
-        System.out.println("readableBytes(): " + buffer.readableBytes());
-        System.out.println("isReadable(): " + buffer.isReadable());
-        System.out.println("writerIndex(): " + buffer.writerIndex());
-        System.out.println("writableBytes(): " + buffer.writableBytes());
-        System.out.println("isWritable(): " + buffer.isWritable());
-        System.out.println("maxWritableBytes(): " + buffer.maxWritableBytes());
-        System.out.println();
+        Print.tcfo("after ===========" + action + "============");
+        Print.tcfo("capacity(): " + buffer.capacity());
+        Print.tcfo("maxCapacity(): " + buffer.maxCapacity());
+        Print.tcfo("readerIndex(): " + buffer.readerIndex());
+        Print.tcfo("readableBytes(): " + buffer.readableBytes());
+        Print.tcfo("isReadable(): " + buffer.isReadable());
+        Print.tcfo("writerIndex(): " + buffer.writerIndex());
+        Print.tcfo("writableBytes(): " + buffer.writableBytes());
+        Print.tcfo("isWritable(): " + buffer.isWritable());
+        Print.tcfo("maxWritableBytes(): " + buffer.maxWritableBytes());
     }
 }
