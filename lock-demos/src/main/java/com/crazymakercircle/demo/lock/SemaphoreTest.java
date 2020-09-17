@@ -1,4 +1,4 @@
-package com.crazymakercircle.basic.demo.lock;
+package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.util.Print;
 

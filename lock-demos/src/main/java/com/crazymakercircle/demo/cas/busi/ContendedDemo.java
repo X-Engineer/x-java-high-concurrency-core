@@ -1,4 +1,4 @@
-package com.crazymakercircle.basic.demo.cas.busi;
+package com.crazymakercircle.demo.cas.busi;
 import sun.misc.Contended;
 public class ContendedDemo
 {

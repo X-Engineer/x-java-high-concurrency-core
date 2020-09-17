@@ -1,29 +1,31 @@
-package com.crazymakercircle.basic.demo.cas;
+package com.crazymakercircle.demo.lock;
 
+import com.crazymakercircle.demo.lock.busi.IncrementData;
+import com.crazymakercircle.demo.lock.custom.MutexLock;
+import com.crazymakercircle.demo.lock.custom.ShareLock;
 import com.crazymakercircle.util.Print;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.Lock;
 
-public class LongAdderVSAtomicLongTest
+public class MutexAndShareLockTest
 {
-    // 每条线程的执行轮数
-    final int TURNS = 100000000;
+
 
     @org.junit.Test
-    public void testAtomicLong()
+    public void testMutexLock()
     {
+        // 每条线程的执行轮数
+        final int TURNS = 1000;
         // 线程数
         final int THREADS = 10;
 
         //线程池，用于多线程模拟测试
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
 
-        //
-        AtomicLong atomicLong = new AtomicLong(0);
+        Lock lock = new MutexLock();
 
         // 线程同步器
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
@@ -36,9 +38,9 @@ public class LongAdderVSAtomicLongTest
                 {
                     for (int j = 0; j < TURNS; j++)
                     {
-                        atomicLong.incrementAndGet();
+                        IncrementData.lockAndFastIncrease(lock);
                     }
-                    // Print.tcfo("本线程累加完成");
+                    Print.tcfo("本线程累加完成");
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -58,35 +60,41 @@ public class LongAdderVSAtomicLongTest
         float time = (System.currentTimeMillis() - start) / 1000F;
         //输出统计结果
         Print.tcfo("运行的时长为：" + time);
-        Print.tcfo("累加结果为：" + atomicLong.get());
+        Print.tcfo("累加结果为：" + IncrementData.sum);
     }
 
     @org.junit.Test
-    public void testLongAdder()
+    public void testShareLock()
     {
+        // 每条线程的执行轮数
+        final int TURNS = 1000;
         // 线程数
         final int THREADS = 10;
 
         //线程池，用于多线程模拟测试
-        ExecutorService pool = Executors.newFixedThreadPool(THREADS);
+        ExecutorService threadPool = Executors.newFixedThreadPool(THREADS);
 
-        //
-        LongAdder longAdder = new LongAdder();
+        Lock shareLock = new ShareLock(10);
 
         // 线程同步器
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
         for (int i = 0; i < THREADS; i++)
         {
-            pool.submit(() ->
+            threadPool.submit(() ->
             {
                 try
                 {
                     for (int j = 0; j < TURNS; j++)
                     {
-                        longAdder.add(1);
+                        //抢占共享锁
+                        shareLock.lock();
+                        //模拟数据操作
+                        Print.tcfo("数据操作");
+                        //释放共享锁
+                        shareLock.unlock();
                     }
-                    // Print.tcfo("本线程累加完成");
+                    Print.tcfo("本线程累加完成");
                 } catch (Exception e)
                 {
                     e.printStackTrace();
@@ -106,7 +114,7 @@ public class LongAdderVSAtomicLongTest
         float time = (System.currentTimeMillis() - start) / 1000F;
         //输出统计结果
         Print.tcfo("运行的时长为：" + time);
-        Print.tcfo("累加结果为：" + longAdder.longValue());
+        Print.tcfo("累加结果为：" + IncrementData.sum);
     }
 
 

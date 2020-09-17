@@ -1,22 +1,16 @@
-package com.crazymakercircle.basic.demo.lock.custom;
+package com.crazymakercircle.demo.lock.custom;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class ReentrantSpinLock implements Lock
+public class SpinLock implements Lock
 {
     /**
      * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
      */
     private AtomicReference<Thread> owner = new AtomicReference<>();
-    /**
-     * 为了实现可重入锁，我们需要引入一个计数器，用来记录一个重复获取锁的次数
-     */
-    volatile private int count = 0;
-    //此变量为同一个线程在操作，没有必要加上volatile保障可见性
-    // volatile private int count = 0;
 
     /**
      * 抢占锁
@@ -25,12 +19,6 @@ public class ReentrantSpinLock implements Lock
     public void lock()
     {
         Thread t = Thread.currentThread();
-        // 如果是重入，增加重入次数
-        if (t == owner.get())
-        {
-            ++count;
-            return;
-        }
         //自旋
         while (owner.compareAndSet(null, t))
         {
@@ -49,15 +37,9 @@ public class ReentrantSpinLock implements Lock
         //只有拥有者才能释放锁
         if (t == owner.get())
         {
-            if (count > 0)
-            {
-                // 如果重入的次数大于0， 减少重入次数
-                --count;
-            } else
-            {
-                // 设置拥有者为空，这里不需要 compareAndSet， 因为已经通过owner做过线程检查
-                owner.set(null);
-            }
+            // 设置拥有者为空，这里不需要 compareAndSet，
+            // 因为已经通过owner做过线程检查
+            owner.set(null);
         }
     }
 

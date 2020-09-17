@@ -28,8 +28,7 @@ public class SpeedLogThreadPool extends ThreadPoolExecutor
     {
         super.beforeExecute(t, r);
         Print.tcfo("start task execute.....");
-
-        //开始耗时记录
+       //开始耗时记录
         SpeedLog.beginSpeedLog();
     }
 

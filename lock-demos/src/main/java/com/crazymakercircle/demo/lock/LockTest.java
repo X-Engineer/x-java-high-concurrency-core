@@ -1,8 +1,8 @@
-package com.crazymakercircle.basic.demo.lock;
+package com.crazymakercircle.demo.lock;
 
-import com.crazymakercircle.basic.demo.lock.busi.IncrementData;
-import com.crazymakercircle.basic.demo.lock.busi.TwoLockDemo;
-import com.crazymakercircle.basic.demo.lock.custom.CLHLock;
+import com.crazymakercircle.demo.lock.busi.IncrementData;
+import com.crazymakercircle.demo.lock.busi.TwoLockDemo;
+import com.crazymakercircle.demo.lock.custom.CLHLock;
 import com.crazymakercircle.util.Print;
 
 import java.lang.management.ManagementFactory;

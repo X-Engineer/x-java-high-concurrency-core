@@ -1,9 +1,7 @@
-package com.crazymakercircle.basic.demo.lock.custom;
+package com.crazymakercircle.demo.lock.custom;
 
 import com.crazymakercircle.util.Print;
-import com.google.common.collect.Sets;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,25 +9,23 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
-public class ShareLock implements Lock
+public class MutexLock implements Lock
 {
 
-    private volatile Set<Thread> owners = Sets.newConcurrentHashSet();
 
-    private final AtomicInteger state;
+    private volatile Thread owner;
+
+    private final AtomicInteger state = new AtomicInteger(0);
 
     private final ConcurrentLinkedQueue<Thread> waitersQueue =
             new ConcurrentLinkedQueue<Thread>();
 
-    public ShareLock(int shareNum)
-    {
-        this.state = new AtomicInteger(shareNum);
-    }
+
 
     public void lock()
     {
         Thread currentThread = Thread.currentThread();
-        if (owners != null && owners.contains(currentThread))
+        if (owner != null && (owner == Thread.currentThread()))
         {
             return;
         }
@@ -38,19 +34,10 @@ public class ShareLock implements Lock
             waitersQueue.add(currentThread);
             while (true)
             {
-                boolean succeed = false;
-
-                if (state.getAndDecrement() > 0)
-                {
-                    succeed = true;
-                } else
-                {
-                    state.getAndIncrement();//恢复回来
-                }
-
+                boolean succeed = state.compareAndSet(0, 1);
                 if (succeed)
                 {
-                    owners.add(currentThread);
+                    owner = currentThread;
                     break;
                 }
                 LockSupport.park();
@@ -64,23 +51,90 @@ public class ShareLock implements Lock
 
     public void unlock()
     {
-        Thread currentThread = Thread.currentThread();
-        if (owners != null && !owners.contains(currentThread))
+        if (owner != null && (owner != Thread.currentThread()))
         {
-            Print.tcfo(" Wrong state, this thread don't own this lock. owner:" + currentThread);
+            Print.tcfo(" Wrong state, this thread don't own this lock. owner:" + owner);
         }
-        state.getAndIncrement();
-        owners.remove(Thread.currentThread());
+        while (true)
+        {
+            if (state.compareAndSet(1, 0))
+            {
+                break;
+            }
+        }
+        owner = null;
         if (!waitersQueue.isEmpty())
         {
+
             for (Thread thread : waitersQueue)
             {
                 LockSupport.unpark(thread);
             }
         }
-
     }
 
+    /**
+     * 仅供参考：可中断限时抢锁
+     * @param time  限时长度
+     * @param unit  时间单位
+     * @return  是否成功
+     * @throws InterruptedException  中断异常
+     */
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
+    {
+        long maxWaitInMills=-1L;
+        if(time>0)
+        {
+            maxWaitInMills= TimeUnit.MILLISECONDS.convert(time,unit);
+        }
+        Thread currentThread = Thread.currentThread();
+        try
+        {
+            waitersQueue.add(currentThread);
+            if (maxWaitInMills > 0)
+            {
+                boolean acquired = false;
+                long left = maxWaitInMills * 1000L * 1000L;
+                long cost = 0;
+                while (true)
+                {
+                    //
+                    if (state.compareAndSet(0, 1))
+                    {
+                        owner = currentThread;
+                        acquired = true;
+                        break;
+                    }
+
+                    left = left - cost;
+                    long mark = System.nanoTime();
+                    if (left <= 0)
+                    {
+                        break;
+                    }
+                    LockSupport.parkNanos(left);
+                    cost = mark - System.nanoTime();
+                }
+                return acquired;
+            } else
+            {
+                while (true)
+                {
+                    if (state.compareAndSet(0, 1))
+                    {
+                        owner = currentThread;
+                        break;
+                    }
+                    LockSupport.park();
+                }
+                return true;
+            }
+        } finally
+        {
+            waitersQueue.remove(currentThread);
+        }
+
+    }
 
     /**
      * Acquires the lock only if it is free at the time of invocation.
@@ -117,70 +171,6 @@ public class ShareLock implements Lock
 
     }
 
-    /**
-     * Acquires the lock if it is free within the given waiting time and the
-     * current thread has not been {@linkplain Thread#interrupt interrupted}.
-     *
-     * <p>If the lock is available this method returns immediately
-     * with the value {@code true}.
-     * If the lock is not available then
-     * the current thread becomes disabled for thread scheduling
-     * purposes and lies dormant until one of three things happens:
-     * <ul>
-     * <li>The lock is acquired by the current thread; or
-     * <li>Some other thread {@linkplain Thread#interrupt interrupts} the
-     * current thread, and interruption of lock acquisition is supported; or
-     * <li>The specified waiting time elapses
-     * </ul>
-     *
-     * <p>If the lock is acquired then the value {@code true} is returned.
-     *
-     * <p>If the current thread:
-     * <ul>
-     * <li>has its interrupted status set on entry to this method; or
-     * <li>is {@linkplain Thread#interrupt interrupted} while acquiring
-     * the lock, and interruption of lock acquisition is supported,
-     * </ul>
-     * then {@link InterruptedException} is thrown and the current thread's
-     * interrupted status is cleared.
-     *
-     * <p>If the specified waiting time elapses then the value {@code false}
-     * is returned.
-     * If the time is
-     * less than or equal to zero, the method will not wait at all.
-     *
-     * <p><b>Implementation Considerations</b>
-     *
-     * <p>The ability to interrupt a lock acquisition in some implementations
-     * may not be possible, and if possible may
-     * be an expensive operation.
-     * The programmer should be aware that this may be the case. An
-     * implementation should document when this is the case.
-     *
-     * <p>An implementation can favor responding to an interrupt over normal
-     * method return, or reporting a timeout.
-     *
-     * <p>A {@code Lock} implementation may be able to detect
-     * erroneous use of the lock, such as an invocation that would cause
-     * deadlock, and may throw an (unchecked) exception in such circumstances.
-     * The circumstances and the exception type must be documented by that
-     * {@code Lock} implementation.
-     *
-     * @param time the maximum time to wait for the lock
-     * @param unit the time unit of the {@code time} argument
-     * @return {@code true} if the lock was acquired and {@code false}
-     * if the waiting time elapsed before the lock was acquired
-     * @throws InterruptedException if the current thread is interrupted
-     *                              while acquiring the lock (and interruption of lock
-     *                              acquisition is supported)
-     */
-    @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
-        throw new IllegalStateException(
-                "方法 'tryLock' 尚未实现!");
-
-    }
 
 
     /**
@@ -260,5 +250,4 @@ public class ShareLock implements Lock
     {
         throw new IllegalStateException("方法 'newCondition' 尚未实现!");
     }
-
 }

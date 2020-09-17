@@ -1,100 +1,86 @@
-package com.crazymakercircle.basic.demo.lock.custom;
+package com.crazymakercircle.demo.lock.custom;
 
+import com.crazymakercircle.util.Print;
+import com.google.common.collect.Sets;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
 
-public class SpinLock implements Lock
+public class ShareLock implements Lock
 {
-    /**
-     * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
-     */
-    private AtomicReference<Thread> owner = new AtomicReference<>();
 
-    /**
-     * 抢占锁
-     */
-    @Override
+    private volatile Set<Thread> owners = Sets.newConcurrentHashSet();
+
+    private final AtomicInteger state;
+
+    private final ConcurrentLinkedQueue<Thread> waitersQueue =
+            new ConcurrentLinkedQueue<Thread>();
+
+    public ShareLock(int shareNum)
+    {
+        this.state = new AtomicInteger(shareNum);
+    }
+
     public void lock()
     {
-        Thread t = Thread.currentThread();
-        //自旋
-        while (owner.compareAndSet(null, t))
+        Thread currentThread = Thread.currentThread();
+        if (owners != null && owners.contains(currentThread))
         {
-            // DO nothing
-            Thread.yield();//让出当前剩余的CPU时间片
+            return;
         }
+        try
+        {
+            waitersQueue.add(currentThread);
+            while (true)
+            {
+                boolean succeed = false;
+
+                if (state.getAndDecrement() > 0)
+                {
+                    succeed = true;
+                } else
+                {
+                    state.getAndIncrement();//恢复回来
+                }
+
+                if (succeed)
+                {
+                    owners.add(currentThread);
+                    break;
+                }
+                LockSupport.park();
+            }
+        } finally
+        {
+            waitersQueue.remove(currentThread);
+        }
+
     }
 
-    /**
-     * 释放锁
-     */
-    @Override
     public void unlock()
     {
-        Thread t = Thread.currentThread();
-        //只有拥有者才能释放锁
-        if (t == owner.get())
+        Thread currentThread = Thread.currentThread();
+        if (owners != null && !owners.contains(currentThread))
         {
-            // 设置拥有者为空，这里不需要 compareAndSet，
-            // 因为已经通过owner做过线程检查
-            owner.set(null);
+            Print.tcfo(" Wrong state, this thread don't own this lock. owner:" + currentThread);
         }
+        state.getAndIncrement();
+        owners.remove(Thread.currentThread());
+        if (!waitersQueue.isEmpty())
+        {
+            for (Thread thread : waitersQueue)
+            {
+                LockSupport.unpark(thread);
+            }
+        }
+
     }
 
-    /**
-     * Acquires the lock unless the current thread is
-     * {@linkplain Thread#interrupt interrupted}.
-     *
-     * <p>Acquires the lock if it is available and returns immediately.
-     *
-     * <p>If the lock is not available then the current thread becomes
-     * disabled for thread scheduling purposes and lies dormant until
-     * one of two things happens:
-     *
-     * <ul>
-     * <li>The lock is acquired by the current thread; or
-     * <li>Some other thread {@linkplain Thread#interrupt interrupts} the
-     * current thread, and interruption of lock acquisition is supported.
-     * </ul>
-     *
-     * <p>If the current thread:
-     * <ul>
-     * <li>has its interrupted status set on entry to this method; or
-     * <li>is {@linkplain Thread#interrupt interrupted} while acquiring the
-     * lock, and interruption of lock acquisition is supported,
-     * </ul>
-     * then {@link InterruptedException} is thrown and the current thread's
-     * interrupted status is cleared.
-     *
-     * <p><b>Implementation Considerations</b>
-     *
-     * <p>The ability to interrupt a lock acquisition in some
-     * implementations may not be possible, and if possible may be an
-     * expensive operation.  The programmer should be aware that this
-     * may be the case. An implementation should document when this is
-     * the case.
-     *
-     * <p>An implementation can favor responding to an interrupt over
-     * normal method return.
-     *
-     * <p>A {@code Lock} implementation may be able to detect
-     * erroneous use of the lock, such as an invocation that would
-     * cause deadlock, and may throw an (unchecked) exception in such
-     * circumstances.  The circumstances and the exception type must
-     * be documented by that {@code Lock} implementation.
-     *
-     * @throws InterruptedException if the current thread is
-     *                              interrupted while acquiring the lock (and interruption
-     *                              of lock acquisition is supported)
-     */
-    @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
-        throw new IllegalStateException(
-                "方法 'lockInterruptibly' 尚未实现!");
-    }
 
     /**
      * Acquires the lock only if it is free at the time of invocation.
@@ -193,6 +179,60 @@ public class SpinLock implements Lock
     {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
+
+    }
+
+
+    /**
+     * Acquires the lock unless the current thread is
+     * {@linkplain Thread#interrupt interrupted}.
+     *
+     * <p>Acquires the lock if it is available and returns immediately.
+     *
+     * <p>If the lock is not available then the current thread becomes
+     * disabled for thread scheduling purposes and lies dormant until
+     * one of two things happens:
+     *
+     * <ul>
+     * <li>The lock is acquired by the current thread; or
+     * <li>Some other thread {@linkplain Thread#interrupt interrupts} the
+     * current thread, and interruption of lock acquisition is supported.
+     * </ul>
+     *
+     * <p>If the current thread:
+     * <ul>
+     * <li>has its interrupted status set on entry to this method; or
+     * <li>is {@linkplain Thread#interrupt interrupted} while acquiring the
+     * lock, and interruption of lock acquisition is supported,
+     * </ul>
+     * then {@link InterruptedException} is thrown and the current thread's
+     * interrupted status is cleared.
+     *
+     * <p><b>Implementation Considerations</b>
+     *
+     * <p>The ability to interrupt a lock acquisition in some
+     * implementations may not be possible, and if possible may be an
+     * expensive operation.  The programmer should be aware that this
+     * may be the case. An implementation should document when this is
+     * the case.
+     *
+     * <p>An implementation can favor responding to an interrupt over
+     * normal method return.
+     *
+     * <p>A {@code Lock} implementation may be able to detect
+     * erroneous use of the lock, such as an invocation that would
+     * cause deadlock, and may throw an (unchecked) exception in such
+     * circumstances.  The circumstances and the exception type must
+     * be documented by that {@code Lock} implementation.
+     *
+     * @throws InterruptedException if the current thread is
+     *                              interrupted while acquiring the lock (and interruption
+     *                              of lock acquisition is supported)
+     */
+    @Override
+    public void lockInterruptibly() throws InterruptedException
+    {
+        throw new IllegalStateException("方法 'lockInterruptibly' 尚未实现!");
     }
 
 
@@ -218,7 +258,7 @@ public class SpinLock implements Lock
     @Override
     public Condition newCondition()
     {
-        throw new IllegalStateException(
-                "方法 'newCondition' 尚未实现!");
+        throw new IllegalStateException("方法 'newCondition' 尚未实现!");
     }
+
 }
