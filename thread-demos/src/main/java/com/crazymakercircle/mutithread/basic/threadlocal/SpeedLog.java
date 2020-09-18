@@ -1,4 +1,4 @@
-package com.crazymakercircle.thread.local.busi;
+package com.crazymakercircle.mutithread.basic.threadlocal;
 
 import com.crazymakercircle.util.Print;
 
@@ -39,7 +39,7 @@ public class SpeedLog
      */
     public static final void beginSpeedLog()
     {
-        Print.tcfo("开始耗时记录");
+        Print.fo("开始耗时记录");
         TIME_RECORD_LOCAL.get();
     }
 
@@ -49,7 +49,7 @@ public class SpeedLog
     public static final void endSpeedLog()
     {
         TIME_RECORD_LOCAL.remove();
-        Print.tcfo("结束耗时记录");
+        Print.fo("结束耗时记录");
     }
 
     /**
@@ -77,7 +77,7 @@ public class SpeedLog
         while (it.hasNext())
         {
             Map.Entry<String, Long> entry = it.next();
-            Print.tcfo(entry.getKey() + " =>" + entry.getValue());
+            Print.fo(entry.getKey() + " =>" + entry.getValue());
         }
     }
 

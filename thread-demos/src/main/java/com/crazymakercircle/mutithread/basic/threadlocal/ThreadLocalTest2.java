@@ -1,8 +1,5 @@
-package com.crazymakercircle.thread.local;
+package com.crazymakercircle.mutithread.basic.threadlocal;
 
-import com.crazymakercircle.thread.local.busi.Foo;
-import com.crazymakercircle.thread.local.busi.SpeedLog;
-import com.crazymakercircle.thread.local.busi.SpeedLogThreadPool;
 import com.crazymakercircle.util.Print;
 
 import java.lang.ref.WeakReference;
@@ -14,7 +11,7 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ThreadLocalTest
+public class ThreadLocalTest2
 {
     /**
      * 模拟业务方法
@@ -67,8 +64,6 @@ public class ThreadLocalTest
     @org.junit.Test
     public void testSpeedLog() throws InterruptedException
     {
-        CountDownLatch latch = new CountDownLatch(2);
-
         Runnable runnable = () ->
         {
             //开始耗时记录
@@ -82,14 +77,10 @@ public class ThreadLocalTest
 
             //结束耗时记录
             SpeedLog.endSpeedLog();
-            latch.countDown();
-        };
 
-        for (int i = 0; i < 2; i++)
-        {
-            new Thread(runnable).start();
-        }
-        latch.await();
+        };
+        new Thread(runnable).start();
+        sleepSeconds(10);//等待10s看结果
     }
 
 
@@ -124,13 +115,12 @@ public class ThreadLocalTest
 
         if (reference.get() == null)
         {
-            Print.cfo(" reference value 已经被GC回收");
+            Print.tco(" reference value 已经被GC回收");
         } else
         {
-            Print.cfo(" reference value =" + reference.get());
+            Print.tco(" reference value =" + reference.get());
         }
-        //保持线程存活
-        sleepSeconds(Integer.MAX_VALUE);
+
     }
 
     @org.junit.Test

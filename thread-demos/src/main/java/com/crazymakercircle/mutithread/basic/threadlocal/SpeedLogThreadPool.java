@@ -1,4 +1,4 @@
-package com.crazymakercircle.thread.local.busi;
+package com.crazymakercircle.mutithread.basic.threadlocal;
 
 import com.crazymakercircle.util.Print;
 
@@ -27,7 +27,7 @@ public class SpeedLogThreadPool extends ThreadPoolExecutor
     protected void beforeExecute(Thread t, Runnable r)
     {
         super.beforeExecute(t, r);
-        Print.tcfo("start task execute.....");
+        Print.fo("start task execute.....");
        //开始耗时记录
         SpeedLog.beginSpeedLog();
     }
@@ -37,7 +37,7 @@ public class SpeedLogThreadPool extends ThreadPoolExecutor
     {
         try
         {
-            Print.tcfo("end task execute!");
+            Print.fo("end task execute!");
             SpeedLog.printCost(); //打印耗时
             SpeedLog.endSpeedLog(); //结束耗时记录
         } finally
@@ -51,7 +51,7 @@ public class SpeedLogThreadPool extends ThreadPoolExecutor
     {
         try
         {
-            Print.tcfo("线程结束!!!!");
+            Print.fo("线程结束!!!!");
         } finally
         {
             super.terminated();

@@ -1,4 +1,4 @@
-package com.crazymakercircle.thread.local.busi;
+package com.crazymakercircle.mutithread.basic.threadlocal;
 
 import com.crazymakercircle.util.RandomUtil;
 import org.springframework.util.ReflectionUtils;
