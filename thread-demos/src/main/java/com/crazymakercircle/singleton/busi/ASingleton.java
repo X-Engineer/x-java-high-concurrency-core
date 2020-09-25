@@ -3,6 +3,7 @@ package com.crazymakercircle.singleton.busi;
 public class ASingleton
 {
     static ASingleton instance;
+
     // 私有化构造方法
     private ASingleton()
     {

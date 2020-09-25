@@ -1,13 +1,12 @@
 package com.crazymakercircle.visiable.busi;
 
-import com.crazymakercircle.util.Print;
-
 class VolatileRawSample
 {
     int a = 0;
     boolean flag = false;
 
-    public void write() {
+    public void write()
+    {
         a = 1;           //①②③⑤⑦④
         flag = true;     //①②③⑤⑦④
     }
@@ -16,7 +15,7 @@ class VolatileRawSample
     {
         if (flag)
         {       //①②③⑤⑦④
-            int b = a+1;    //①②③⑤⑦④
+            int b = a + 1;    //①②③⑤⑦④
             // do sth.
         }
     }

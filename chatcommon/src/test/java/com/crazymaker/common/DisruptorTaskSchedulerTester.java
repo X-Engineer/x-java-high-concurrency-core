@@ -9,7 +9,8 @@ import java.util.concurrent.Executors;
 
 public class DisruptorTaskSchedulerTester
 {
-      private ExecutorService pool = Executors.newFixedThreadPool(10);
+    private ExecutorService pool = Executors.newFixedThreadPool(10);
+
     /**
      * 测试用例：DisruptorTaskScheduler
      */

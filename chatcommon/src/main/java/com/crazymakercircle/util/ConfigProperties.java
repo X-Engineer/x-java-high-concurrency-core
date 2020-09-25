@@ -36,9 +36,9 @@ public class ConfigProperties
         try
         {
 //            String filePath = IOUtil.getResourcePath(properiesName);
-            if(properiesName.startsWith("/"))
+            if (properiesName.startsWith("/"))
             {
-                properiesName=properiesName.substring(1);
+                properiesName = properiesName.substring(1);
             }
             in = this.getClass().getClassLoader().getResourceAsStream(properiesName);
 //            in = new FileInputStream(filePath);

@@ -94,7 +94,7 @@ public class PetStoreWithReadWriteLock
                 Print.tcfo("队列已经空了！");
                 return null;
             }
-            goods =goodsList.remove(0);
+            goods = goodsList.remove(0);
             Print.tcfo(goods + "");
             amount.decrementAndGet();
             return goods;

@@ -355,6 +355,7 @@ public class HttpClientHelper
 
     /**
      * 使用带连接池的HTTP客户端，发送请求
+     *
      * @param url     连接地址
      * @param client  客户端
      * @param request post、get或者其他请求
@@ -395,6 +396,7 @@ public class HttpClientHelper
 
     /**
      * 从url中获取HttpHost实例，含主机和端口
+     *
      * @param url url 地址
      * @return HttpHost
      */
@@ -414,6 +416,7 @@ public class HttpClientHelper
 
     /**
      * 使用带连接池的HTTP客户端，发送GET请求
+     *
      * @param url 连接地址
      * @return 请求字符串
      */

@@ -22,6 +22,7 @@ public final class X509TrustManagerFacade implements X509TrustManager
 
     /**
      * 使用密钥仓库初始化信任管理器
+     *
      * @param keyStore 密钥仓库
      */
     public void init(KeyStore keyStore) throws Exception

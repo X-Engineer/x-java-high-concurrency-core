@@ -170,7 +170,7 @@ public class Test
             {
                 Print.tcfo(" tryLockTest  CAN NOT get the lock");
             }
-            Print.tcfo("take time: " +(System.currentTimeMillis()-currentTime));
+            Print.tcfo("take time: " + (System.currentTimeMillis() - currentTime));
 
         } catch (InterruptedException e)
         {
@@ -184,8 +184,8 @@ public class Test
     public void testTryLock() throws InterruptedException
     {
 
-        pool.submit(() -> lockTest() );
-        pool.submit(() -> tryLockTest() );
+        pool.submit(() -> lockTest());
+        pool.submit(() -> tryLockTest());
         Thread.sleep(MAX_VALUE);
 
     }

@@ -44,11 +44,11 @@ public class YieldDemo
                 metric.get(this.getName()).incrementAndGet();
                 if (i % 2 == 0)
                 {
-                   //让步：出让执行的权限
+                    //让步：出让执行的权限
                     Thread.yield();
                 }
             }
-           //输出线程的执行次数
+            //输出线程的执行次数
             printMetric();
             Print.tco(getName() + " 运行结束.");
         }

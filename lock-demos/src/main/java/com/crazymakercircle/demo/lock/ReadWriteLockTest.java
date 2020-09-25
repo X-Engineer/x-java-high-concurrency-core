@@ -2,8 +2,8 @@ package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.demo.lock.busi.PetStoreWithReadWriteLock;
 import com.crazymakercircle.demo.lock.busi.PetStoreWithStampedLock;
-import com.crazymakercircle.petstore.actor.ConsumerTask;
-import com.crazymakercircle.petstore.actor.ProducerTask;
+import com.crazymakercircle.petstore.actor.Consumer;
+import com.crazymakercircle.petstore.actor.Producer;
 import com.crazymakercircle.petstore.goods.Goods;
 import com.crazymakercircle.petstore.goods.IGoods;
 import com.crazymakercircle.util.Print;
@@ -99,9 +99,9 @@ public class ReadWriteLockTest
         for (int i = 0; i < 2; i++)
         {
             //生产者线程每生产一个商品，间隔500ms
-            threadPool.submit(new ProducerTask(produceAction, 500));
+            threadPool.submit(new Producer(produceAction, 500));
             //消费者线程每消费一个商品，间隔1500ms
-            threadPool.submit(new ConsumerTask(consumerAction, 1500));
+            threadPool.submit(new Consumer(consumerAction, 1500));
         }
 
         //查询的条件
@@ -161,9 +161,9 @@ public class ReadWriteLockTest
         for (int i = 0; i < 2; i++)
         {
             //生产者线程每生产一个商品，间隔500ms
-            threadPool.submit(new ProducerTask(produceAction, 500));
+            threadPool.submit(new Producer(produceAction, 500));
             //消费者线程每消费一个商品，间隔1500ms
-            threadPool.submit(new ConsumerTask(consumerAction, 1500));
+            threadPool.submit(new Consumer(consumerAction, 1500));
         }
 
         //查询的条件

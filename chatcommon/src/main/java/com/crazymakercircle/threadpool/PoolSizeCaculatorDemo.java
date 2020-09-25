@@ -1,12 +1,10 @@
 package com.crazymakercircle.threadpool;
 
-import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
-import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
 public class PoolSizeCaculatorDemo extends PoolSizeCalculator
 {
@@ -23,8 +21,6 @@ public class PoolSizeCaculatorDemo extends PoolSizeCalculator
         }
 
     }
-
-
 
 
     /**

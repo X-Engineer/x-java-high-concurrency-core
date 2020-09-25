@@ -7,21 +7,25 @@ import com.crazymakercircle.petstore.goods.IGoods;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class CartItem {
+public class CartItem
+{
 
 
     private IGoods goods;//商品
     private int amount;//商品数量
 
-    public CartItem(IGoods goods) {
+    public CartItem(IGoods goods)
+    {
         this.goods = goods;
     }
 
-    public void addAmount(int i) {
+    public void addAmount(int i)
+    {
         amount += i;
     }
 
-    public String toString() {
+    public String toString()
+    {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("商品编号：").append(goods.getID())
                 .append(",商品名称：").append(goods.getName())
@@ -32,7 +36,8 @@ public class CartItem {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -42,11 +47,13 @@ public class CartItem {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return goods != null ? goods.hashCode() : 0;
     }
 
-    public float getItemMoney() {
+    public float getItemMoney()
+    {
         return amount * goods.getPrice();
     }
 }

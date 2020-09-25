@@ -1,7 +1,6 @@
 package com.crazymakercircle.petstore.store;
 
 
-
 import com.crazymakercircle.petstore.goods.IGoods;
 import com.crazymakercircle.util.Print;
 
@@ -12,16 +11,20 @@ import java.util.OptionalDouble;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ShoppingCart {
+public class ShoppingCart
+{
 
     private Map<IGoods, CartItem> cartItems = new HashMap<>();
 
-    public ShoppingCart addGoods(IGoods goods) {
-        if (cartItems.containsKey(goods)) {
+    public ShoppingCart addGoods(IGoods goods)
+    {
+        if (cartItems.containsKey(goods))
+        {
             CartItem cartItem = cartItems.get(goods);
             cartItem.addAmount(1);
 
-        } else {
+        } else
+        {
             CartItem cartItem = new CartItem(goods);
             cartItem.addAmount(1);
             cartItems.put(goods, cartItem);
@@ -29,16 +32,19 @@ public class ShoppingCart {
         return this;
     }
 
-    public void showCart() {
+    public void showCart()
+    {
         Print.hint("查看购物车信息");
-        cartItems.entrySet().forEach(item -> {
-            Print.cfo( item.getValue());
+        cartItems.entrySet().forEach(item ->
+        {
+            Print.cfo(item.getValue());
         });
 
         Print.cfo("foreach方式统计总价");
         float totalMoney = 0;
         for (CartItem item : cartItems.values()
-                ) {
+        )
+        {
             totalMoney += item.getItemMoney();
         }
         Print.cfo("购物车价格合计" + totalMoney);
@@ -50,7 +56,8 @@ public class ShoppingCart {
         Print.cfo("购物车价格合计" + totalMoney2.getAsDouble());
     }
 
-    public Map<IGoods, CartItem> getCartItems() {
+    public Map<IGoods, CartItem> getCartItems()
+    {
         return cartItems;
     }
 }

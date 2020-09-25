@@ -47,7 +47,7 @@ public class JoinDemo
         Thread thread1 = new SleepThread();
         sleepSeconds(20);
         Print.tco("启动 thread1.");
-         thread1.start();
+        thread1.start();
         try
         {
             thread1.join();//合并线程1，不限时
@@ -68,7 +68,6 @@ public class JoinDemo
         {
             e.printStackTrace();
         }
-
 
 
         Print.tco("线程运行结束.");

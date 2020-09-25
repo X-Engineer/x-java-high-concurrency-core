@@ -28,19 +28,18 @@ public class ReentrantLockTest
             lock.unlock();
         }
     }
+
     public void signal()
     {
         try
         {
             lock.lock();
             condition.signal();
-        }
-        finally
+        } finally
         {
             lock.unlock();
         }
     }
-
 
 
 }

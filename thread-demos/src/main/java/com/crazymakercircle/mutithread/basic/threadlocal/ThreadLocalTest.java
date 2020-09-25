@@ -3,6 +3,7 @@ package com.crazymakercircle.mutithread.basic.threadlocal;
 import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.ThreadUtil;
 import lombok.Data;
+import org.junit.Test;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +36,7 @@ public class ThreadLocalTest
     }
 
     //定义线程本地变量
-    private static final ThreadLocal<Foo> localFoo = new ThreadLocal<Foo>();
+    private static final ThreadLocal<Foo> LOCAL_FOO = new ThreadLocal<Foo>();
 
     public static void main(String[] args) throws InterruptedException
     {
@@ -53,27 +54,78 @@ public class ThreadLocalTest
                 public void run()
                 {
                     //获取“线程本地变量”中当前线程所绑定的值
-                    if (localFoo.get() == null)
+                    if (LOCAL_FOO.get() == null)
                     {
                         //设置“线程本地变量”中当前线程所绑定的值
-                        localFoo.set(new Foo());
+                        LOCAL_FOO.set(new Foo());
                     }
 
-                    Print.tco("初始的本地值：" + localFoo.get());
+                    Print.tco("初始的本地值：" + LOCAL_FOO.get());
                     //每个线程执行10次
                     for (int i = 0; i < 10; i++)
                     {
-                        Foo foo = localFoo.get();
+                        Foo foo = LOCAL_FOO.get();
                         foo.setBar(foo.getBar() + 1);
                         sleepMilliSeconds(10);
 
                     }
-                    Print.tco("累加10次之后的本地值：" + localFoo.get());
+                    Print.tco("累加10次之后的本地值：" + LOCAL_FOO.get());
 
                     //删除“线程本地变量”中当前线程所绑定的值，对于线程池中的线程尤其重要
-                    localFoo.remove();
+                    LOCAL_FOO.remove();
                 }
             });
         }
     }
+
+    static class LeakFoo extends Foo
+    {
+
+        private final Byte[] toLeak;
+
+        public LeakFoo()
+        {
+            super();
+            toLeak = new Byte[1024 * 1024];
+        }
+
+        @Override
+        protected void finalize()
+        {
+            Print.tco(super.toString());
+
+        }
+    }
+
+    @Test
+    public void testLeak() throws InterruptedException
+    {
+        //获取自定义的混合线程池
+        ThreadPoolExecutor threadPool = ThreadUtil.getMixedTargetThreadPool();
+        //共1000个任务
+        for (int i = 0; i < 1000; i++)
+        {
+            threadPool.submit(new Runnable()
+            {
+
+                @Override
+                public void run()
+                {
+
+                    //每个任务执行1000次
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        ThreadLocal<LeakFoo> localFoo = new ThreadLocal<LeakFoo>();
+                        if (null == localFoo.get())
+                        {
+                            localFoo.set(new LeakFoo());
+                        }
+                        LeakFoo foo = localFoo.get();
+                    }
+                }
+            });
+        }
+    }
+
+
 }

@@ -88,7 +88,7 @@ public class DisruptorTaskScheduler
         public void handleEventException(Throwable throwable, long sequence, Object event)
         {
             throwable.fillInStackTrace();
-            log.error("process  error ==[{}] ",  throwable.getMessage());
+            log.error("process  error ==[{}] ", throwable.getMessage());
         }
 
         @Override
@@ -163,5 +163,5 @@ public class DisruptorTaskScheduler
         }
     }
 
-    
+
 }

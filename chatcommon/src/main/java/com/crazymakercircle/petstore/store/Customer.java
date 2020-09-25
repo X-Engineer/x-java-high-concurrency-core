@@ -8,7 +8,8 @@ import java.util.Comparator;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class Customer implements Comparable {
+public class Customer implements Comparable
+{
 
     private String name;//名称，内部唯一
     private String nickName;//昵称，用户可见
@@ -18,8 +19,9 @@ public class Customer implements Comparable {
     private int level;//级别
 
     @Override
-    public int compareTo(Object o) {
-        if (o == null ) throw new NullPointerException("user object is null");
+    public int compareTo(Object o)
+    {
+        if (o == null) throw new NullPointerException("user object is null");
         Customer user = (Customer) o;
 
 //        按照名字的字母顺序排序，区分大小写
@@ -27,20 +29,24 @@ public class Customer implements Comparable {
 
     }
 
-    public static class AgeComparator implements Comparator<Customer> {
+    public static class AgeComparator implements Comparator<Customer>
+    {
         @Override
-        public int compare(Customer o1, Customer o2) {
+        public int compare(Customer o1, Customer o2)
+        {
             if (o1 == null || o2 == null)
                 return 0;
-             return o1.age-o2.age ;
+            return o1.age - o2.age;
         }
 
 
     }
 
-    public static class NameComparator implements Comparator<Customer> {
+    public static class NameComparator implements Comparator<Customer>
+    {
         @Override
-        public int compare(Customer o1, Customer o2) {
+        public int compare(Customer o1, Customer o2)
+        {
             if (o1 == null || o2 == null)
                 return 0;
             String name1 = o1.name;
@@ -53,17 +59,20 @@ public class Customer implements Comparable {
     }
 
 
-    public enum Gender {
+    public enum Gender
+    {
         MALE, FEMALE;
 
-        public static Gender randGender() {
+        public static Gender randGender()
+        {
             int length = values().length;
             int typeNo = RandomUtil.randInMod(length) - 1;
             return values()[typeNo];
         }
     }
 
-    public Customer(String name, String nickName, String passWord, Gender gender, int age) {
+    public Customer(String name, String nickName, String passWord, Gender gender, int age)
+    {
         this.name = name;
         this.nickName = nickName;
         this.passWord = passWord;
@@ -71,7 +80,8 @@ public class Customer implements Comparable {
         this.age = age;
     }
 
-    public Customer(String name, String nickName) {
+    public Customer(String name, String nickName)
+    {
         this.name = name;
         this.nickName = nickName;
         this.passWord = "123456";
@@ -81,7 +91,8 @@ public class Customer implements Comparable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -91,12 +102,14 @@ public class Customer implements Comparable {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return name != null ? name.hashCode() : 0;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Customer{" +
                 "name='" + name + '\'' +
                 ", nickName='" + nickName + '\'' +
@@ -106,7 +119,8 @@ public class Customer implements Comparable {
                 '}';
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
 
 
     }

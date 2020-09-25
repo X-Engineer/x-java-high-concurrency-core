@@ -21,7 +21,6 @@ public class MutexLock implements Lock
             new ConcurrentLinkedQueue<Thread>();
 
 
-
     public void lock()
     {
         Thread currentThread = Thread.currentThread();
@@ -75,17 +74,18 @@ public class MutexLock implements Lock
 
     /**
      * 仅供参考：可中断限时抢锁
-     * @param time  限时长度
-     * @param unit  时间单位
-     * @return  是否成功
-     * @throws InterruptedException  中断异常
+     *
+     * @param time 限时长度
+     * @param unit 时间单位
+     * @return 是否成功
+     * @throws InterruptedException 中断异常
      */
     public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
     {
-        long maxWaitInMills=-1L;
-        if(time>0)
+        long maxWaitInMills = -1L;
+        if (time > 0)
         {
-            maxWaitInMills= TimeUnit.MILLISECONDS.convert(time,unit);
+            maxWaitInMills = TimeUnit.MILLISECONDS.convert(time, unit);
         }
         Thread currentThread = Thread.currentThread();
         try
@@ -170,7 +170,6 @@ public class MutexLock implements Lock
                 "方法 'tryLock' 尚未实现!");
 
     }
-
 
 
     /**

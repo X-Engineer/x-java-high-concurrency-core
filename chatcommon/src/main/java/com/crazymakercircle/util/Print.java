@@ -5,6 +5,8 @@
 package com.crazymakercircle.util;
 
 
+import java.util.Scanner;
+
 public class Print
 {
     /**
@@ -60,7 +62,7 @@ public class Print
      */
     public static void fo(Object s)
     {
-        String cft = "["+ ReflectionUtil.getNakeCallClassMethod() + "]";
+        String cft = "[" + ReflectionUtil.getNakeCallClassMethod() + "]";
 
         //提交线程池进行独立输出，使得输出不影响当前线程的执行
         ThreadUtil.seqExecute(() ->
@@ -115,4 +117,14 @@ public class Print
     {
         Print.tcfo("/--" + s + "--/");
     }
+
+    public static String consoleInput()
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Please Enter sth:");
+        String nextLine = sc.nextLine();  //读取字符串型输入
+        return nextLine;
+    }
 }
+
+
