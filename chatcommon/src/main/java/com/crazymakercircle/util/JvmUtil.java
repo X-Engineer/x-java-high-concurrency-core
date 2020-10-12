@@ -69,7 +69,7 @@ public class JvmUtil
         return sb.toString();
     }
 
-    private static Unsafe getUnsafe()
+    public static Unsafe getUnsafe()
     {
         try
         {
@@ -118,5 +118,6 @@ public class JvmUtil
         Object o = new Object();
         Print.tcfo(getAddresses(o));
     }
+
 
 }

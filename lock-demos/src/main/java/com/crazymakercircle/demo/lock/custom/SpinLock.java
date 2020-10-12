@@ -10,7 +10,7 @@ public class SpinLock implements Lock
     /**
      * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
      */
-    private AtomicReference<Thread> owner = new AtomicReference<>();
+    private volatile AtomicReference<Thread> owner = new AtomicReference<>();
 
     /**
      * 抢占锁

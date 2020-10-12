@@ -1,4 +1,4 @@
-package com.crazymakercircle.demo.lock.busi;
+package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.util.Print;
 
@@ -12,14 +12,17 @@ public class IncrementData
 
     public static void lockAndFastIncrease(Lock lock)
     {
+        //step1：抢占锁
         // Print.tcfo(curThreadName()+" -- 本线程开始抢占锁");
         lock.lock();
         //Print.tcfo(curThreadName()+" ^-^本线程抢到了锁");
         try
         {
+            //step2：执行临界区代码
             sum++;
         } finally
         {
+            //step3：释放锁
             lock.unlock();
             //Print.tcfo("本线程释放了锁");
         }

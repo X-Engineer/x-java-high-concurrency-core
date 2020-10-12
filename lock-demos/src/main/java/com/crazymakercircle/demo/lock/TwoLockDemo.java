@@ -1,4 +1,4 @@
-package com.crazymakercircle.demo.lock.busi;
+package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.RandomUtil;

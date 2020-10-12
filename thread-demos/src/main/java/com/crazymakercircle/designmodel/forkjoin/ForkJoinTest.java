@@ -1,6 +1,5 @@
-package com.crazymakercircle.designmodel;
+package com.crazymakercircle.designmodel.forkjoin;
 
-import com.crazymakercircle.designmodel.busi.AccumulateTask;
 import com.crazymakercircle.util.Print;
 import org.junit.Assert;
 
@@ -18,7 +17,7 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class DesignModelTest
+public class ForkJoinTest
 {
 
     @org.junit.Test

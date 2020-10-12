@@ -1,4 +1,4 @@
-package com.crazymakercircle.visiable.busi;
+package com.crazymakercircle.visiable;
 
 class CounterSample
 {
@@ -9,3 +9,4 @@ class CounterSample
         sum++;           //①②③⑤⑦④
     }
 }
+

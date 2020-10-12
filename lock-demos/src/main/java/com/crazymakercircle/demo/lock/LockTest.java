@@ -1,7 +1,5 @@
 package com.crazymakercircle.demo.lock;
 
-import com.crazymakercircle.demo.lock.busi.IncrementData;
-import com.crazymakercircle.demo.lock.busi.TwoLockDemo;
 import com.crazymakercircle.demo.lock.custom.CLHLock;
 import com.crazymakercircle.util.Print;
 
@@ -19,7 +17,7 @@ public class LockTest
 
 
     @org.junit.Test
-    public void testLimit()
+    public void testReentrantLock()
     {
         // 每条线程的执行轮数
         final int TURNS = 1000;
@@ -29,33 +27,38 @@ public class LockTest
         //线程池，用于多线程模拟测试
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
 
+        //可重入、独占锁对象
         Lock lock = new ReentrantLock();
-
-        // 线程同步器
+        // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
+
+        //10条线程并发执行
         for (int i = 0; i < THREADS; i++)
         {
             pool.submit(() ->
             {
                 try
                 {
+                    //累加 1000 次
                     for (int j = 0; j < TURNS; j++)
                     {
-                        IncrementData.lockAndIncrease(lock);
+                        //传入锁，执行一次累加
+                        IncrementData.lockAndFastIncrease(lock);
                     }
-                    Print.tcfo("本线程累加完成");
+                    Print.tco("本线程累加完成");
                 } catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-                //等待所有线程结束
+                //线程执行完成，倒数闩减少一次
                 countDownLatch.countDown();
 
             });
         }
         try
         {
+            //等待倒数闩归零，所有线程结束
             countDownLatch.await();
         } catch (InterruptedException e)
         {
@@ -218,48 +221,41 @@ public class LockTest
     public void testCLHLockCapability()
     {
         // 速度对比
-        // ReentrantLock  1 000 000 次 0.122 秒
-        // CLHLock        1 000 000 次 2.352 秒
+        // ReentrantLock  1 000 000 次 0.154 秒
+        // CLHLock        1 000 000 次 2.798 秒
 
         // 每条线程的执行轮数
-//        final int TURNS = 100000;
-        final int TURNS = 5;
+        final int TURNS = 100000;
 
         // 线程数
-        final int THREADS = 2;
+        final int THREADS = 10;
 
         //线程池，用于多线程模拟测试
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
 
         Lock lock = new CLHLock();
+//        Lock lock = new ReentrantLock();
 
-        // 线程同步器
+        // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
         for (int i = 0; i < THREADS; i++)
         {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
-                        // IncrementData.lockAndFastIncrease(lock);
-                        IncrementData.lockAndIncrease(lock);
-                    }
-                    Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
-                    Print.tcfo("本线程累加失败，出现异常");
-                    e.printStackTrace();
-                }
-                //等待所有线程结束
-                countDownLatch.countDown();
 
+                for (int j = 0; j < TURNS; j++)
+                {
+                    IncrementData.lockAndFastIncrease(lock);
+                }
+                Print.tcfo("本线程累加完成");
+                //倒数闩减少1次
+                countDownLatch.countDown();
             });
         }
         try
         {
+            //等待倒数闩归0，所有线程结束
             countDownLatch.await();
         } catch (InterruptedException e)
         {
@@ -270,5 +266,4 @@ public class LockTest
         Print.tcfo("运行的时长为：" + time);
         Print.tcfo("累加结果为：" + IncrementData.sum);
     }
-
 }

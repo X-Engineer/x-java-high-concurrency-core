@@ -1,4 +1,4 @@
-package com.crazymakercircle.demo.lock.busi;
+package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.petstore.goods.IGoods;
 import com.crazymakercircle.util.Print;
@@ -8,13 +8,12 @@ import org.apache.commons.collections4.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.StampedLock;
 
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PetStoreWithReadWriteLock
+public class PetStoreWithStampedLock
 {
     //数据缓冲区的大小
     public static final int MAX_AMOUNT = 10;
@@ -23,13 +22,8 @@ public class PetStoreWithReadWriteLock
     private ArrayList<IGoods> goodsList = new ArrayList<IGoods>(MAX_AMOUNT);
 
     //成员：读写锁
-    ReentrantReadWriteLock rtLock = new ReentrantReadWriteLock();
+    StampedLock rtLock = new StampedLock();
 
-    //成员：读锁
-    private final Lock readLock = rtLock.readLock();
-
-    //成员：写锁
-    private final Lock writeLock = rtLock.writeLock();
 
     //保存数量
     private AtomicInteger amount = new AtomicInteger(0);
@@ -42,7 +36,8 @@ public class PetStoreWithReadWriteLock
      */
     public void add(IGoods goods)
     {
-        writeLock.lock();// 抢占写锁
+        // 抢占写锁
+        long stamp = rtLock.writeLock();
         try
         {
             if (amount.get() > MAX_AMOUNT)
@@ -55,7 +50,7 @@ public class PetStoreWithReadWriteLock
             amount.incrementAndGet();
         } finally
         {
-            writeLock.unlock();// 释放写锁
+            rtLock.unlock(stamp);// 释放写锁
         }
     }
 
@@ -68,14 +63,15 @@ public class PetStoreWithReadWriteLock
     public List<IGoods> search(Predicate predicate)
     {
         int count = 0;
-        readLock.lock();// 抢占读锁
+        // 抢占读锁
+        long stamp = rtLock.readLock();
         try
         {
             //eg: Predicate predicate= goods-> example.equals(goods);
             return (List<IGoods>) CollectionUtils.select(goodsList, predicate);
         } finally
         {
-            readLock.unlock();// 释放读锁
+            rtLock.unlock(stamp);// 释放读锁
         }
     }
 
@@ -85,7 +81,8 @@ public class PetStoreWithReadWriteLock
      */
     public IGoods fetch()
     {
-        writeLock.lock();// 抢占写锁
+        // 抢占写锁
+        long stamp = rtLock.writeLock();
         try
         {
             IGoods goods = null;
@@ -100,7 +97,7 @@ public class PetStoreWithReadWriteLock
             return goods;
         } finally
         {
-            writeLock.unlock();// 释放写锁
+            rtLock.unlock(stamp);// 释放写锁
         }
     }
 

@@ -1,6 +1,5 @@
 package com.crazymakercircle.demo.lock;
 
-import com.crazymakercircle.demo.lock.busi.IncrementData;
 import com.crazymakercircle.demo.lock.custom.MutexLock;
 import com.crazymakercircle.demo.lock.custom.ShareLock;
 import com.crazymakercircle.util.Print;
@@ -27,7 +26,7 @@ public class MutexAndShareLockTest
 
         Lock lock = new MutexLock();
 
-        // 线程同步器
+        // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
         for (int i = 0; i < THREADS; i++)
@@ -76,7 +75,7 @@ public class MutexAndShareLockTest
 
         Lock shareLock = new ShareLock(10);
 
-        // 线程同步器
+        // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
         for (int i = 0; i < THREADS; i++)

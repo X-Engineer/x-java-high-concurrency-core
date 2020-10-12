@@ -1,95 +1,86 @@
 package com.crazymakercircle.demo.lock.custom;
 
 import com.crazymakercircle.util.Print;
+import lombok.Data;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 public class CLHLock implements Lock
 {
-
-    static private class QNode
-    {
-        /**
-         * true表示该线程需要获取锁，且需占用锁
-         * 为false表示线程释放了锁，且不占用锁
-         */
-        private volatile boolean locked = false;
-
-        //测试专用：节点编号
-        static AtomicInteger nodeSum = new AtomicInteger(0);
-        int nodeNO;
-
-        public QNode()
-        {
-            nodeNO = nodeSum.incrementAndGet();
-        }
-    }
-
-    /**
-     * 锁等待队列的尾部
-     */
-    private AtomicReference<QNode> tail = new AtomicReference<>(null);
-    /**
-     * 指向前驱节点
-     */
-    private static ThreadLocal<QNode> preNodeLocal = ThreadLocal.withInitial(() -> null);
-
     /**
      * 指向当前节点
      */
-    private static ThreadLocal<QNode> curNodeLocal = ThreadLocal.withInitial(QNode::new);
+    private static ThreadLocal<Node> curNodeLocal = new ThreadLocal();
+    /**
+     * CLHLock队列的尾部
+     */
+    private AtomicReference<Node> tail = new AtomicReference<>(null);
 
     public CLHLock()
     {
+        //设置尾部节点
+        tail.getAndSet(Node.EMPTY);
     }
 
+    //加锁：将节点添加到等待队列的尾部
     @Override
     public void lock()
     {
-        //获取线程局部变量中的当前节点
-        QNode curNode = this.curNodeLocal.get();
-        if (null == curNode)
+        Node curNode = new Node(true, null);
+        Node preNode = tail.get();
+        //CAS自旋：将当前节点插入到队列的尾部
+        while (!tail.compareAndSet(preNode, curNode))
         {
-            curNode = new QNode();
-            this.curNodeLocal.set(curNode);
+            preNode = tail.get();
         }
-        Print.tcfo("节点编号为：" + curNode.nodeNO);
-        //设置自己的状态为locked=true表示需要获取锁
-        curNode.locked = true;
+        //设置前驱
+        curNode.setPrevNode(preNode);
 
-        //1 取出链表尾部的之前的节点 preNode
-        //2 链表的尾部设置为本线程的 curNode
-        QNode preNode = tail.getAndSet(curNode);
-
-        //把前驱节点保持在线程本地变量
-        preNodeLocal.set(preNode);
-
-        if (preNode != null)
+        //监听前驱节点的locked变量，直到其值为false
+        // 若前继节点的locked状态为true，则表示前一线程还在抢占或者占有锁
+        while (curNode.getPrevNode().isLocked())
         {
-            //在前驱节点的locked字段上自旋，直到前驱节点释放锁资源
-            while (preNode.locked)
-            {
-                //不让出CPU时间片，性能比较低
-                Thread.yield();
-            }
+            //让出CPU时间片，提高性能
+            Thread.yield();
         }
+        // 能执行到这里，说明当前线程获取到了锁
+        //  Print.tcfo("获取到了锁！！！");
+
+        //设置在线程本地变量中，用于释放锁
+        curNodeLocal.set(curNode);
     }
 
     @Override
     public void unlock()
     {
-        QNode curNode = curNodeLocal.get();
-
-        //释放锁操作时将自己的locked设置为false
-        // 是的后继节点可以结束自旋，抢占到锁
-        curNode.locked = false;
-
-        //回收自己这个节点，从虚拟队列中删除
+        Node curNode = curNodeLocal.get();
+        curNode.setLocked(false);
+        curNode.setPrevNode(null);//help for GC
         curNodeLocal.set(null);
+    }
+
+    @Data
+    static class Node
+    {
+        public Node(boolean locked, Node prevNode)
+        {
+            this.locked = locked;
+            this.prevNode = prevNode;
+        }
+
+        //true：当前线程正在抢占锁、或者已经占有锁
+        // false：当前线程已经释放锁，下一个线程可以占有锁了
+        volatile boolean locked;
+        //前一个节点，需要监听其locked字段
+        Node prevNode;
+
+
+        //空节点
+        public static final Node EMPTY =
+                new Node(false, null);
     }
 
 

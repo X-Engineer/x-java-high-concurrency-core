@@ -25,7 +25,7 @@ public class Test
     @org.junit.Test
     public void testLimit()
     {
-        // 线程同步器
+        // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
         for (int i = 0; i < THREADS; i++)

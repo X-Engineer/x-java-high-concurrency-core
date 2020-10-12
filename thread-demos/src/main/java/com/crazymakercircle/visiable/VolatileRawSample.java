@@ -1,9 +1,9 @@
-package com.crazymakercircle.visiable.busi;
+package com.crazymakercircle.visiable;
 
-class VolatileSample
+class VolatileRawSample
 {
     int a = 0;
-    volatile boolean flag = false;
+    boolean flag = false;
 
     public void write()
     {

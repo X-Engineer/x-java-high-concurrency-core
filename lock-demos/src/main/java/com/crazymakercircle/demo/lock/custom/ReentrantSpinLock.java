@@ -10,13 +10,12 @@ public class ReentrantSpinLock implements Lock
     /**
      * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
      */
-    private AtomicReference<Thread> owner = new AtomicReference<>();
+    private  volatile AtomicReference<Thread> owner = new AtomicReference<>();
     /**
      * 为了实现可重入锁，我们需要引入一个计数器，用来记录一个重复获取锁的次数
+     * 此变量为同一个线程在操作，没有必要加上volatile保障可见性和有序性
      */
-    volatile private int count = 0;
-    //此变量为同一个线程在操作，没有必要加上volatile保障可见性
-    // volatile private int count = 0;
+     private int count = 0;
 
     /**
      * 抢占锁

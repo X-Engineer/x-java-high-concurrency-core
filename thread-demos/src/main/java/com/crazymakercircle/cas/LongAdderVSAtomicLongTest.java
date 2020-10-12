@@ -1,10 +1,11 @@
-package com.crazymakercircle.demo.cas;
+package com.crazymakercircle.cas;
+//...省略import
 
 import com.crazymakercircle.util.Print;
+import com.crazymakercircle.util.ThreadUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -16,19 +17,19 @@ public class LongAdderVSAtomicLongTest
     @org.junit.Test
     public void testAtomicLong()
     {
-        // 线程数
-        final int THREADS = 10;
+        // 并发任务数
+        final int TASK_AMOUNT = 10;
 
-        //线程池，用于多线程模拟测试
-        ExecutorService pool = Executors.newFixedThreadPool(THREADS);
+        //线程池，获取CPU密集型任务线程池
+        ExecutorService pool = ThreadUtil.getCpuIntenseTargetThreadPool();
 
-        //
+        //定义一个原子对象
         AtomicLong atomicLong = new AtomicLong(0);
 
-        // 倒数闩
-        CountDownLatch countDownLatch = new CountDownLatch(THREADS);
+        // 线程同步倒数闩
+        CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
+        for (int i = 0; i < TASK_AMOUNT; i++)
         {
             pool.submit(() ->
             {
@@ -43,13 +44,15 @@ public class LongAdderVSAtomicLongTest
                 {
                     e.printStackTrace();
                 }
-                //等待所有线程结束
+                //倒数闩，倒数一次
                 countDownLatch.countDown();
 
             });
         }
+
         try
         {
+            //等待倒数闩完成所有的倒数操作
             countDownLatch.await();
         } catch (InterruptedException e)
         {
@@ -64,19 +67,19 @@ public class LongAdderVSAtomicLongTest
     @org.junit.Test
     public void testLongAdder()
     {
-        // 线程数
-        final int THREADS = 10;
+        // 并发任务数
+        final int TASK_AMOUNT = 10;
 
-        //线程池，用于多线程模拟测试
-        ExecutorService pool = Executors.newFixedThreadPool(THREADS);
+        //线程池，获取CPU密集型任务线程池
+        ExecutorService pool = ThreadUtil.getCpuIntenseTargetThreadPool();
 
-        //
+        //定义一个LongAdder 对象
         LongAdder longAdder = new LongAdder();
 
-        // 倒数闩
-        CountDownLatch countDownLatch = new CountDownLatch(THREADS);
+        // 线程同步倒数闩
+        CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
+        for (int i = 0; i < TASK_AMOUNT; i++)
         {
             pool.submit(() ->
             {
@@ -91,13 +94,15 @@ public class LongAdderVSAtomicLongTest
                 {
                     e.printStackTrace();
                 }
-                //等待所有线程结束
+                //倒数闩，倒数一次
                 countDownLatch.countDown();
 
             });
         }
+
         try
         {
+            //等待倒数闩完成所有的倒数操作
             countDownLatch.await();
         } catch (InterruptedException e)
         {
@@ -108,6 +113,5 @@ public class LongAdderVSAtomicLongTest
         Print.tcfo("运行的时长为：" + time);
         Print.tcfo("累加结果为：" + longAdder.longValue());
     }
-
-
 }
+

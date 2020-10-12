@@ -1,7 +1,5 @@
 package com.crazymakercircle.demo.lock;
 
-import com.crazymakercircle.demo.lock.busi.PetStoreWithReadWriteLock;
-import com.crazymakercircle.demo.lock.busi.PetStoreWithStampedLock;
 import com.crazymakercircle.petstore.actor.Consumer;
 import com.crazymakercircle.petstore.actor.Producer;
 import com.crazymakercircle.petstore.goods.Goods;

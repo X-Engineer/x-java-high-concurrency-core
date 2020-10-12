@@ -16,11 +16,18 @@ public class User implements Serializable
     String nickName;
     transient PLATTYPE platform;
     int intPlatFrom;
+    public  volatile  int age; //年龄
 
     public User()
     {
         nickName = "nickName";
         setPlatform(PLATTYPE.ANDROID);
+    }
+
+    public User(String uid, String nickName)
+    {
+        this.uid = uid;
+        this.nickName = nickName;
     }
 
     // windows,mac,android, ios, web , other
@@ -70,6 +77,7 @@ public class User implements Serializable
         return "User{" +
                 "uid='" + getUid() + '\'' +
                 ", nickName='" + getNickName() + '\'' +
+                ", age=" + age +
                 ", platform=" + getPlatform() +
                 ", intPlatFrom=" + getIntPlatFrom() +
                 '}';
@@ -136,4 +144,6 @@ public class User implements Serializable
     {
         this.sessionId = sessionId;
     }
+
+
 }

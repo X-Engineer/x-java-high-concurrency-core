@@ -1,4 +1,4 @@
-package com.crazymakercircle.singleton.busi;
+package com.crazymakercircle.designmodel.singleton;
 
 public class FSingleton
 {
