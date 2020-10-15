@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
+
 public class LockTest
 {
 
@@ -78,21 +80,22 @@ public class LockTest
     public void testFairLock() throws InterruptedException
     {
         //创建可重入锁，创建为公平锁的类型
-        Lock lock = new ReentrantLock(true);
+        Lock lock = new CLHLock();
 
         //创建Runnable可执行实例
         Runnable r = () -> IncrementData.lockAndIncrease(lock);
-        Thread t1 = new Thread(r, "thread-1");  //创建第1条线程
-        Thread t2 = new Thread(r, "thread-2");  //创建第2条线程
-        Thread t3 = new Thread(r, "thread-3");  //创建第3条线程
-        Thread t4 = new Thread(r, "thread-4");  //创建第4条线程
 
-        t1.start(); //启动第1条线程
-        t2.start(); //启动第2条线程
-        t3.start(); //启动第3条线程
-        t4.start(); //启动第4条线程
-
-        Print.tcfo("主线程结束");
+        //创建4条线程
+        Thread[] tArray = new Thread[4];
+        for (int i = 0; i < 4; i++)
+        {
+            tArray[i] = new Thread(r, "线程" + i);
+        }
+        //启动4条线程
+        for (int i = 0; i < 4; i++)
+        {
+            tArray[i].start();
+        }
         Thread.sleep(Integer.MAX_VALUE);
     }
 
@@ -101,24 +104,25 @@ public class LockTest
      * 非公平锁测试用例
      */
     @org.junit.Test
-    public void testNoFairLock() throws InterruptedException
+    public void testNotFairLock() throws InterruptedException
     {
         //创建可重入锁，默认的非公平锁
-        Lock lock = new ReentrantLock();
+        Lock lock = new ReentrantLock(false);
 
         //创建Runnable可执行实例
         Runnable r = () -> IncrementData.lockAndIncrease(lock);
-        Thread t1 = new Thread(r, "thread-1");  //创建第1条线程
-        Thread t2 = new Thread(r, "thread-2");  //创建第2条线程
-        Thread t3 = new Thread(r, "thread-3");  //创建第3条线程
-        Thread t4 = new Thread(r, "thread-4");  //创建第4条线程
 
-        t1.start(); //启动第1条线程
-        t2.start(); //启动第2条线程
-        t3.start(); //启动第3条线程
-        t4.start(); //启动第4条线程
-
-        Print.tcfo("主线程结束");
+        //创建4条线程
+        Thread[] tArray = new Thread[4];
+        for (int i = 0; i < 4; i++)
+        {
+            tArray[i] = new Thread(r, "线程" + i);
+        }
+        //启动4条线程
+        for (int i = 0; i < 4; i++)
+        {
+            tArray[i].start();
+        }
         Thread.sleep(Integer.MAX_VALUE);
     }
 
@@ -133,18 +137,16 @@ public class LockTest
         Runnable r = () -> IncrementData.lockInterruptiblyAndIncrease(lock);
         Thread t1 = new Thread(r, "thread-1");  //创建第1条线程
         Thread t2 = new Thread(r, "thread-2");  //创建第2条线程
-        Thread t3 = new Thread(r, "thread-3");  //创建第3条线程
-        Thread t4 = new Thread(r, "thread-4");  //创建第4条线程
+
 
         t1.start(); //启动第1条线程
         t2.start(); //启动第2条线程
-        t3.start(); //启动第3条线程
-        t4.start(); //启动第4条线程
+        sleepMilliSeconds(100);
+        Print.synTco( "等待100毫秒，中断两个线程");
 
-        t3.interrupt(); //中断第3条线程
-        t4.interrupt(); //中断第4条线程
+        t1.interrupt(); //启动第2条线程
+        t2.interrupt(); //启动第2条线程
 
-        Print.tcfo("主线程结束");
         Thread.sleep(Integer.MAX_VALUE);
     }
 
@@ -153,7 +155,7 @@ public class LockTest
 
     //测试用例：抢占两把锁，造成死锁，然后进行死锁监测和部分中断
     @org.junit.Test
-    public void testTowLock() throws InterruptedException
+    public void testDeadLock() throws InterruptedException
     {
         //创建可重入锁，默认的非公平锁
         Lock lock1 = new ReentrantLock();
@@ -169,16 +171,15 @@ public class LockTest
         t1.start(); //启动第1条线程
         t2.start(); //启动第2条线程
 
-        Print.tcfo("主线程结束");
-
-        Print.tcfo("死锁监测和处理");
         //等待一段时间再执行死锁检测
         Thread.sleep(2000);
+        Print.tcfo("等待2秒，开始死锁监测和处理");
+
         //获取到所有死锁线程的id
         long[] deadlockedThreads = mbean.findDeadlockedThreads();
         if (deadlockedThreads.length > 0)
         {
-            Print.tcfo("发生了死锁");
+            Print.tcfo("发生了死锁，输出死锁线程的信息");
             //遍历数组获取所有的死锁线程详细堆栈信息并打印
             for (long pid : deadlockedThreads)
             {

@@ -27,7 +27,7 @@ public class FileLogger
             {
                 dir.mkdir();
             }
-            String filePath = logDir + Dateutil.getToday() + ".txt";
+            String filePath = logDir + DateUtil.getToday() + ".txt";
 
             logFile = new File(filePath);
             if (!logFile.exists())
@@ -56,7 +56,7 @@ public class FileLogger
         {
             fileWriter = new FileWriter(logFile, true);
             bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.append(Dateutil.getNow());
+            bufferedWriter.append(DateUtil.getNow());
             bufferedWriter.append(" ");
             bufferedWriter.append(s.toString());
             bufferedWriter.append("\r");

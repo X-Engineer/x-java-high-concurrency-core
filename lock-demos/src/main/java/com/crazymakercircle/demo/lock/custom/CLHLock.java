@@ -10,10 +10,12 @@ import java.util.concurrent.locks.Lock;
 
 public class CLHLock implements Lock
 {
+
     /**
      * 指向当前节点
      */
     private static ThreadLocal<Node> curNodeLocal = new ThreadLocal();
+    private  String name;
     /**
      * CLHLock队列的尾部
      */
@@ -25,6 +27,12 @@ public class CLHLock implements Lock
         tail.getAndSet(Node.EMPTY);
     }
 
+    public CLHLock(String name)
+    {
+        this.name=name;
+        //设置尾部节点
+        tail.getAndSet(Node.EMPTY);
+    }
     //加锁：将节点添加到等待队列的尾部
     @Override
     public void lock()
@@ -57,9 +65,10 @@ public class CLHLock implements Lock
     public void unlock()
     {
         Node curNode = curNodeLocal.get();
-        curNode.setLocked(false);
         curNode.setPrevNode(null);//help for GC
         curNodeLocal.set(null);
+        curNode.setLocked(false);
+
     }
 
     @Data
@@ -261,5 +270,11 @@ public class CLHLock implements Lock
     {
         throw new IllegalStateException(
                 "方法 'newCondition' 尚未实现!");
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CLHLock{" + name +    '}';
     }
 }

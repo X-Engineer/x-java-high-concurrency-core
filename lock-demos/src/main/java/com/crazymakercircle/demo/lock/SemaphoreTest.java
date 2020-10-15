@@ -1,11 +1,13 @@
 package com.crazymakercircle.demo.lock;
 
+import com.crazymakercircle.util.DateUtil;
 import com.crazymakercircle.util.Print;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SemaphoreTest
 {
@@ -14,45 +16,50 @@ public class SemaphoreTest
     public void testShareLock() throws InterruptedException
     {
         // 排队总人数（请求总数）
-        final int CLIENT_TOTAL = 10;
+        final int USER_TOTAL = 10;
         // 可同时受理业务的窗口数量（同时并发执行的线程数）
-        final int THREAD_TOTAL = 2;
+        final int PERMIT_TOTAL = 2;
         //线程池，用于多线程模拟测试
-        ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_TOTAL);
-        //创建并发信号量
-        final Semaphore semaphore = new Semaphore(THREAD_TOTAL);
-        final CountDownLatch countDownLatch = new CountDownLatch(CLIENT_TOTAL);
-        for (int i = 0; i < CLIENT_TOTAL; i++)
+        final CountDownLatch countDownLatch = new CountDownLatch(USER_TOTAL);
+        //创建信号量,含有2个许可
+        final Semaphore semaphore = new Semaphore(PERMIT_TOTAL);
+        AtomicInteger index = new AtomicInteger(0);
+        //创建Runnable可执行实例
+        Runnable r = () ->
         {
-            final int count = i;
-            threadPool.execute(() ->
+            try
             {
-                try
-                {
-                    //抢占一个信号
-                    semaphore.acquire(1);
-                    //模拟业务操作： 处理排队业务
-                    process(count);
-                    //释放一个信号
-                    semaphore.release(1);
-                } catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                countDownLatch.countDown();
-            });
-        }
-        countDownLatch.await();
-        threadPool.shutdown();
-    }
+                Calendar calendar = new GregorianCalendar();//日历实例
+                //抢占一个许可
+                semaphore.acquire(1);
 
-    /**
-     * 模拟业务操作： 处理排队业务
-     */
-    private static void process(int i) throws InterruptedException
-    {
-        Print.tcfo("受理处理中。。。,服务号: " + i);
-        Thread.sleep(1000);
+                //模拟业务操作： 处理排队业务
+                Print.tco(DateUtil.getNowTime() + ", 受理处理中...,服务号: " + index.incrementAndGet());
+                Thread.sleep(1000);
+                //释放一个信号
+                semaphore.release(1);
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            countDownLatch.countDown();
+        };
+
+
+        //创建4条线程
+        Thread[] tArray = new Thread[USER_TOTAL];
+        for (int i = 0; i < USER_TOTAL; i++)
+        {
+            tArray[i] = new Thread(r, "线程" + i);
+        }
+        //启动4条线程
+        for (int i = 0; i < USER_TOTAL; i++)
+        {
+            tArray[i].start();
+        }
+
+
+        countDownLatch.await();
     }
 
 

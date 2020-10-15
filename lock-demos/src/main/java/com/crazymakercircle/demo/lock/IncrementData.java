@@ -4,7 +4,8 @@ import com.crazymakercircle.util.Print;
 
 import java.util.concurrent.locks.Lock;
 
-import static com.crazymakercircle.util.JvmUtil.curThreadName;
+import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
+
 
 public class IncrementData
 {
@@ -13,66 +14,66 @@ public class IncrementData
     public static void lockAndFastIncrease(Lock lock)
     {
         //step1：抢占锁
-        // Print.tcfo(curThreadName()+" -- 本线程开始抢占锁");
+        // Print.synTco(curThreadName()+" -- 本线程开始抢占锁");
         lock.lock();
-        //Print.tcfo(curThreadName()+" ^-^本线程抢到了锁");
         try
         {
+            //Print.synTco(curThreadName()+" ^-^本线程抢到了锁");
             //step2：执行临界区代码
             sum++;
         } finally
         {
             //step3：释放锁
             lock.unlock();
-            //Print.tcfo("本线程释放了锁");
+            //Print.synTco("本线程释放了锁");
         }
     }
 
     public static void lockAndIncrease(Lock lock)
     {
-        Print.tcfo(curThreadName() + " -- 开始抢占锁");
+        Print.synTco(" -- 开始抢占锁");
         lock.lock();
-        Print.tcfo(curThreadName() + " ^-^ 抢到了锁");
         try
         {
-            Thread.sleep(100);
+            Print.synTco(" ^-^ 抢到了锁");
             sum++;
-        } catch (InterruptedException e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         } finally
         {
             lock.unlock();
-            Print.tcfo(curThreadName() + " -- 释放了锁");
         }
     }
 
-    //演示方法：抢锁过程可中断
+    //演示方法：可中断抢锁
     public static void lockInterruptiblyAndIncrease(Lock lock)
     {
-        Print.tcfo(curThreadName() + " -- 本线程开始抢占锁");
+        Print.synTco(" 开始抢占锁");
         try
         {
             lock.lockInterruptibly();
         } catch (InterruptedException e)
         {
-            Print.tcfo(curThreadName() + " @-@本线程被中断，抢锁失败");
+            Print.synTco("抢占被中断，抢锁失败");
             // e.printStackTrace();
             return;
         }
-        Print.tcfo(curThreadName() + " ^-^本线程抢到了锁");
         try
         {
-            //等待100ms
-            Thread.sleep(100);
+            Print.synTco("抢到了锁，同步执行1秒");
+            sleepMilliSeconds(1000);
             sum++;
-        } catch (InterruptedException e)
+            if (Thread.currentThread().isInterrupted())
+            {
+                Print.synTco("同步执行被中断");
+            }
+        } catch (Exception e)
         {
             e.printStackTrace();
         } finally
         {
             lock.unlock();
-            Print.tcfo("本线程释放了锁");
         }
     }
 
@@ -81,7 +82,7 @@ public class IncrementData
     {
         if (lock.tryLock())
         {
-            Print.tcfo("本线程抢到了锁");
+            Print.synTco("本线程抢到了锁");
 
             try
             {
@@ -93,13 +94,13 @@ public class IncrementData
             } finally
             {
                 lock.unlock();
-                Print.tcfo("本线程释放了锁");
+                Print.synTco("本线程释放了锁");
 
             }
         } else
         {
             // perform alternative actions
-            Print.tcfo("本线程抢锁失败");
+            Print.synTco("本线程抢锁失败");
         }
     }
 

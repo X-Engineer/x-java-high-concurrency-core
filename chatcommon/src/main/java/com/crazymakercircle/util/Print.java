@@ -15,7 +15,7 @@ public class Print
      *
      * @param s 待输出的字符串
      */
-    public static void tco(Object s)
+    public  static void tco(Object s)
     {
         String cft = "[" + Thread.currentThread().getName() + "]" + "：" + s;
 
@@ -23,7 +23,8 @@ public class Print
         //异步输出的好处：不会造成输出乱序，也不会造成当前线程阻塞
         ThreadUtil.seqExecute(() ->
         {
-            System.out.println(cft);
+
+                System.out.println(cft);
 
         });
     }
