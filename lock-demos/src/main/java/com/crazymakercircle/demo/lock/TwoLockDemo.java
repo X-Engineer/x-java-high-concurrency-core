@@ -7,7 +7,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class TwoLockDemo
 {
     //演示代码：使用两把锁, 通过可以中断的方式抢锁

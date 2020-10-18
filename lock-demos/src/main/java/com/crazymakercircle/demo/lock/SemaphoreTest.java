@@ -8,7 +8,9 @@ import java.util.GregorianCalendar;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class SemaphoreTest
 {
 

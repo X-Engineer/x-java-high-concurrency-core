@@ -68,7 +68,6 @@ public class CLHLock implements Lock
         curNode.setPrevNode(null);//help for GC
         curNodeLocal.set(null);
         curNode.setLocked(false);
-
     }
 
     @Data

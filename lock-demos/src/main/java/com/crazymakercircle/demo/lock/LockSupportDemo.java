@@ -5,7 +5,9 @@ import com.crazymakercircle.util.Print;
 import java.util.concurrent.locks.LockSupport;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class LockSupportDemo
 {
     public static class ChangeObjectThread extends Thread

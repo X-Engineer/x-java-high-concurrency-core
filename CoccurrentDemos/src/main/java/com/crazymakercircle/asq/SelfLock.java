@@ -13,7 +13,9 @@ public class SelfLock implements Lock
     private static class Sync extends AbstractQueuedSynchronizer
     {
 
-        //锁是否被占用
+        //检查锁是否被占用
+        // 状态为0 表示没有被占用，返回false
+        // 1 表示被占用，返回true
         protected boolean isHeldExclusively()
         {
             return getState() == 1;
@@ -21,6 +23,7 @@ public class SelfLock implements Lock
 
         protected boolean tryAcquire(int arg)
         {
+            //CAS更新状态值为1
             if (compareAndSetState(0, 1))
             {
                 setExclusiveOwnerThread(Thread.currentThread());
@@ -60,24 +63,7 @@ public class SelfLock implements Lock
 
     }
 
-    @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
-        sycn.acquireInterruptibly(1);
 
-    }
-
-    @Override
-    public boolean tryLock()
-    {
-        return sycn.tryAcquire(1);
-    }
-
-    @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
-        return sycn.tryAcquireNanos(1, unit.toNanos(time));
-    }
 
     @Override
     public void unlock()
@@ -90,6 +76,25 @@ public class SelfLock implements Lock
     public Condition newCondition()
     {
         return sycn.newCondition();
+    }
+    @Override
+    public void lockInterruptibly() throws InterruptedException
+    {
+        sycn.acquireInterruptibly(1);
+
+    }
+
+
+    @Override
+    public boolean tryLock()
+    {
+        return sycn.tryAcquire(1);
+    }
+
+    @Override
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
+    {
+        return sycn.tryAcquireNanos(1, unit.toNanos(time));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.demo.lock.custom.CLHLock;
+import com.crazymakercircle.demo.lock.custom.MockLock;
 import com.crazymakercircle.util.Print;
 
 import java.lang.management.ManagementFactory;
@@ -13,7 +14,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class LockTest
 {
 
@@ -267,4 +270,61 @@ public class LockTest
         Print.tcfo("运行的时长为：" + time);
         Print.tcfo("累加结果为：" + IncrementData.sum);
     }
+
+
+
+    @org.junit.Test
+    public void testMockLock()
+    {
+        // 每条线程的执行轮数
+        final int TURNS = 1000;
+        // 线程数
+        final int THREADS = 10;
+
+        //线程池，用于多线程模拟测试
+        ExecutorService pool = Executors.newFixedThreadPool(THREADS);
+
+        //可重入、独占锁对象
+        Lock lock = new MockLock();
+        // 倒数闩
+        CountDownLatch countDownLatch = new CountDownLatch(THREADS);
+        long start = System.currentTimeMillis();
+
+        //10条线程并发执行
+        for (int i = 0; i < THREADS; i++)
+        {
+            pool.submit(() ->
+            {
+                try
+                {
+                    //累加 1000 次
+                    for (int j = 0; j < TURNS; j++)
+                    {
+                        //传入锁，执行一次累加
+                        IncrementData.lockAndFastIncrease(lock);
+                    }
+                    Print.tco("本线程累加完成");
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                //线程执行完成，倒数闩减少一次
+                countDownLatch.countDown();
+
+            });
+        }
+        try
+        {
+            //等待倒数闩归零，所有线程结束
+            countDownLatch.await();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        float time = (System.currentTimeMillis() - start) / 1000F;
+        //输出统计结果
+        Print.tcfo("运行的时长为：" + time);
+        Print.tcfo("累加结果为：" + IncrementData.sum);
+    }
+
 }

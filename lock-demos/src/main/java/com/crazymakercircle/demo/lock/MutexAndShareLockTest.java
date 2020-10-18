@@ -8,7 +8,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class MutexAndShareLockTest
 {
 

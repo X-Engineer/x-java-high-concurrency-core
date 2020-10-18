@@ -6,7 +6,9 @@ import java.util.concurrent.locks.Lock;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
-
+/**
+ * Created by 尼恩@疯狂创客圈.
+ */
 public class IncrementData
 {
     public static int sum = 0;
