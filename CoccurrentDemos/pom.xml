@@ -26,6 +26,23 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>2.1.17</version>
+        </dependency>
+
+        <dependency >
+        <groupId> com.typesafe.akka</groupId >
+        <artifactId>akka-actor_2.10</artifactId>
+        <version>2.3.10</version>
+        </dependency>
+        <dependency >
+            <groupId> com.typesafe.akka</groupId >
+            <artifactId>akka-persistence-experimental_2.10</artifactId>
+            <version>2.3.10</version>
+        </dependency>
+
     </dependencies>
 
 </project>

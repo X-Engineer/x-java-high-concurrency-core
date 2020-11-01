@@ -75,7 +75,6 @@ public class LongAdderVSAtomicLongTest
 
         //定义一个LongAdder 对象
         LongAdder longAdder = new LongAdder();
-
         // 线程同步倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();

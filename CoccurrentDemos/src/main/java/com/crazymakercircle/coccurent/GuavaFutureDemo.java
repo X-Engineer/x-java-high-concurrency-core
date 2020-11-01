@@ -1,6 +1,6 @@
 package com.crazymakercircle.coccurent;
 
-import com.crazymakercircle.util.Logger;
+import com.crazymakercircle.util.Print;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -11,6 +11,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+
 /**
  * Created by 尼恩 at 疯狂创客圈
  */
@@ -18,37 +20,28 @@ import java.util.concurrent.Executors;
 public class GuavaFutureDemo
 {
 
-    public static final int SLEEP_GAP = 500;
-
-
-    public static String getCurThreadName()
-    {
-        return Thread.currentThread().getName();
-    }
+    public static final int SLEEP_GAP = 3000;
 
     static class HotWaterJob implements Callable<Boolean> //①
     {
-
         @Override
         public Boolean call() throws Exception //②
         {
-
             try
             {
-                Logger.info("洗好水壶");
-                Logger.info("灌上凉水");
-                Logger.info("放在火上");
+                Print.tcfo("洗好水壶");
+                Print.tcfo("烧开水");
 
                 //线程睡眠一段时间，代表烧水中
                 Thread.sleep(SLEEP_GAP);
-                Logger.info("水开了");
+                Print.tcfo("水开了");
 
             } catch (InterruptedException e)
             {
-                Logger.info(" 发生异常被中断.");
+                Print.tcfo(" 发生异常被中断.");
                 return false;
             }
-            Logger.info(" 烧水工作，运行结束.");
+            Print.tcfo(" 烧水工作，运行结束.");
 
             return true;
         }
@@ -60,84 +53,49 @@ public class GuavaFutureDemo
         @Override
         public Boolean call() throws Exception
         {
-
-
             try
             {
-                Logger.info("洗茶壶");
-                Logger.info("洗茶杯");
-                Logger.info("拿茶叶");
+                Print.tcfo("洗茶杯");
                 //线程睡眠一段时间，代表清洗中
                 Thread.sleep(SLEEP_GAP);
-                Logger.info("洗完了");
+                Print.tcfo("洗完了");
 
             } catch (InterruptedException e)
             {
-                Logger.info(" 清洗工作 发生异常被中断.");
+                Print.tcfo(" 清洗工作 发生异常被中断.");
                 return false;
             }
-            Logger.info(" 清洗工作  运行结束.");
+            Print.tcfo(" 清洗工作  运行结束.");
             return true;
         }
 
     }
 
-    //泡茶线程
-    static class MainJob implements Runnable
+    //泡茶喝的工作
+    static class DrinkJob
     {
 
         boolean waterOk = false;
         boolean cupOk = false;
-        int gap = SLEEP_GAP / 10;
 
-        @Override
-        public void run()
+        public void drinkTea()
         {
-            while (true)
+            if (waterOk && cupOk)
             {
-                try
-                {
-                    Thread.sleep(gap);
-                    Logger.info("读书中......");
-                } catch (InterruptedException e)
-                {
-                    Logger.info(getCurThreadName() + "发生异常被中断.");
-                }
-
-                if (waterOk && cupOk)
-                {
-                    drinkTea(waterOk, cupOk);
-                }
-            }
-        }
-
-
-        public void drinkTea(Boolean wOk, Boolean cOK)
-        {
-            if (wOk && cOK)
-            {
-                Logger.info("泡茶喝，茶喝完");
+                Print.tcfo("泡茶喝，茶喝完");
                 this.waterOk = false;
-                this.gap = SLEEP_GAP * 100;
-            } else if (!wOk)
-            {
-                Logger.info("烧水失败，没有茶喝了");
-            } else if (!cOK)
-            {
-                Logger.info("杯子洗不了，没有茶喝了");
             }
 
         }
     }
 
+
     public static void main(String args[])
     {
+        Thread.currentThread().setName("泡茶喝线程");
 
         //新起一个线程，作为泡茶主线程
-        MainJob mainJob = new MainJob();
-        Thread mainThread = new Thread(mainJob);
-        mainThread.setName("主线程");
-        mainThread.start();
+        DrinkJob drinkJob = new DrinkJob();
 
         //烧水的业务逻辑
         Callable<Boolean> hotJob = new HotWaterJob();
@@ -152,43 +110,53 @@ public class GuavaFutureDemo
         ListeningExecutorService gPool =
                 MoreExecutors.listeningDecorator(jPool);
 
-        //提交烧水的业务逻辑，取到异步任务
-        ListenableFuture<Boolean> hotFuture = gPool.submit(hotJob);
-        //绑定任务执行完成后的回调，到异步任务
-        Futures.addCallback(hotFuture, new FutureCallback<Boolean>()
+        //烧水的回调钩子
+        FutureCallback<Boolean> hotWaterHook = new FutureCallback<Boolean>()
         {
             public void onSuccess(Boolean r)
             {
                 if (r)
                 {
-                    mainJob.waterOk = true;
+                    drinkJob.waterOk = true;
+                    //执行回调方法
+                    drinkJob.drinkTea();
                 }
             }
 
             public void onFailure(Throwable t)
             {
-                Logger.info("烧水失败，没有茶喝了");
+                Print.tcfo("烧水失败，没有茶喝了");
             }
-        });
-        //提交清洗的业务逻辑，取到异步任务
+        };
+        //启动烧水线程
+        ListenableFuture<Boolean> hotFuture = gPool.submit(hotJob);
+        //设置烧水任务的回调钩子
+        Futures.addCallback(hotFuture, hotWaterHook);
 
+        //启动清洗线程
         ListenableFuture<Boolean> washFuture = gPool.submit(washJob);
-        //绑定任务执行完成后的回调，到异步任务
+        //使用匿名实例，作为清洗之后的回调钩子
         Futures.addCallback(washFuture, new FutureCallback<Boolean>()
         {
             public void onSuccess(Boolean r)
             {
                 if (r)
                 {
-                    mainJob.cupOk = true;
+                    drinkJob.cupOk = true;
+                    //执行回调方法
+                    drinkJob.drinkTea();
                 }
             }
 
             public void onFailure(Throwable t)
             {
-                Logger.info("杯子洗不了，没有茶喝了");
+                Print.tcfo("杯子洗不了，没有茶喝了");
             }
         });
+
+        Print.tcfo("干点其他事情....");
+        sleepSeconds(1);
+        Print.tcfo("执行完成");
     }
 
 

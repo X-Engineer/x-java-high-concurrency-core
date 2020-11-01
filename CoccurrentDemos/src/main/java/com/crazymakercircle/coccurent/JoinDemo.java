@@ -2,6 +2,7 @@ package com.crazymakercircle.coccurent;
 
 
 import com.crazymakercircle.util.Logger;
+import com.crazymakercircle.util.Print;
 
 /**
  * Created by 尼恩 at 疯狂创客圈
@@ -32,19 +33,19 @@ public class JoinDemo
 
             try
             {
-                Logger.info("洗好水壶");
-                Logger.info("灌上凉水");
-                Logger.info("放在火上");
+             Print.tcfo("洗好水壶");
+             Print.tcfo("灌上凉水");
+             Print.tcfo("放在火上");
 
                 //线程睡眠一段时间，代表烧水中
                 Thread.sleep(SLEEP_GAP);
-                Logger.info("水开了");
+             Print.tcfo("水开了");
 
             } catch (InterruptedException e)
             {
-                Logger.info(" 发生异常被中断.");
+             Print.tcfo(" 发生异常被中断.");
             }
-            Logger.info(" 运行结束.");
+         Print.tcfo(" 运行结束.");
         }
 
     }
@@ -63,18 +64,18 @@ public class JoinDemo
 
             try
             {
-                Logger.info("洗茶壶");
-                Logger.info("洗茶杯");
-                Logger.info("拿茶叶");
+             Print.tcfo("洗茶壶");
+             Print.tcfo("洗茶杯");
+             Print.tcfo("拿茶叶");
                 //线程睡眠一段时间，代表清洗中
                 Thread.sleep(SLEEP_GAP);
-                Logger.info("洗完了");
+             Print.tcfo("洗完了");
 
             } catch (InterruptedException e)
             {
-                Logger.info(" 发生异常被中断.");
+             Print.tcfo(" 发生异常被中断.");
             }
-            Logger.info(" 运行结束.");
+         Print.tcfo(" 运行结束.");
         }
 
     }
@@ -96,12 +97,12 @@ public class JoinDemo
             wThread.join();
 
             Thread.currentThread().setName("主线程");
-            Logger.info("泡茶喝");
+         Print.tcfo("泡茶喝");
 
         } catch (InterruptedException e)
         {
-            Logger.info(getCurThreadName() + "发生异常被中断.");
+         Print.tcfo(getCurThreadName() + "发生异常被中断.");
         }
-        Logger.info(getCurThreadName() + " 运行结束.");
+     Print.tcfo(getCurThreadName() + " 运行结束.");
     }
 }

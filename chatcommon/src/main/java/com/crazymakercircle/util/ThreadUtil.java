@@ -314,6 +314,13 @@ public class ThreadUtil
     {
         return Thread.currentThread().getName();
     }
+    /**
+     * 获取当前线程ID
+     */
+    public static long getCurThreadId()
+    {
+        return Thread.currentThread().getId();
+    }
 
     /**
      * 获取当前线程

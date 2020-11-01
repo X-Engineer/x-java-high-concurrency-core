@@ -2,6 +2,7 @@ package com.crazymaker.common;
 
 import com.crazymakercircle.cocurrent.DisruptorTaskScheduler;
 import com.crazymakercircle.util.Print;
+import com.crazymakercircle.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -9,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class DisruptorTaskSchedulerTester
 {
-    private ExecutorService pool = Executors.newFixedThreadPool(10);
+    private ExecutorService pool = ThreadUtil.getIoIntenseTargetThreadPool();
 
     /**
      * 测试用例：DisruptorTaskScheduler

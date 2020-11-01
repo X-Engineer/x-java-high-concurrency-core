@@ -1,7 +1,5 @@
 package com.crazymakercircle.demo.cas;
 
-import com.crazymakercircle.demo.cas.busi.ContendedDemo;
-import com.crazymakercircle.demo.cas.busi.PaddedAtomicLong;
 import com.crazymakercircle.util.Print;
 import org.openjdk.jol.info.ClassLayout;
 
