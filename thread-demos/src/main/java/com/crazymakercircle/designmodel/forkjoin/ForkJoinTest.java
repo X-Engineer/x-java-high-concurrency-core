@@ -21,16 +21,19 @@ public class ForkJoinTest
 {
 
     @org.junit.Test
-    public void testAccumulateTask() throws ExecutionException, InterruptedException, TimeoutException
+    public void testAccumulateTask()
+            throws ExecutionException, InterruptedException, TimeoutException
     {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         //创建一个累加任务，计算 由1加到10
-        AccumulateTask countTask = new AccumulateTask(1, 10);
+        AccumulateTask countTask = new AccumulateTask(1, 100);
         Future<Integer> future = forkJoinPool.submit(countTask);
         Integer sum = future.get(1, TimeUnit.SECONDS);
         Print.tcfo("最终的计算结果：" + sum);
         //预期的结果为5050
-        Assert.assertTrue(sum == 55);
+        Assert.assertTrue(sum == 5050);
+
+
     }
 
     @org.junit.Test

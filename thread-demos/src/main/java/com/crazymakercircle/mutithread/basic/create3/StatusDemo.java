@@ -1,6 +1,8 @@
 package com.crazymakercircle.mutithread.basic.create3;
 
 import com.crazymakercircle.util.Print;
+import com.crazymakercircle.util.ThreadUtil;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,7 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class StatusDemo
-{
+public class StatusDemo {
 
     //每个线程执行的轮次
     public static final long MAX_TURN = 5;
@@ -26,35 +27,28 @@ public class StatusDemo
     static List<Thread> threadList = new ArrayList<>();
 
     //输出静态线程列表中，所有线程的状态
-    private static void printThreadStatus()
-    {
-        for (Thread thread : threadList)
-        {
+    private static void printThreadStatus() {
+        for (Thread thread : threadList) {
             Print.tco(thread.getName() + " 状态为 " + thread.getState());
 
         }
     }
 
     //向全局的静态线程列表加入线程
-    private static void addStatusThread(Thread thread)
-    {
+    private static void addStatusThread(Thread thread) {
         threadList.add(thread);
     }
 
-    static class StatusDemoThread extends Thread
-    {
-        public StatusDemoThread()
-        {
+    static class StatusDemoThread extends Thread {
+        public StatusDemoThread() {
             super("statusPrintThread" + (++threadSeqNumber));
             //将自己加入到全局的静态线程列表
             addStatusThread(this);
         }
 
-        public void run()
-        {
+        public void run() {
             Print.tco(getName() + ", 状态为" + getState());
-            for (int turn = 0; turn < MAX_TURN; turn++)
-            {
+            for (int turn = 0; turn < MAX_TURN; turn++) {
                 //线程睡眠
                 sleepMilliSeconds(500);
                 //输出所有线程的状态
@@ -64,8 +58,7 @@ public class StatusDemo
         }
     }
 
-    public static void main(String args[]) throws InterruptedException
-    {
+    public static void main(String args[]) throws InterruptedException {
 
         addStatusThread(Thread.currentThread());
 
@@ -87,5 +80,45 @@ public class StatusDemo
 
     }
 
+    @Test
+    //让线程处于TIMED_WAITING状态
+    public  void testTimedWaiting() {
+        final Object lock = new Object();
+        synchronized (lock) {
+            try {
+                lock.wait(30 * 1000);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 
+    //让线程处于WAITING状态
+    @Test
+    public  void testWaiting() {
+        final Object lock = new Object();
+        synchronized (lock) {
+            try {
+                lock.wait();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
+    //让线程一直处于BLOCKED
+    @Test
+    public  void testBlocked() {
+        final Object lock = new Object();
+        new Thread() {
+            public void run() {
+                synchronized (lock) {
+                    System.out.println("i got lock, but don't release");
+                    ThreadUtil.sleepMilliSeconds(1000 * 1000);
+                }
+            }
+        }.start();
+        ThreadUtil.sleepMilliSeconds(100 * 1000);
+        synchronized (lock) {
+            ThreadUtil.sleepMilliSeconds(30 * 1000);
+        }
+    }
 }

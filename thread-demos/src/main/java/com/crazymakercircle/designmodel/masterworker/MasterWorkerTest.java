@@ -1,16 +1,19 @@
 package com.crazymakercircle.designmodel.masterworker;
 
+import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.ThreadUtil;
 
 import java.util.concurrent.TimeUnit;
 
 public class MasterWorkerTest
 {
+    //简单任务
     static class SimpleTask extends Task<Integer>
     {
         @Override
         protected Integer doExecute()
         {
+            Print.tcfo("task "+ getId() +" is done ");
             return getId();
         }
     }
@@ -29,7 +32,6 @@ public class MasterWorkerTest
         ThreadUtil.scheduleAtFixedRate(
                 () -> master.printResult(),
                 5, TimeUnit.SECONDS);
-
     }
 
 }

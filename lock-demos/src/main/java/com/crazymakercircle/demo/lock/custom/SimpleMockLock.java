@@ -5,7 +5,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class MockLock implements Lock
+public class SimpleMockLock implements Lock
 {
     //自定义的内部类实例：同步器
     private final Sync sync = new Sync();

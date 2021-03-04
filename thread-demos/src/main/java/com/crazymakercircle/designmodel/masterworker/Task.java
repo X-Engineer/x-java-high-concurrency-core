@@ -9,7 +9,9 @@ import java.util.function.Consumer;
 public class Task<R>
 {
     static AtomicInteger index = new AtomicInteger(1);
+    //任务的回调函数
     public Consumer<Task<R>> resultAction;
+    //任务的id
     private int id;
 
     // worker ID
@@ -26,6 +28,7 @@ public class Task<R>
     public void execute()
     {
         this.result = this.doExecute();
+        //执行回调函数
         resultAction.accept(this);
     }
 

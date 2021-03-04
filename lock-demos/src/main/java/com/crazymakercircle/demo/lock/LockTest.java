@@ -1,7 +1,7 @@
 package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.demo.lock.custom.CLHLock;
-import com.crazymakercircle.demo.lock.custom.MockLock;
+import com.crazymakercircle.demo.lock.custom.SimpleMockLock;
 import com.crazymakercircle.util.Print;
 
 import java.lang.management.ManagementFactory;
@@ -285,7 +285,7 @@ public class LockTest
         ExecutorService pool = Executors.newFixedThreadPool(THREADS);
 
         //可重入、独占锁对象
-        Lock lock = new MockLock();
+        Lock lock = new SimpleMockLock();
         // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
