@@ -2,6 +2,8 @@ package com.crazymakercircle.mutithread.basic.create;
 
 import com.crazymakercircle.util.Print;
 
+import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
@@ -11,10 +13,6 @@ public class CreateDemo
 
     public static final int MAX_TURN = 5;
 
-    public static String getCurThreadName()
-    {
-        return Thread.currentThread().getName();
-    }
 
     static int threadNo = 1;
 

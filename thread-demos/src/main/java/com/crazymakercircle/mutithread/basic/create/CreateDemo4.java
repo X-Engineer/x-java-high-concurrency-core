@@ -16,24 +16,19 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class CreateDemo4
-{
+public class CreateDemo4 {
 
-    //创建一个包含三个线程的线程池
-    private static ExecutorService pool = Executors.newFixedThreadPool(3);
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException
-    {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        //创建一个包含三个线程的线程池
+        ExecutorService pool = Executors.newFixedThreadPool(3);
 
         pool.execute(new DemoThread()); //执行线程实例
         //执行Runnable执行目标实例
-        pool.execute(new Runnable()
-        {
+        pool.execute(new Runnable() {
             @Override
-            public void run()
-            {
-                for (int j = 1; j < MAX_TURN; j++)
-                {
+            public void run() {
+                for (int j = 1; j < MAX_TURN; j++) {
                     Print.cfo(getCurThreadName() + ", 轮次：" + j);
                     sleepMilliSeconds(10);
                 }
@@ -49,16 +44,13 @@ public class CreateDemo4
     }
 
 
-    static class DemoThread implements Runnable
-    {
+    static class DemoThread implements Runnable {
 
         @Override
 
-        public void run()
-        {
+        public void run() {
 
-            for (int j = 1; j < MAX_TURN; j++)
-            {
+            for (int j = 1; j < MAX_TURN; j++) {
                 Print.cfo(getCurThreadName() + ", 轮次：" + j);
                 sleepMilliSeconds(10);
             }
@@ -69,15 +61,12 @@ public class CreateDemo4
     public static final int COMPUTE_TIMES = 100000000;
 
 
-    static class ReturnableTask implements Callable<Long>
-    {
+    static class ReturnableTask implements Callable<Long> {
         //返回并发执行的时间
-        public Long call() throws Exception
-        {
+        public Long call() throws Exception {
             long startTime = System.currentTimeMillis();
             Print.cfo(getCurThreadName() + " 线程运行开始.");
-            for (int j = 1; j < MAX_TURN; j++)
-            {
+            for (int j = 1; j < MAX_TURN; j++) {
                 Print.cfo(getCurThreadName() + ", 轮次：" + j);
                 sleepMilliSeconds(10);
             }

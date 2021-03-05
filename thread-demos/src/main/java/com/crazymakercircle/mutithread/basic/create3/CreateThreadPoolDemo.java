@@ -35,7 +35,7 @@ public class CreateThreadPoolDemo {
     public static final int MAX_TURN = 5;
 
     //异步的执行目标类
-    static class TargetTask implements Runnable {
+   public static class TargetTask implements Runnable {
         static AtomicInteger taskNo = new AtomicInteger(1);
         protected String taskName;
 
@@ -284,25 +284,6 @@ public class CreateThreadPoolDemo {
     }
 
 
-    @org.junit.Test
-    public void testMixedThreadPool() {
-        System.getProperties().put("mixed.thread", 600);
-        // 获取自定义的混合线程池
-        ExecutorService pool =
-                ThreadUtil.getMixedTargetThreadPool();
-        for (int i = 0; i < 1000; i++) {
-            try {
-                sleepMilliSeconds(10);
-                pool.submit(new TargetTask());
-
-            } catch (RejectedExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        //等待10s
-        sleepSeconds(10);
-        Print.tco("关闭线程池");
-    }
 
     @org.junit.Test
     public void testNewFixedThreadPool2() {

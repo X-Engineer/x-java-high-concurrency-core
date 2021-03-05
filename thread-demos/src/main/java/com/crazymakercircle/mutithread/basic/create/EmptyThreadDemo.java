@@ -1,6 +1,7 @@
 package com.crazymakercircle.mutithread.basic.create;
 
 import com.crazymakercircle.util.Print;
+import com.crazymakercircle.util.ThreadUtil;
 
 /**
  * Created by 尼恩@疯狂创客圈 on 2017/2/22.
@@ -18,5 +19,8 @@ public class EmptyThreadDemo
         Print.cfo("线程状态：" + thread.getState());
         Print.cfo("线程优先级：" + thread.getPriority());
         thread.start();
+        Print.cfo("线程状态：" + thread.getState());
+
+        ThreadUtil.sleepMilliSeconds(10);
     }
 }
