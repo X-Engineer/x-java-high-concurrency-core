@@ -255,7 +255,7 @@ public class CreateThreadPoolDemo {
 
             @Override
             protected void beforeExecute(Thread t, Runnable target) {
-                Print.tco(target + "前钩被执行");
+                Print.tco(target + "前钩子被执行");
                 //记录开始执行时间
                 START_TIME.set(System.currentTimeMillis());
                 super.beforeExecute(t, target);
@@ -267,15 +267,15 @@ public class CreateThreadPoolDemo {
                 super.afterExecute(target, t);
                 //计算执行时长
                 long time = (System.currentTimeMillis() - START_TIME.get());
-                Print.tco(target + " 后钩被执行, 任务执行时长（ms）：" + time);
+                Print.tco(target + " 后钩子被执行, 任务执行时长（ms）：" + time);
                 //清空本地变量
                 START_TIME.remove();
             }
         };
 
-        for (int i = 1; i <= 5; i++) {
+
             pool.execute(new TargetTask());
-        }
+
         //等待10秒
         sleepSeconds(10);
         Print.tco("关闭线程池");
@@ -331,13 +331,13 @@ public class CreateThreadPoolDemo {
     @Test
     public void testSubmit2() {
         ScheduledExecutorService pool = Executors.newScheduledThreadPool(2);
-        Future<Integer> future = pool.submit(new Callable<Integer>() {
+        Future<Integer> future = pool.schedule(new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
                 //返回200 - 300 之间的随机数
                 return RandomUtil.randInRange(200, 300);
             }
-        });
+        },100,TimeUnit.MILLISECONDS);
 
         try {
             Integer result = future.get();

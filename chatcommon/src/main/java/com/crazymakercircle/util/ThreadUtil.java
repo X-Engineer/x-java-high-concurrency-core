@@ -171,7 +171,7 @@ public class ThreadUtil
      */
     private static final int MIXED_CORE = 0;  //混合线程池核心线程数
     private static final int MIXED_MAX = 128;  //最大线程数
-    private static final String MIXED_THREAD_AMOUNT = "mixed.thread.amount";
+    public static final String MIXED_THREAD_AMOUNT = "mixed.thread.amount";
 
     //懒汉式单例创建线程池：用于混合型任务
     private static class MixedTargetThreadPoolLazyHolder

@@ -3,11 +3,13 @@ package com.crazymakercircle.mutithread.basic.create;
 import com.crazymakercircle.mutithread.basic.create3.CreateThreadPoolDemo;
 import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.ThreadUtil;
+import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static com.crazymakercircle.util.ThreadUtil.MIXED_THREAD_AMOUNT;
 import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
@@ -34,6 +36,7 @@ public class ThreadPoolDemo {
         }
     }
 
+    @Test
     public void testIoIntenseTargetThreadPool() {
         ThreadPoolExecutor pool = ThreadUtil.getIoIntenseTargetThreadPool();
         for (int i = 0; i < 2; i++) {
@@ -51,6 +54,7 @@ public class ThreadPoolDemo {
         ThreadUtil.sleepMilliSeconds(Integer.MAX_VALUE);
     }
 
+    @Test
     public void testCpuIntenseTargetThreadPool() {
         ThreadPoolExecutor pool = ThreadUtil.getCpuIntenseTargetThreadPool();
         for (int i = 0; i < 2; i++) {
@@ -68,9 +72,9 @@ public class ThreadPoolDemo {
         ThreadUtil.sleepMilliSeconds(Integer.MAX_VALUE);
     }
 
-    @org.junit.Test
+    @Test
     public void testMixedThreadPool() {
-        System.getProperties().put("mixed.thread", 80);
+        System.getProperties().setProperty(MIXED_THREAD_AMOUNT, "80");
         // 获取自定义的混合线程池
         ExecutorService pool =
                 ThreadUtil.getMixedTargetThreadPool();
