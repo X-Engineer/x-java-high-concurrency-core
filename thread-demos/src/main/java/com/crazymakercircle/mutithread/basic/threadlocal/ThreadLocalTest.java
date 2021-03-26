@@ -67,6 +67,8 @@ public class ThreadLocalTest {
                 }
             });
         }
+
+        ThreadUtil.sleepMilliSeconds(Integer.MAX_VALUE);
     }
 
     static class LeakFoo extends Foo {
@@ -110,14 +112,20 @@ public class ThreadLocalTest {
     }
 
     public ThreadLocal<String> local = ThreadLocal.withInitial(() -> "foo");
-
     @Test
     public void testFinalThreadLocal() {
         //设置本地变量的值
         local.set("bar");
         Logger.fo("local:" + local.get());
+        funcB();funcC();
+    }
+
+    public void funcB() {
         //修改本地变量的引用地址
         local = new ThreadLocal<>();
+        Logger.fo("local:" + local.get());
+    }
+    public void funcC() {
         Logger.fo("local:" + local.get());
     }
 
