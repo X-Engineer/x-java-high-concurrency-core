@@ -2,7 +2,7 @@ package com.crazymakercircle.designmodel.singleton;
 
 public class ASingleton
 {
-    static ASingleton instance;
+    private static ASingleton instance;
 
     // 私有化构造方法
     private ASingleton()
