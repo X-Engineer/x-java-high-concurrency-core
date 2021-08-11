@@ -42,7 +42,7 @@ public class CommunicatePetStore {
                 }
             }
             synchronized (LOCK_OBJECT) {
-                if (amount < MAX_AMOUNT) {
+                if (amount < MAX_AMOUNT) { // 加上双重检查，模拟双检锁在单例模式中应用
                     dataList.add(element);
                     amount++;
                 }
@@ -69,7 +69,7 @@ public class CommunicatePetStore {
 
             T element = null;
             synchronized (LOCK_OBJECT) {
-                if (amount > 0) {
+                if (amount > 0) {  // 加上双重检查，模拟双检锁在单例模式中应用
                     element = dataList.remove(0);
                     amount--;
                 }
