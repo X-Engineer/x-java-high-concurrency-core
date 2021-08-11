@@ -28,7 +28,7 @@ public class CommunicatePetStore
         //保存数据
         private List<T> dataList = new LinkedList<>();
         //保存数量
-        private Integer amount = 0;
+        private volatile int amount = 0;
 
         private final Object LOCK_OBJECT = new Object();
         private final Object NOT_FULL = new Object();
