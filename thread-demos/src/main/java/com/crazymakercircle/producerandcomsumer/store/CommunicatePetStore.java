@@ -16,15 +16,13 @@ import java.util.concurrent.Executors;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class CommunicatePetStore
-{
+public class CommunicatePetStore {
 
     public static final int MAX_AMOUNT = 10; //数据区长度
 
 
     //共享数据区，类定义
-    static class DateBuffer<T>
-    {
+    static class DateBuffer<T> {
         //保存数据
         private List<T> dataList = new LinkedList<>();
         //保存数量
@@ -35,24 +33,21 @@ public class CommunicatePetStore
         private final Object NOT_EMPTY = new Object();
 
         // 向数据区增加一个元素
-        public void add(T element) throws Exception
-        {
-            while (amount > MAX_AMOUNT)
-            {
-                synchronized (NOT_FULL)
-                {
+        public void add(T element) throws Exception {
+            while (amount >= MAX_AMOUNT) {
+                synchronized (NOT_FULL) {
                     Print.tcfo("队列已经满了！");
                     //等待未满通知
                     NOT_FULL.wait();
                 }
             }
-            synchronized (LOCK_OBJECT)
-            {
-                dataList.add(element);
-                amount++;
+            synchronized (LOCK_OBJECT) {
+                if (amount < MAX_AMOUNT) {
+                    dataList.add(element);
+                    amount++;
+                }
             }
-            synchronized (NOT_EMPTY)
-            {
+            synchronized (NOT_EMPTY) {
                 //发送未空通知
                 NOT_EMPTY.notify();
             }
@@ -63,12 +58,9 @@ public class CommunicatePetStore
         /**
          * 从数据区取出一个商品
          */
-        public T fetch() throws Exception
-        {
-            while (amount <= 0)
-            {
-                synchronized (NOT_EMPTY)
-                {
+        public T fetch() throws Exception {
+            while (amount <= 0) {
+                synchronized (NOT_EMPTY) {
                     Print.tcfo("队列已经空了！");
                     //等待未空通知
                     NOT_EMPTY.wait();
@@ -76,14 +68,14 @@ public class CommunicatePetStore
             }
 
             T element = null;
-            synchronized (LOCK_OBJECT)
-            {
-                element = dataList.remove(0);
-                amount--;
+            synchronized (LOCK_OBJECT) {
+                if (amount > 0) {
+                    element = dataList.remove(0);
+                    amount--;
+                }
             }
 
-            synchronized (NOT_FULL)
-            {
+            synchronized (NOT_FULL) {
                 //发送未满通知
                 NOT_FULL.notify();
             }
@@ -92,8 +84,7 @@ public class CommunicatePetStore
     }
 
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         Print.cfo("当前进程的ID是" + JvmUtil.getProcessID());
         System.setErr(System.out);
         //共享数据区，实例对象
@@ -125,13 +116,11 @@ public class CommunicatePetStore
         final int CONSUMER_TOTAL = 11;
         final int PRODUCE_TOTAL = 1;
 
-        for (int i = 0; i < PRODUCE_TOTAL; i++)
-        {
+        for (int i = 0; i < PRODUCE_TOTAL; i++) {
             //生产者线程每生产一个商品，间隔50ms
             threadPool.submit(new Producer(produceAction, 50));
         }
-        for (int i = 0; i < CONSUMER_TOTAL; i++)
-        {
+        for (int i = 0; i < CONSUMER_TOTAL; i++) {
             //消费者线程每消费一个商品，间隔100ms
             threadPool.submit(new Consumer(consumerAction, 100));
         }
