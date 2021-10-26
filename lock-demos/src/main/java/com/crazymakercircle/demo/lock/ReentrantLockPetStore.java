@@ -6,6 +6,8 @@ import com.crazymakercircle.petstore.goods.Goods;
 import com.crazymakercircle.petstore.goods.IGoods;
 import com.crazymakercircle.util.JvmUtil;
 import com.crazymakercircle.util.Print;
+import com.crazymakercircle.util.ThreadUtil;
+import org.apache.curator.utils.ThreadUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,22 +18,22 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ReentrantLockPetStore
-{
+public class ReentrantLockPetStore {
 
     public static final int MAX_AMOUNT = 10; //数据区长度
 
 
     //共享数据区，类定义
-    static class DateBuffer<T>
-    {
+    static class DateBuffer<T> {
         //保存数据
         private List<T> dataList = new LinkedList<>();
         //保存数量
-        private Integer amount = 0;
+        private volatile Integer amount = 0;
 
 
         public static final Lock LOCK_OBJECT = new ReentrantLock();
@@ -39,31 +41,27 @@ public class ReentrantLockPetStore
         public static final Condition NOT_EMPTY = LOCK_OBJECT.newCondition();
 
         // 向数据区增加一个元素
-        public void add(T element) throws Exception
-        {
-            while (amount > MAX_AMOUNT)
-            {
+        public void add(T element) throws Exception {
+            while (amount > MAX_AMOUNT) {
                 LOCK_OBJECT.lock();
-                try
-                {
+                try {
                     Print.tcfo("队列已经满了！");
                     //等待未满通知
                     NOT_FULL.await();
-                } finally
-                {
+                } finally {
                     LOCK_OBJECT.unlock();
                 }
             }
 
             LOCK_OBJECT.lock();
-            try
-            {
-                dataList.add(element);
-                amount++;
-                //发送未空通知
-                NOT_EMPTY.signal();
-            } finally
-            {
+            try {
+                if(amount<=MAX_AMOUNT) {
+                    dataList.add(element);
+                    amount++;
+                    //发送未空通知
+                    NOT_EMPTY.signal();
+                }
+            } finally {
                 LOCK_OBJECT.unlock();
             }
 
@@ -72,43 +70,40 @@ public class ReentrantLockPetStore
         /**
          * 从数据区取出一个商品
          */
-        public T fetch() throws Exception
-        {
-            while (amount <= 0)
-            {
+        public T fetch() throws Exception {
+            while (amount <= 0) {
                 LOCK_OBJECT.lock();
-                try
-                {
+                try {
                     Print.tcfo("队列已经空了！");
                     //等待未空通知
-                    NOT_EMPTY.wait();
-                } finally
-                {
+                    NOT_EMPTY.await();
+                } finally {
                     LOCK_OBJECT.unlock();
                 }
             }
 
             T element = null;
             LOCK_OBJECT.lock();
-            try
-            {
-                element = dataList.remove(0);
-                amount--;
-                //发送未满通知
-                NOT_FULL.notify();
-            } finally
-            {
+            try {
+                if (amount > 0) {
+                    element = dataList.remove(0);
+                    amount--;
+
+                    //发送未满通知
+                    NOT_FULL.signal();
+                }
+                return element;
+
+            } finally {
                 LOCK_OBJECT.unlock();
             }
 
 
-            return element;
         }
     }
 
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         Print.cfo("当前进程的ID是" + JvmUtil.getProcessID());
         System.setErr(System.out);
         //共享数据区，实例对象
@@ -128,6 +123,7 @@ public class ReentrantLockPetStore
         {
             // 从PetStore获取商品
             IGoods goods = null;
+
             goods = dateBuffer.fetch();
             return goods;
         };
@@ -140,16 +136,17 @@ public class ReentrantLockPetStore
         final int CONSUMER_TOTAL = 11;
         final int PRODUCE_TOTAL = 1;
 
-        for (int i = 0; i < PRODUCE_TOTAL; i++)
-        {
+        for (int i = 0; i < PRODUCE_TOTAL; i++) {
             //生产者线程每生产一个商品，间隔50ms
             threadPool.submit(new Producer(produceAction, 50));
         }
-        for (int i = 0; i < CONSUMER_TOTAL; i++)
-        {
+        for (int i = 0; i < CONSUMER_TOTAL; i++) {
             //消费者线程每消费一个商品，间隔100ms
             threadPool.submit(new Consumer(consumerAction, 100));
         }
+
+        sleepSeconds(Integer.MAX_VALUE);
+
 
     }
 

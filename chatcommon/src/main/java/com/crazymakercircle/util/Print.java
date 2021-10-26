@@ -97,14 +97,15 @@ public class Print
     public static void tcfo(Object s)
     {
         String cft = "[" + Thread.currentThread().getName() + "|" + ReflectionUtil.getNakeCallClassMethod() + "]";
+        System.out.println(cft + "：" + s);
 
-        //提交线程池进行独立输出，使得输出不影响当前线程的执行
-        ThreadUtil.seqExecute(() ->
-        {
-
-            System.out.println(cft + "：" + s);
-
-        });
+//        //提交线程池进行独立输出，使得输出不影响当前线程的执行
+//        ThreadUtil.seqExecute(() ->
+//        {
+//
+//            System.out.println(cft + "：" + s);
+//
+//        });
 
     }
 
