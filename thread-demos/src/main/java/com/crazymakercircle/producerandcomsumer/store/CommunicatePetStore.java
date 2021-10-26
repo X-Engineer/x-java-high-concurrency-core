@@ -42,6 +42,7 @@ public class CommunicatePetStore {
                 }
             }
             synchronized (LOCK_OBJECT) {
+
                 if (amount < MAX_AMOUNT) { // 加上双重检查，模拟双检锁在单例模式中应用
                     dataList.add(element);
                     amount++;
