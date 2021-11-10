@@ -42,20 +42,21 @@ public class ReentrantLockPetStore {
 
         // 向数据区增加一个元素
         public void add(T element) throws Exception {
-            while (amount > MAX_AMOUNT) {
-                LOCK_OBJECT.lock();
-                try {
+            LOCK_OBJECT.lock();
+            try {
+                while (amount > MAX_AMOUNT) {
                     Print.tcfo("队列已经满了！");
                     //等待未满通知
                     NOT_FULL.await();
-                } finally {
-                    LOCK_OBJECT.unlock();
                 }
+            } finally {
+                LOCK_OBJECT.unlock();
             }
+
 
             LOCK_OBJECT.lock();
             try {
-                if(amount<=MAX_AMOUNT) {
+                if (amount <= MAX_AMOUNT) {
                     dataList.add(element);
                     amount++;
                     //发送未空通知
@@ -71,16 +72,17 @@ public class ReentrantLockPetStore {
          * 从数据区取出一个商品
          */
         public T fetch() throws Exception {
-            while (amount <= 0) {
-                LOCK_OBJECT.lock();
-                try {
+            LOCK_OBJECT.lock();
+            try {
+                while (amount <= 0) {
                     Print.tcfo("队列已经空了！");
                     //等待未空通知
                     NOT_EMPTY.await();
-                } finally {
-                    LOCK_OBJECT.unlock();
                 }
+            } finally {
+                LOCK_OBJECT.unlock();
             }
+
 
             T element = null;
             LOCK_OBJECT.lock();

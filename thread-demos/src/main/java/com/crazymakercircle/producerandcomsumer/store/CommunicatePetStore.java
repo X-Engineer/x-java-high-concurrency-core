@@ -34,8 +34,8 @@ public class CommunicatePetStore {
 
         // 向数据区增加一个元素
         public void add(T element) throws Exception {
-            while (amount >= MAX_AMOUNT) {
-                synchronized (NOT_FULL) {
+            synchronized (NOT_FULL) {
+                while (amount >= MAX_AMOUNT) {
                     Print.tcfo("队列已经满了！");
                     //等待未满通知
                     NOT_FULL.wait();
@@ -60,8 +60,8 @@ public class CommunicatePetStore {
          * 从数据区取出一个商品
          */
         public T fetch() throws Exception {
-            while (amount <= 0) {
-                synchronized (NOT_EMPTY) {
+            synchronized (NOT_EMPTY) {
+                while (amount <= 0) {
                     Print.tcfo("队列已经空了！");
                     //等待未空通知
                     NOT_EMPTY.wait();

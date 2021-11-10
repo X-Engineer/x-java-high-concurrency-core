@@ -31,7 +31,7 @@ public class ArrayBlockingQueuePetStore
         // 向数据区增加一个元素
         public void add(T element) throws Exception
         {
-            dataList.add(element);
+            dataList.put(element);
         }
 
         /**
