@@ -5,34 +5,30 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class ReentrantSpinLock implements Lock
-{
+public class ReentrantSpinLock implements Lock {
     /**
      * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
      */
-    private  volatile AtomicReference<Thread> owner = new AtomicReference<>();
+    private volatile AtomicReference<Thread> owner = new AtomicReference<>();
     /**
      * 为了实现可重入锁，我们需要引入一个计数器，用来记录一个重复获取锁的次数
      * 此变量为同一个线程在操作，没有必要加上volatile保障可见性和有序性
      */
-     private int count = 0;
+    private int count = 0;
 
     /**
      * 抢占锁
      */
     @Override
-    public void lock()
-    {
+    public void lock() {
         Thread t = Thread.currentThread();
         // 如果是重入，增加重入次数
-        if (t == owner.get())
-        {
+        if (t == owner.get()) {
             ++count;
             return;
         }
         //自旋
-        while (owner.compareAndSet(null, t))
-        {
+        while (!owner.compareAndSet(null, t)) {
             // DO nothing
             Thread.yield();//让出当前剩余的CPU时间片
         }
@@ -42,18 +38,14 @@ public class ReentrantSpinLock implements Lock
      * 释放锁
      */
     @Override
-    public void unlock()
-    {
+    public void unlock() {
         Thread t = Thread.currentThread();
         //只有拥有者才能释放锁
-        if (t == owner.get())
-        {
-            if (count > 0)
-            {
+        if (t == owner.get()) {
+            if (count > 0) {
                 // 如果重入的次数大于0， 减少重入次数
                 --count;
-            } else
-            {
+            } else {
                 // 设置拥有者为空，这里不需要 compareAndSet， 因为已经通过owner做过线程检查
                 owner.set(null);
             }
@@ -107,8 +99,7 @@ public class ReentrantSpinLock implements Lock
      *                              of lock acquisition is supported)
      */
     @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
+    public void lockInterruptibly() throws InterruptedException {
         throw new IllegalStateException(
                 "方法 'lockInterruptibly' 尚未实现!");
     }
@@ -141,8 +132,7 @@ public class ReentrantSpinLock implements Lock
      * {@code false} otherwise
      */
     @Override
-    public boolean tryLock()
-    {
+    public boolean tryLock() {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
 
@@ -206,8 +196,7 @@ public class ReentrantSpinLock implements Lock
      *                              acquisition is supported)
      */
     @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
     }
@@ -233,8 +222,7 @@ public class ReentrantSpinLock implements Lock
      *                                       implementation does not support conditions
      */
     @Override
-    public Condition newCondition()
-    {
+    public Condition newCondition() {
         throw new IllegalStateException(
                 "方法 'newCondition' 尚未实现!");
     }
