@@ -7,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
 
 @Slf4j
-public class User implements Serializable
-{
+public class User implements Serializable {
 
     String uid;
     String devId;
@@ -16,31 +15,27 @@ public class User implements Serializable
     String nickName;
     transient PLATTYPE platform;
     int intPlatFrom;
-    public  volatile  int age; //年龄
+    public volatile int age; //年龄
 
-    public User()
-    {
+    public User() {
         nickName = "nickName";
         setPlatform(PLATTYPE.ANDROID);
     }
 
-    public User(String uid, String nickName)
-    {
+    public User(String uid, String nickName) {
         this.uid = uid;
         this.nickName = nickName;
     }
 
     // windows,mac,android, ios, web , other
-    public enum PLATTYPE
-    {
+    public enum PLATTYPE {
         WINDOWS, MAC, ANDROID, IOS, WEB, OTHER;
     }
 
     private String sessionId;
 
     @JSONField(serialize = false)
-    public void setPlatform(PLATTYPE platform)
-    {
+    public void setPlatform(PLATTYPE platform) {
 
         this.platform = platform;
         this.intPlatFrom = platform.ordinal();
@@ -48,32 +43,27 @@ public class User implements Serializable
     }
 
     @JSONField(serialize = false)
-    public PLATTYPE getPlatform()
-    {
-        if (null == platform)
-        {
+    public PLATTYPE getPlatform() {
+        if (null == platform) {
             this.platform = PLATTYPE.values()[intPlatFrom];
         }
         return platform;
     }
 
     @JSONField(name = "intPlatFrom")
-    public int getIntPlatFrom()
-    {
+    public int getIntPlatFrom() {
         this.platform = PLATTYPE.values()[intPlatFrom];
         return intPlatFrom;
     }
 
     @JSONField(name = "intPlatFrom")
-    public void setIntPlatFrom(int code)
-    {
+    public void setIntPlatFrom(int code) {
         this.intPlatFrom = code;
         this.platform = PLATTYPE.values()[code];
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "User{" +
                 "uid='" + getUid() + '\'' +
                 ", nickName='" + getNickName() + '\'' +
@@ -83,8 +73,7 @@ public class User implements Serializable
                 '}';
     }
 
-    public static User fromMsg(ProtoMsg.LoginRequest info)
-    {
+    public static User fromMsg(ProtoMsg.LoginRequest info) {
         User user = new User();
         user.uid = new String(info.getUid());
         user.devId = new String(info.getDeviceId());
@@ -95,53 +84,43 @@ public class User implements Serializable
 
     }
 
-    public String getUid()
-    {
+    public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid)
-    {
+    public void setUid(String uid) {
         this.uid = uid;
     }
 
-    public String getDevId()
-    {
+    public String getDevId() {
         return devId;
     }
 
-    public void setDevId(String devId)
-    {
+    public void setDevId(String devId) {
         this.devId = devId;
     }
 
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
-    public void setToken(String token)
-    {
+    public void setToken(String token) {
         this.token = token;
     }
 
-    public String getNickName()
-    {
+    public String getNickName() {
         return nickName;
     }
 
-    public void setNickName(String nickName)
-    {
+    public void setNickName(String nickName) {
         this.nickName = nickName;
     }
 
-    public String getSessionId()
-    {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(String sessionId)
-    {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 

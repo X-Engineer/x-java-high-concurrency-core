@@ -9,14 +9,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
-public class LongAdderVSAtomicLongTest
-{
+public class LongAdderVSAtomicLongTest {
     // 每条线程的执行轮数
     final int TURNS = 100000000;
 
     @org.junit.Test
-    public void testAtomicLong()
-    {
+    public void testAtomicLong() {
         // 并发任务数
         final int TASK_AMOUNT = 10;
 
@@ -29,19 +27,15 @@ public class LongAdderVSAtomicLongTest
         // 线程同步倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < TASK_AMOUNT; i++)
-        {
+        for (int i = 0; i < TASK_AMOUNT; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         atomicLong.incrementAndGet();
                     }
                     // Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //倒数闩，倒数一次
@@ -50,12 +44,10 @@ public class LongAdderVSAtomicLongTest
             });
         }
 
-        try
-        {
+        try {
             //等待倒数闩完成所有的倒数操作
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;
@@ -65,8 +57,7 @@ public class LongAdderVSAtomicLongTest
     }
 
     @org.junit.Test
-    public void testLongAdder()
-    {
+    public void testLongAdder() {
         // 并发任务数
         final int TASK_AMOUNT = 10;
 
@@ -78,19 +69,15 @@ public class LongAdderVSAtomicLongTest
         // 线程同步倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < TASK_AMOUNT; i++)
-        {
+        for (int i = 0; i < TASK_AMOUNT; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         longAdder.add(1);
                     }
                     // Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //倒数闩，倒数一次
@@ -99,12 +86,10 @@ public class LongAdderVSAtomicLongTest
             });
         }
 
-        try
-        {
+        try {
             //等待倒数闩完成所有的倒数操作
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;

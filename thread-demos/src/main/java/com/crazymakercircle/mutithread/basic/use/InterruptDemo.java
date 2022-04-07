@@ -10,31 +10,25 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class InterruptDemo
-{
+public class InterruptDemo {
 
     public static final int SLEEP_GAP = 5000;//睡眠时长
     public static final int MAX_TURN = 50;//睡眠次数
 
-    static class SleepThread extends Thread
-    {
+    static class SleepThread extends Thread {
         static int threadSeqNumber = 1;
 
-        public SleepThread()
-        {
+        public SleepThread() {
             super("sleepThread-" + threadSeqNumber);
             threadSeqNumber++;
         }
 
-        public void run()
-        {
-            try
-            {
+        public void run() {
+            try {
                 Print.tco(getName() + " 进入睡眠.");
                 // 线程睡眠一会
                 Thread.sleep(SLEEP_GAP);
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 Print.tco(getName() + " 发生被异常打断.");
                 return;
@@ -44,8 +38,7 @@ public class InterruptDemo
 
     }
 
-    public static void main(String args[]) throws InterruptedException
-    {
+    public static void main(String args[]) throws InterruptedException {
 
         Thread thread1 = new SleepThread();
         thread1.start();
@@ -61,22 +54,17 @@ public class InterruptDemo
 
     //测试用例：获取异步调用的结果
     @Test
-    public void testInterrupted2()
-    {
-        Thread thread = new Thread()
-        {
-            public void run()
-            {
+    public void testInterrupted2() {
+        Thread thread = new Thread() {
+            public void run() {
                 Print.tco("线程启动了");
                 //一直循环
-                while (true)
-                {
+                while (true) {
                     Print.tco(isInterrupted());
                     sleepMilliSeconds(SLEEP_GAP);
 
                     //如果调用 interrupt 为true，退出死循环
-                    if (isInterrupted())
-                    {
+                    if (isInterrupted()) {
                         Print.tco("线程结束了");
                         return;
                     }

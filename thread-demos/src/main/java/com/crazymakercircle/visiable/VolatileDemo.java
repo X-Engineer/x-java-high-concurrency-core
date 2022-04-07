@@ -6,13 +6,11 @@ import com.crazymakercircle.util.ThreadUtil;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
-public class VolatileDemo
-{
+public class VolatileDemo {
     private volatile long value;
 
     @org.junit.Test
-    public void testAtomicLong()
-    {
+    public void testAtomicLong() {
         // 并发任务数
         final int TASK_AMOUNT = 10;
 
@@ -24,18 +22,14 @@ public class VolatileDemo
         // 线程同步倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(TASK_AMOUNT);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < TASK_AMOUNT; i++)
-        {
+        for (int i = 0; i < TASK_AMOUNT; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         value++;
                     }
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //倒数闩，倒数一次
@@ -43,12 +37,10 @@ public class VolatileDemo
             });
         }
 
-        try
-        {
+        try {
             //等待倒数闩完成所有的倒数操作
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;

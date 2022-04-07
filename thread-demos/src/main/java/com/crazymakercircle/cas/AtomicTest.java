@@ -6,23 +6,16 @@ import com.crazymakercircle.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicIntegerArray;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicMarkableReference;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicStampedReference;
+import java.util.concurrent.atomic.*;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
-public class AtomicTest
-{
+public class AtomicTest {
 
     private static final int THREAD_COUNT = 10;
 
     @Test
-    public void atomicIntegerTest()
-    {
+    public void atomicIntegerTest() {
         int temvalue = 0;
         //定义一个整数原子类实例，赋值到变量 i
         AtomicInteger i = new AtomicInteger(0);
@@ -48,20 +41,17 @@ public class AtomicTest
         Print.fo("flag:" + flag + ";  i:" + i.get());//flag:true;  i:100
     }
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(THREAD_COUNT);
         //定义一个整数原子类实例，赋值到变量 i
         AtomicInteger atomicInteger = new AtomicInteger(0);
 
-        for (int i = 0; i < THREAD_COUNT; i++)
-        {
+        for (int i = 0; i < THREAD_COUNT; i++) {
             // 创建10个线程,模拟多线程环境
             ThreadUtil.getMixedTargetThreadPool().submit(() ->
             {
 
-                for (int j = 0; j < 1000; j++)
-                {
+                for (int j = 0; j < 1000; j++) {
                     atomicInteger.getAndIncrement();
                 }
                 latch.countDown();
@@ -73,8 +63,7 @@ public class AtomicTest
     }
 
     @Test
-    public void testAtomicIntegerArray()
-    {
+    public void testAtomicIntegerArray() {
         int tempvalue = 0;
         //建立原始的数组
         int[] array = {1, 2, 3, 4, 5, 6};
@@ -98,19 +87,16 @@ public class AtomicTest
     }
 
     @Test
-    public void testAtomicStampedReference() throws InterruptedException
-    {
+    public void testAtomicStampedReference() throws InterruptedException {
 
         CountDownLatch latch = new CountDownLatch(2);
 
         AtomicStampedReference<Integer> atomicStampedRef =
                 new AtomicStampedReference<Integer>(1, 0);
 
-        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable()
-        {
+        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 boolean success = false;
                 int stamp = atomicStampedRef.getStamp();
                 Print.tco("before sleep 500: value=" + atomicStampedRef.getReference()
@@ -138,11 +124,9 @@ public class AtomicTest
             }
         });
 
-        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable()
-        {
+        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 boolean success = false;
                 int stamp = atomicStampedRef.getStamp();
                 // stamp = 0
@@ -165,19 +149,16 @@ public class AtomicTest
     }
 
     @Test
-    public void testAtomicMarkableReference() throws InterruptedException
-    {
+    public void testAtomicMarkableReference() throws InterruptedException {
 
         CountDownLatch latch = new CountDownLatch(2);
 
         AtomicMarkableReference<Integer> atomicRef =
                 new AtomicMarkableReference<Integer>(1, false);
 
-        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable()
-        {
+        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 boolean success = false;
                 int value = atomicRef.getReference();
                 boolean mark = getMark(atomicRef);
@@ -198,11 +179,9 @@ public class AtomicTest
             }
         });
 
-        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable()
-        {
+        ThreadUtil.getMixedTargetThreadPool().submit(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 boolean success = false;
                 int value = atomicRef.getReference();
                 boolean mark = getMark(atomicRef);
@@ -223,16 +202,14 @@ public class AtomicTest
 
     }
 
-    private boolean getMark(AtomicMarkableReference<Integer> atomicRef)
-    {
+    private boolean getMark(AtomicMarkableReference<Integer> atomicRef) {
         boolean[] markHolder = {false};
         int value = atomicRef.get(markHolder);
         return markHolder[0];
     }
 
     @Test
-    public void testAtomicReference() throws InterruptedException
-    {
+    public void testAtomicReference() throws InterruptedException {
         //包装的原子对象
         AtomicReference<User> userRef = new AtomicReference<User>();
         //待包装的User对象
@@ -250,8 +227,7 @@ public class AtomicTest
     }
 
     @Test
-    public void testAtomicIntegerFieldUpdater() throws InterruptedException
-    {
+    public void testAtomicIntegerFieldUpdater() throws InterruptedException {
         AtomicIntegerFieldUpdater<User> a =
                 AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
 

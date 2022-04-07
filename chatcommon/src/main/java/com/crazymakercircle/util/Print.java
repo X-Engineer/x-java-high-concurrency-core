@@ -7,16 +7,14 @@ package com.crazymakercircle.util;
 
 import java.util.Scanner;
 
-public class Print
-{
+public class Print {
     /**
      * 正式输出前，输出线程名
      * t-thread，c-content， o-output
      *
      * @param s 待输出的字符串
      */
-    public  static void tco(Object s)
-    {
+    public static void tco(Object s) {
         String cft = "[" + Thread.currentThread().getName() + "]" + "：" + s;
 
         //提交线程池进行异步输出，使得输出过程不影响当前线程的执行
@@ -24,7 +22,7 @@ public class Print
         ThreadUtil.seqExecute(() ->
         {
 
-                System.out.println(cft);
+            System.out.println(cft);
 
         });
     }
@@ -35,8 +33,7 @@ public class Print
      *
      * @param s 待输出的字符串
      */
-    public static void synTco(Object s)
-    {
+    public static void synTco(Object s) {
         String cft = "[" + Thread.currentThread().getName() + "]" + "：" + s;
 
         //提交线程池进行异步输出，使得输出过程不影响当前线程的执行
@@ -51,8 +48,7 @@ public class Print
      *
      * @param s 输出的字符串形参
      */
-    public static void o(Object s)
-    {
+    public static void o(Object s) {
         Print.tcfo(s);
     }
 
@@ -61,8 +57,7 @@ public class Print
      *
      * @param s 待输出的字符串形参
      */
-    public static void fo(Object s)
-    {
+    public static void fo(Object s) {
         String cft = "[" + ReflectionUtil.getNakeCallClassMethod() + "]";
 
         //提交线程池进行独立输出，使得输出不影响当前线程的执行
@@ -79,8 +74,7 @@ public class Print
      *
      * @param s 待输出的字符串形参
      */
-    synchronized public static void cfo(Object s)
-    {
+    synchronized public static void cfo(Object s) {
         String cft = "[" + ReflectionUtil.getNakeCallClassMethod() + "]";
         //提交线程池进行独立输出，使得输出不影响当前线程的执行
         ThreadUtil.seqExecute(() ->
@@ -94,8 +88,7 @@ public class Print
      *
      * @param s 待输出的字符串形参
      */
-    public static void tcfo(Object s)
-    {
+    public static void tcfo(Object s) {
         String cft = "[" + Thread.currentThread().getName() + "|" + ReflectionUtil.getNakeCallClassMethod() + "]";
         System.out.println(cft + "：" + s);
 
@@ -115,19 +108,16 @@ public class Print
      *
      * @param s 提示的字符串形参
      */
-    public static void hint(Object s)
-    {
+    public static void hint(Object s) {
         Print.tcfo("/--" + s + "--/");
     }
 
-    public static String consoleInput()
-    {
+    public static String consoleInput() {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please Enter sth:");
         String nextLine = sc.nextLine();  //读取字符串型输入
         return nextLine;
     }
-
 
 
 }

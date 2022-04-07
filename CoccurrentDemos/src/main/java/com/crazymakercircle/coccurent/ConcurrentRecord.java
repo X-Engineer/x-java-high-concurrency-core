@@ -228,7 +228,6 @@ public class ConcurrentRecord {
     }
 
 
-
     /**
      * 任务是否已经全部完成
      */
@@ -303,9 +302,9 @@ public class ConcurrentRecord {
                 try {
                     condition.await();
                     break;
-            } catch (InterruptedException ex) {
-                interrupt = true;
-            }
+                } catch (InterruptedException ex) {
+                    interrupt = true;
+                }
             }
             //如果对当前线程执行过interrupt操作，则在被唤醒后对当前线程进行中断
             if (interrupt)
@@ -382,7 +381,7 @@ public class ConcurrentRecord {
             return taskCounter.longValue() == 0;
         }
 
-        public void waitTask(){
+        public void waitTask() {
             record.waitForCompleteTask();
         }
 
@@ -396,7 +395,7 @@ public class ConcurrentRecord {
                     .filter(recordTask -> recordTask.isStop())
                     .map(RecordTask::toString)
                     .collect(Collectors.joining(", "));
-            String s=taskCounter.longValue()+" "+  tasks ;
+            String s = taskCounter.longValue() + " " + tasks;
 
             log.info("【TaskManagr:  counter: {}, {} 】", taskCounter.longValue(), tasks);
             return s;
@@ -514,7 +513,7 @@ public class ConcurrentRecord {
         @Override
         public String toString() {
             Double executeTime = getExecuteTime(startTime, endTime);
-            String s=taskName+" " +executeTime+" " +taskThread.getName()+" " ;
+            String s = taskName + " " + executeTime + " " + taskThread.getName() + " ";
 //            log.info("RecordTask (taskName = {}, usedTime = {}s, threadName: {})", taskName, executeTime, taskThread.getName());
             return s;
         }

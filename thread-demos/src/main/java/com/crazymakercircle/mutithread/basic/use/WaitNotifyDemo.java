@@ -4,27 +4,21 @@ import com.crazymakercircle.util.Print;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
-public class WaitNotifyDemo
-{
+public class WaitNotifyDemo {
     static Object locko = new Object();
 
     //等待线程
-    static class WaitTarget implements Runnable
-    {
-        public void run()
-        {
+    static class WaitTarget implements Runnable {
+        public void run() {
             //加锁
-            synchronized (locko)
-            {
-                try
-                {
+            synchronized (locko) {
+                try {
                     //启动等待，同时释放locko监视器的Owner权限
                     Print.tco("启动等待");
                     //等待被通知，同时释放locko监视器的Owner权限
                     locko.wait();
                     //收到通知后，线程会进入locko监视器的EntryList
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -35,13 +29,10 @@ public class WaitNotifyDemo
     }
 
     //通知线程
-    static class NotifyTarget implements Runnable
-    {
-        public void run()
-        {
+    static class NotifyTarget implements Runnable {
+        public void run() {
             //加锁
-            synchronized (locko)
-            {
+            synchronized (locko) {
                 //从屏幕读取输入，目的阻塞通知线程，方便使用jstack查看线程状态
                 Print.consoleInput();
                 //获取lock锁，然后进行发送
@@ -53,8 +44,7 @@ public class WaitNotifyDemo
     }
 
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         //创建等待线程
         Thread waitThread = new Thread(new WaitTarget(), "WaitThread");
         //启动等待线程

@@ -1,7 +1,6 @@
 package com.crazymakercircle.util;
 
-public class ClassLoaderUtil
-{
+public class ClassLoaderUtil {
 
     /**
      * 显示classLoaderTree
@@ -10,8 +9,7 @@ public class ClassLoaderUtil
      *
      * @param aClass
      */
-    public static void showLoader4Class(Class aClass)
-    {
+    public static void showLoader4Class(Class aClass) {
         ClassLoader loader = aClass.getClassLoader();
         showLoaderTree(loader);
     }
@@ -19,10 +17,8 @@ public class ClassLoaderUtil
     /**
      * 迭代，显示class loader 和 父加载器
      */
-    public static void showLoaderTree(ClassLoader loader)
-    {
-        while (loader != null)
-        {
+    public static void showLoaderTree(ClassLoader loader) {
+        while (loader != null) {
             Logger.debug(loader.toString());
             loader = loader.getParent();
         }

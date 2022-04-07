@@ -13,47 +13,39 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.Serializable;
 
 @Slf4j
-public class AkkaDemo
-{
+public class AkkaDemo {
     //创建命令对象
     @Data
     @AllArgsConstructor
-    static class Command implements Serializable
-    {
+    static class Command implements Serializable {
         private static final long serialVersionUID = 1L;
         private String data;
     }
 
     //创建Actor对象
-    static class SimpleActor extends UntypedActor
-    {
+    static class SimpleActor extends UntypedActor {
 
         LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-        public SimpleActor()
-        {
+        public SimpleActor() {
             log.info("SimpleActor constructor");
         }
 
         @Override
-        public void onReceive(Object msg) throws Exception
-        {
+        public void onReceive(Object msg) throws Exception {
 
             log.info("Received Command: " + msg);
-            if (msg instanceof Command)
-            {
+            if (msg instanceof Command) {
                 final String data = ((Command) msg).getData();
                 // emmit an event somewhere...
 
-            } else if (msg.equals("echo"))
-            {
+            } else if (msg.equals("echo")) {
                 log.info("ECHO!");
             }
         }
     }
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
 
         final ActorSystem actorSystem = ActorSystem.create("actor-system");
 

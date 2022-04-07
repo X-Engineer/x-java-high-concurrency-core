@@ -8,14 +8,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 
-public class LongAdderVSAtomicLongTest
-{
+public class LongAdderVSAtomicLongTest {
     // 每条线程的执行轮数
     final int TURNS = 100000000;
 
     @org.junit.Test
-    public void testAtomicLong()
-    {
+    public void testAtomicLong() {
         // 线程数
         final int THREADS = 10;
 
@@ -28,19 +26,15 @@ public class LongAdderVSAtomicLongTest
         // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
-        {
+        for (int i = 0; i < THREADS; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         atomicLong.incrementAndGet();
                     }
                     // Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //等待所有线程结束
@@ -48,11 +42,9 @@ public class LongAdderVSAtomicLongTest
 
             });
         }
-        try
-        {
+        try {
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;
@@ -62,8 +54,7 @@ public class LongAdderVSAtomicLongTest
     }
 
     @org.junit.Test
-    public void testLongAdder()
-    {
+    public void testLongAdder() {
         // 线程数
         final int THREADS = 10;
 
@@ -76,19 +67,15 @@ public class LongAdderVSAtomicLongTest
         // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
-        {
+        for (int i = 0; i < THREADS; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         longAdder.add(1);
                     }
                     // Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //等待所有线程结束
@@ -96,11 +83,9 @@ public class LongAdderVSAtomicLongTest
 
             });
         }
-        try
-        {
+        try {
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;

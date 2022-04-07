@@ -2,24 +2,18 @@ package com.crazymakercircle.pool;
 
 import com.crazymakercircle.util.Print;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by 尼恩 at 疯狂创客圈
  */
 
-public class JavaFuturePoolDemo
-{
+public class JavaFuturePoolDemo {
 
     public static final int SLEEP_GAP = 500;
 
 
-    public static String getCurThreadName()
-    {
+    public static String getCurThreadName() {
         return Thread.currentThread().getName();
     }
 
@@ -30,8 +24,7 @@ public class JavaFuturePoolDemo
         public Boolean call() throws Exception //②
         {
 
-            try
-            {
+            try {
                 Print.tcfo("洗好水壶");
                 Print.tcfo("灌上凉水");
                 Print.tcfo("放在火上");
@@ -40,8 +33,7 @@ public class JavaFuturePoolDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("水开了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 发生异常被中断.");
                 return false;
             }
@@ -51,16 +43,13 @@ public class JavaFuturePoolDemo
         }
     }
 
-    static class WashJob implements Callable<Boolean>
-    {
+    static class WashJob implements Callable<Boolean> {
 
         @Override
-        public Boolean call() throws Exception
-        {
+        public Boolean call() throws Exception {
 
 
-            try
-            {
+            try {
                 Print.tcfo("洗茶壶");
                 Print.tcfo("洗茶杯");
                 Print.tcfo("拿茶叶");
@@ -68,8 +57,7 @@ public class JavaFuturePoolDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("洗完了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 清洗工作 发生异常被中断.");
                 return false;
             }
@@ -80,8 +68,7 @@ public class JavaFuturePoolDemo
     }
 
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
 
         Callable<Boolean> hJob = new HotWaterJob();//异步逻辑
 
@@ -98,8 +85,7 @@ public class JavaFuturePoolDemo
         Future<Boolean> wTask = pool.submit(wJob);
 
 
-        try
-        {
+        try {
 
             boolean waterOk = hTask.get();
             boolean cupOk = wTask.get();
@@ -109,22 +95,17 @@ public class JavaFuturePoolDemo
 
 
             Thread.currentThread().setName("主线程");
-            if (waterOk && cupOk)
-            {
+            if (waterOk && cupOk) {
                 Print.tcfo("泡茶喝");
-            } else if (!waterOk)
-            {
+            } else if (!waterOk) {
                 Print.tcfo("烧水失败，没有茶喝了");
-            } else if (!cupOk)
-            {
+            } else if (!cupOk) {
                 Print.tcfo("杯子洗不了，没有茶喝了");
             }
 
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             Print.tcfo(getCurThreadName() + "发生异常被中断.");
-        } catch (ExecutionException e)
-        {
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         Print.tcfo(getCurThreadName() + " 运行结束.");

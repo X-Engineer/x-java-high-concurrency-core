@@ -3,19 +3,16 @@ package com.crazymakercircle.plus;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class SafeStaticMethodPlus
-{
+public class SafeStaticMethodPlus {
     private static Integer amount = 0;
 
-    public static synchronized void selfPlus()
-    {
+    public static synchronized void selfPlus() {
 
         amount++;
 
     }
 
-    public Integer getAmount()
-    {
+    public Integer getAmount() {
         return amount;
     }
 

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.crazymakercircle.util.ThreadUtil.CustomThreadFactory;
 import static com.crazymakercircle.util.ThreadUtil.shutdownThreadPoolGracefully;
@@ -17,8 +16,6 @@ public class SeqOrScheduledTargetThreadPoolLazyHolder {
     static final ScheduledThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(
             1,
             new CustomThreadFactory("seq"));
-
-
 
 
     public static ScheduledThreadPoolExecutor getInnerExecutor() {

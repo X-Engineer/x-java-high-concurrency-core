@@ -1,13 +1,11 @@
 package com.crazymakercircle.im.common;
 
-public class ProtoInstant
-{
+public class ProtoInstant {
 
     /**
      * 消息类型
      */
-    public class MsgType
-    {
+    public class MsgType {
 
         //登陆请求
         public static final int OP_Login_REQUEST = 1;
@@ -35,8 +33,7 @@ public class ProtoInstant
     /**
      * 客户端平台
      */
-    public interface Platform
-    {
+    public interface Platform {
         /**
          * windwos
          */
@@ -69,8 +66,7 @@ public class ProtoInstant
     /**
      * 协议细节
      */
-    public class Protocal
-    {
+    public class Protocal {
 
         /**
          * 报文头长度
@@ -86,8 +82,7 @@ public class ProtoInstant
     /**
      * 返回码枚举类
      */
-    public enum ResultCodeEnum
-    {
+    public enum ResultCodeEnum {
 
         SUCCESS(0, "Success"),  // 成功
         AUTH_FAILED(1, "登录失败"),
@@ -98,19 +93,16 @@ public class ProtoInstant
         private Integer code;
         private String desc;
 
-        ResultCodeEnum(Integer code, String desc)
-        {
+        ResultCodeEnum(Integer code, String desc) {
             this.code = code;
             this.desc = desc;
         }
 
-        public Integer getCode()
-        {
+        public Integer getCode() {
             return code;
         }
 
-        public String getDesc()
-        {
+        public String getDesc() {
             return desc;
         }
 

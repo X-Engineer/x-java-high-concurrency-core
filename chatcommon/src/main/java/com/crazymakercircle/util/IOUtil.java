@@ -4,23 +4,17 @@
 package com.crazymakercircle.util;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 
-public class IOUtil
-{
+public class IOUtil {
 
 
-    public static String getUserHomeResourcePath(String resName)
-    {
+    public static String getUserHomeResourcePath(String resName) {
         String p = System.getProperty("user.dir") + File.separator + resName;
 
         return p;
@@ -34,16 +28,13 @@ public class IOUtil
      * @param resName 需要获取完整路径的资源,需要以/打头
      * @return 完整路径
      */
-    public static String getResourcePath(String resName)
-    {
+    public static String getResourcePath(String resName) {
         URL url = IOUtil.class.getResource(resName);
         String path = url.getPath();
         String decodePath = null;
-        try
-        {
+        try {
             decodePath = URLDecoder.decode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return decodePath;
@@ -57,29 +48,23 @@ public class IOUtil
      * @param resName 需要获取完整路径的资源,需要以/打头
      * @return 完整路径
      */
-    public static String builderResourcePath(String resName)
-    {
+    public static String builderResourcePath(String resName) {
         URL url = IOUtil.class.getResource("/");
         String path = url.getPath();
         String decodePath = null;
-        try
-        {
+        try {
             decodePath = URLDecoder.decode(path, "UTF-8");
-        } catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return decodePath + resName;
     }
 
-    public static void closeQuietly(java.io.Closeable o)
-    {
+    public static void closeQuietly(java.io.Closeable o) {
         if (null == o) return;
-        try
-        {
+        try {
             o.close();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -90,21 +75,17 @@ public class IOUtil
      * @param length
      * @return
      */
-    public static String getFormatFileSize(long length)
-    {
+    public static String getFormatFileSize(long length) {
         double size = ((double) length) / (1 << 30);
-        if (size >= 1)
-        {
+        if (size >= 1) {
             return fileSizeFormater.format(size) + "GB";
         }
         size = ((double) length) / (1 << 20);
-        if (size >= 1)
-        {
+        if (size >= 1) {
             return fileSizeFormater.format(size) + "MB";
         }
         size = ((double) length) / (1 << 10);
-        if (size >= 1)
-        {
+        if (size >= 1) {
             return fileSizeFormater.format(size) + "KB";
         }
         return length + "B";
@@ -123,77 +104,63 @@ public class IOUtil
      * @param MaxLen
      * @return
      */
-    public static String getVarStrFromBuf(ByteBuffer buf, int MaxLen)
-    {
+    public static String getVarStrFromBuf(ByteBuffer buf, int MaxLen) {
         byte[] btemp = new byte[MaxLen];
         byte j = -1;
         int avaibleBytes = buf.array().length - buf.position();
-        if (!(avaibleBytes > 0))
-        {
+        if (!(avaibleBytes > 0)) {
             return "";
         }
         int len = 0;
-        for (int i = 0; i < MaxLen; i++)
-        {
+        for (int i = 0; i < MaxLen; i++) {
             btemp[i] = buf.get();
             len = i;
-            if (btemp[i] == 0)
-            {
+            if (btemp[i] == 0) {
                 break;
             }
         }
-        try
-        {
+        try {
             return new String(btemp, 0, len, "UTF-8");
-        } catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;
     }
 
 
-    public static String toString(InputStream in, String s)
-    {
+    public static String toString(InputStream in, String s) {
         return null;
     }
 
 
     //读取资源目录下的文件
     public static String loadResourceFile(
-            String resourceName)
-    {
+            String resourceName) {
         return loadJarFile(IOUtil.class.getClassLoader(), resourceName);
     }
 
 
     //读jar包根目录下的文件
     public static String loadJarFile(
-            ClassLoader loader, String resourceName)
-    {
+            ClassLoader loader, String resourceName) {
 
         InputStream in = loader.getResourceAsStream(resourceName);
-        if (null == in)
-        {
+        if (null == in) {
             return null;
         }
         String out = null;
-        try
-        {
+        try {
             int len = in.available();
             byte[] bytes = new byte[len];
 
             int readLength = in.read(bytes);
-            if ((long) readLength < len)
-            {
+            if ((long) readLength < len) {
                 throw new IOException("File length error：" + len);
             }
             out = new String(bytes, Charset.forName("UTF-8"));
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             closeQuietly(in);
         }
 
@@ -212,19 +179,15 @@ public class IOUtil
      * readAllBytes从当前指针位置读取，
      * 读取后指针留在最后的位置
      */
-    public static byte[] readInputStream(InputStream inputStream)
-    {
+    public static byte[] readInputStream(InputStream inputStream) {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;
-        try
-        {
-            while ((length = inputStream.read(buffer)) != -1)
-            {
+        try {
+            while ((length = inputStream.read(buffer)) != -1) {
                 outStream.write(buffer, 0, length);
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

@@ -1,6 +1,5 @@
 package com.crazymakercircle.demo.lock.custom;
 
-import com.crazymakercircle.util.Print;
 import lombok.Data;
 
 import java.util.concurrent.TimeUnit;
@@ -8,40 +7,36 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public class CLHLock implements Lock
-{
+public class CLHLock implements Lock {
 
     /**
      * 指向当前节点
      */
     private static ThreadLocal<Node> curNodeLocal = new ThreadLocal();
-    private  String name;
+    private String name;
     /**
      * CLHLock队列的尾部
      */
     private AtomicReference<Node> tail = new AtomicReference<>(null);
 
-    public CLHLock()
-    {
+    public CLHLock() {
         //设置尾部节点
         tail.getAndSet(Node.EMPTY);
     }
 
-    public CLHLock(String name)
-    {
-        this.name=name;
+    public CLHLock(String name) {
+        this.name = name;
         //设置尾部节点
         tail.getAndSet(Node.EMPTY);
     }
+
     //加锁：将节点添加到等待队列的尾部
     @Override
-    public void lock()
-    {
+    public void lock() {
         Node curNode = new Node(true, null);
         Node preNode = tail.get();
         //CAS自旋：将当前节点插入到队列的尾部
-        while (!tail.compareAndSet(preNode, curNode))
-        {
+        while (!tail.compareAndSet(preNode, curNode)) {
             preNode = tail.get();
         }
         //设置前驱
@@ -49,8 +44,7 @@ public class CLHLock implements Lock
 
         //监听前驱节点的locked变量，直到其值为false
         // 若前继节点的locked状态为true，则表示前一线程还在抢占或者占有锁
-        while (curNode.getPrevNode().isLocked())
-        {
+        while (curNode.getPrevNode().isLocked()) {
             //让出CPU时间片，提高性能
             Thread.yield();
         }
@@ -62,8 +56,7 @@ public class CLHLock implements Lock
     }
 
     @Override
-    public void unlock()
-    {
+    public void unlock() {
         Node curNode = curNodeLocal.get();
         curNode.setPrevNode(null);//help for GC
         curNodeLocal.set(null);
@@ -71,10 +64,8 @@ public class CLHLock implements Lock
     }
 
     @Data
-    static class Node
-    {
-        public Node(boolean locked, Node prevNode)
-        {
+    static class Node {
+        public Node(boolean locked, Node prevNode) {
             this.locked = locked;
             this.prevNode = prevNode;
         }
@@ -139,8 +130,7 @@ public class CLHLock implements Lock
      *                              of lock acquisition is supported)
      */
     @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
+    public void lockInterruptibly() throws InterruptedException {
         throw new IllegalStateException(
                 "方法 'lockInterruptibly' 尚未实现!");
     }
@@ -173,8 +163,7 @@ public class CLHLock implements Lock
      * {@code false} otherwise
      */
     @Override
-    public boolean tryLock()
-    {
+    public boolean tryLock() {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
 
@@ -238,8 +227,7 @@ public class CLHLock implements Lock
      *                              acquisition is supported)
      */
     @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
     }
@@ -265,15 +253,13 @@ public class CLHLock implements Lock
      *                                       implementation does not support conditions
      */
     @Override
-    public Condition newCondition()
-    {
+    public Condition newCondition() {
         throw new IllegalStateException(
                 "方法 'newCondition' 尚未实现!");
     }
 
     @Override
-    public String toString()
-    {
-        return "CLHLock{" + name +    '}';
+    public String toString() {
+        return "CLHLock{" + name + '}';
     }
 }

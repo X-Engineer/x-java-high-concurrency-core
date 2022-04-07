@@ -2,14 +2,12 @@ package com.crazymakercircle.visiable;
 
 import com.crazymakercircle.util.Print;
 
-public class JoinExample
-{
+public class JoinExample {
     private int x = 0;
     private int y = 1;
     private boolean flag = false;
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         Thread.currentThread().setName("线程A");
         JoinExample joinExample = new JoinExample();
 
@@ -18,14 +16,13 @@ public class JoinExample
 
         threadB.join();//线程A join线程B
 
-       Print.tcfo("x:" + joinExample.x);
-       Print.tcfo("y:" + joinExample.y);
-       Print.tcfo("flag:" + joinExample.flag);
-       Print.tcfo("本线程结束");
+        Print.tcfo("x:" + joinExample.x);
+        Print.tcfo("y:" + joinExample.y);
+        Print.tcfo("flag:" + joinExample.flag);
+        Print.tcfo("本线程结束");
     }
 
-    public void writer()
-    {
+    public void writer() {
         Print.tcfo("开始赋值操作");
         this.x = 100;
         this.y = 200;

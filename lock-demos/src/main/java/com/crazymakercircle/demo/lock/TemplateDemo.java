@@ -2,16 +2,13 @@ package com.crazymakercircle.demo.lock;
 
 import com.crazymakercircle.util.Print;
 
-public class TemplateDemo
-{
+public class TemplateDemo {
 
-    static abstract class AbstractAction
-    {
+    static abstract class AbstractAction {
         /**
          * 模板方法：算法骨架
          */
-        public void tempMethod()
-        {
+        public void tempMethod() {
             Print.cfo("模板方法的算法骨架被执行");
             beforeAction();
             action();
@@ -21,8 +18,7 @@ public class TemplateDemo
         /**
          * 执行前
          */
-        protected void beforeAction()
-        {
+        protected void beforeAction() {
             Print.cfo("准备执行钩子方法");
         }
 
@@ -35,48 +31,42 @@ public class TemplateDemo
         /**
          * 执行后
          */
-        private void afterAction()
-        {
+        private void afterAction() {
             Print.cfo("钩子方法执行完成");
 
         }
     }
 
-    static class ActionA extends AbstractAction
-    {
+    static class ActionA extends AbstractAction {
         /**
          * 钩子方法
          */
         @Override
-        public void action()
-        {
+        public void action() {
             Print.cfo("钩子方法的实现 ActionA.action() 被执行");
         }
     }
 
-    static class ActionB extends AbstractAction
-    {
+    static class ActionB extends AbstractAction {
         /**
          * 钩子方法
          */
         @Override
-        public void action()
-        {
+        public void action() {
             Print.cfo("钩子方法的实现 ActionB.action() 被执行");
         }
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         AbstractAction action = null;
 
         //创建一个 ActionA 实例
-        action=   new ActionA();
+        action = new ActionA();
         //执行基类的模板方法
         action.tempMethod();
 
         //创建一个 ActionB 实例
-        action=   new ActionB();
+        action = new ActionB();
         //执行基类的模板方法
         action.tempMethod();
 

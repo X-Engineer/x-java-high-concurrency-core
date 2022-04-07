@@ -2,13 +2,7 @@ package com.crazymakercircle.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HeaderElement;
-import org.apache.http.HeaderElementIterator;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -39,19 +33,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 //HTTP 协议处理帮助类
 @Slf4j
-public class HttpClientHelper
-{
+public class HttpClientHelper {
     private static final long KEEP_ALIVE_DURATION = 600000;//长连接的保持时长， 单位ms
     private static final int CONNECT_TIMEOUT = 2000;//客户端和服务器建立连接的超时时长， 单位ms
     private static final int SOCKET_TIMEOUT = 2000;//建立连接后，客户端从服务器读取数据的超时时长， 单位ms
@@ -76,8 +65,7 @@ public class HttpClientHelper
      *
      * @return HttpClient
      */
-    private static CloseableHttpClient getDirectHttpClient()
-    {
+    private static CloseableHttpClient getDirectHttpClient() {
         CloseableHttpClient client = HttpClientBuilder.create().build();
         return client;
     }
@@ -88,8 +76,7 @@ public class HttpClientHelper
      * @param url 连接地址
      * @return 请求字符串
      */
-    public static String simpleGet(String url) throws IOException
-    {
+    public static String simpleGet(String url) throws IOException {
         // 1 直接创建客户端
         CloseableHttpClient client = HttpClientBuilder.create().build();
         //2 创建请求
@@ -111,8 +98,7 @@ public class HttpClientHelper
      * @param url 连接地址
      * @return 请求字符串
      */
-    public static String simplePost(String url) throws IOException
-    {
+    public static String simplePost(String url) throws IOException {
         // 1 直接创建客户端
         CloseableHttpClient client = HttpClientBuilder.create().build();
         //2 创建请求
@@ -134,8 +120,7 @@ public class HttpClientHelper
      * @param url 连接地址
      * @return 请求字符串
      */
-    public static long justLength(String url) throws IOException
-    {
+    public static long justLength(String url) throws IOException {
         // 1 直接创建客户端
         CloseableHttpClient client = HttpClientBuilder.create().build();
         //2 创建请求
@@ -151,17 +136,14 @@ public class HttpClientHelper
         CloseableHttpResponse response = null;
         InputStream in = null;
         long length = -1;
-        try
-        {
+        try {
             HttpHost httpHost = getHost(url);
             response = client.execute(httpHost, request, HttpClientContext.create());
             HttpEntity entity = response.getEntity();
-            if (entity != null)
-            {
+            if (entity != null) {
                 length = entity.getContentLength();
             }
-        } finally
-        {
+        } finally {
             quietlyClose(in);
             quietlyClose(response);
             //释放HttpClient 连接。
@@ -175,15 +157,13 @@ public class HttpClientHelper
     /**
      * 使用JDK的 java.net.HttpURLConnection发起HTTP请求
      */
-    public static String jdkGet(String url)
-    {
+    public static String jdkGet(String url) {
         //输入流
         InputStream inputStream = null;
         //HTTP连接实例
         HttpURLConnection httpConnection = null;
         StringBuilder builder = new StringBuilder();
-        try
-        {
+        try {
             URL restServiceURL = new URL(url);
             //打开HttpURLConnection连接实例
             httpConnection =
@@ -194,8 +174,7 @@ public class HttpClientHelper
             //建立连接，发送请求
             httpConnection.connect();
             //读取响应
-            if (httpConnection.getResponseCode() != 200)
-            {
+            if (httpConnection.getResponseCode() != 200) {
                 throw new RuntimeException("HTTP GET Request Failed with Error code : "
                         + httpConnection.getResponseCode());
             }
@@ -203,18 +182,14 @@ public class HttpClientHelper
             inputStream = httpConnection.getInputStream();
             byte[] b = new byte[1024];
             int length = -1;
-            while ((length = inputStream.read(b)) != -1)
-            {
+            while ((length = inputStream.read(b)) != -1) {
                 builder.append(new String(b, 0, length));
             }
-        } catch (MalformedURLException e)
-        {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             //关闭流和连接
             quietlyClose(inputStream);
             httpConnection.disconnect();
@@ -228,23 +203,18 @@ public class HttpClientHelper
      * @param httpPost 主机ip和端口
      * @param params   请求参数
      */
-    private static void setPostParams(HttpPost httpPost, Map<String, String> params)
-    {
-        if (null == params)
-        {
+    private static void setPostParams(HttpPost httpPost, Map<String, String> params) {
+        if (null == params) {
             return;
         }
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         Set<String> keys = params.keySet();
-        for (String key : keys)
-        {
+        for (String key : keys) {
             nvps.add(new BasicNameValuePair(key, params.get(key)));
         }
-        try
-        {
+        try {
             httpPost.setEntity(new UrlEncodedFormEntity(nvps, "utf-8"));
-        } catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
@@ -256,8 +226,7 @@ public class HttpClientHelper
      * @param params 参数
      * @return 请求字符串
      */
-    public static String post(String url, Map<String, String> params)
-    {
+    public static String post(String url, Map<String, String> params) {
         //取得连接池
         CloseableHttpClient client = pooledHttpClient();
         HttpPost httpPost = new HttpPost(url);
@@ -273,8 +242,7 @@ public class HttpClientHelper
      * @param params 参数
      * @return 请求字符串
      */
-    public static String simplePost(String url, Map<String, String> params) throws IOException
-    {
+    public static String simplePost(String url, Map<String, String> params) throws IOException {
         //取得连接池
         CloseableHttpClient client = getDirectHttpClient();
         HttpPost httpPost = new HttpPost(url);
@@ -291,23 +259,19 @@ public class HttpClientHelper
      * @param request post 或者 getStr 或者其他请求
      * @return 请求字符串
      */
-    private static String simpleRequestData(String url, CloseableHttpClient client, HttpRequest request) throws IOException
-    {
+    private static String simpleRequestData(String url, CloseableHttpClient client, HttpRequest request) throws IOException {
         CloseableHttpResponse response = null;
         InputStream in = null;
         String result = null;
-        try
-        {
+        try {
             HttpHost httpHost = getHost(url);
             response = client.execute(httpHost, request, HttpClientContext.create());
             HttpEntity entity = response.getEntity();
-            if (entity != null)
-            {
+            if (entity != null) {
                 in = entity.getContent();
                 result = IOUtils.toString(in, "utf-8");
             }
-        } finally
-        {
+        } finally {
             quietlyClose(in);
             quietlyClose(response);
             //释放HttpClient 连接。
@@ -326,23 +290,19 @@ public class HttpClientHelper
      * @param request post 或者 getStr 或者其他请求
      * @return 请求字符串
      */
-    private static String getRequestContent(String url, CloseableHttpClient client, HttpRequest request) throws IOException
-    {
+    private static String getRequestContent(String url, CloseableHttpClient client, HttpRequest request) throws IOException {
         CloseableHttpResponse response = null;
         InputStream in = null;
         String result = null;
-        try
-        {
+        try {
             HttpHost httpHost = getHost(url);
             response = client.execute(httpHost, request, HttpClientContext.create());
             HttpEntity entity = response.getEntity();
-            if (entity != null)
-            {
+            if (entity != null) {
                 in = entity.getContent();
                 result = IOUtils.toString(in, "utf-8");
             }
-        } finally
-        {
+        } finally {
             quietlyClose(in);
             quietlyClose(response);
             //释放HttpClient 连接。
@@ -362,29 +322,24 @@ public class HttpClientHelper
      * @return 响应字符串
      */
     private static String poolRequestData(
-            String url, CloseableHttpClient client, HttpRequest request)
-    {
+            String url, CloseableHttpClient client, HttpRequest request) {
         CloseableHttpResponse response = null;
         InputStream in = null;
         String result = null;
-        try
-        {
+        try {
             //从url中获取HttpHost实例，含主机和端口
             HttpHost httpHost = getHost(url);
             //执行HTTP请求
             response = client.execute(httpHost, request, HttpClientContext.create());
             //获取HTTP响应
             HttpEntity entity = response.getEntity();
-            if (entity != null)
-            {
+            if (entity != null) {
                 in = entity.getContent();
                 result = IOUtils.toString(in, "utf-8");
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             quietlyClose(in);
             quietlyClose(response);
             //无论执行成功或出现异常，HttpClient 都会自动处理并保证释放连接。
@@ -400,12 +355,10 @@ public class HttpClientHelper
      * @param url url 地址
      * @return HttpHost
      */
-    private static HttpHost getHost(String url)
-    {
+    private static HttpHost getHost(String url) {
         String hostName = url.split("/")[2];
         int port = 80;
-        if (hostName.contains(":"))
-        {
+        if (hostName.contains(":")) {
             String[] args = hostName.split(":");
             hostName = args[0];
             port = Integer.parseInt(args[1]);
@@ -420,8 +373,7 @@ public class HttpClientHelper
      * @param url 连接地址
      * @return 请求字符串
      */
-    public static String get(String url)
-    {
+    public static String get(String url) {
         //1 取得带连接池的客户端
         CloseableHttpClient client = pooledHttpClient();
         //2 创建一个HTTP请求实例
@@ -433,10 +385,8 @@ public class HttpClientHelper
     /**
      * 创建带连接池的 httpClient 客户端
      */
-    public static CloseableHttpClient pooledHttpClient()
-    {
-        if (null != pooledHttpClient)
-        {
+    public static CloseableHttpClient pooledHttpClient() {
+        if (null != pooledHttpClient) {
             return pooledHttpClient;
         }
         createHttpClientConnectionManager();
@@ -461,30 +411,24 @@ public class HttpClientHelper
 
         //httpclient默认提供了一个Keep-Alive策略
         //这里进行定制：确保客户端与服务端在长连接的保持时长一致
-        httpClientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy()
-        {
+        httpClientBuilder.setKeepAliveStrategy(new ConnectionKeepAliveStrategy() {
             @Override
-            public long getKeepAliveDuration(HttpResponse response, HttpContext context)
-            {
+            public long getKeepAliveDuration(HttpResponse response, HttpContext context) {
                 //获取响应头中HTTP.CONN_KEEP_ALIVE中的“Keep-Alive”部分值
                 //如服务端响应“Keep-Alive: timeout=60”，表示服务端保持时长为60秒
                 //则客户端也设置连接的保持时长为60秒
                 //目的：确保客户端与服务端在长连接的保持时长一致
                 HeaderElementIterator it = new BasicHeaderElementIterator
                         (response.headerIterator(HTTP.CONN_KEEP_ALIVE));
-                while (it.hasNext())
-                {
+                while (it.hasNext()) {
                     HeaderElement he = it.nextElement();
                     String param = he.getName();
                     String value = he.getValue();
                     if (value != null && param.equalsIgnoreCase
-                            ("timeout"))
-                    {
-                        try
-                        {
+                            ("timeout")) {
+                        try {
                             return Long.parseLong(value) * 1000;
-                        } catch (final NumberFormatException ignore)
-                        {
+                        } catch (final NumberFormatException ignore) {
                         }
                     }
                 }
@@ -501,8 +445,7 @@ public class HttpClientHelper
     }
 
     //连接池：HTTP管理器
-    public static void createHttpClientConnectionManager()
-    {
+    public static void createHttpClientConnectionManager() {
 
         //DNS解析器
         DnsResolver dnsResolver = SystemDefaultDnsResolver.INSTANCE;
@@ -542,19 +485,16 @@ public class HttpClientHelper
     /**
      * 定时处理线程：对异常和空闲连接进行关闭
      */
-    private static void startExpiredConnectionsMonitor()
-    {
+    private static void startExpiredConnectionsMonitor() {
         //空闲监测,配置文件默认为6s,生产环境建议稍微放大一点
         int idleCheckGap = EXPIRED_CHECK_GAP;
         // 设置保持连接的时长,根据实际情况调整配置
         long keepAliveTimeout = KEEP_ALIVE_DURATION;
         //开启监控线程,对异常和空闲线程进行关闭
         monitorExecutor = Executors.newScheduledThreadPool(1);
-        monitorExecutor.scheduleAtFixedRate(new TimerTask()
-        {
+        monitorExecutor.scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void run()
-            {
+            public void run() {
                 //关闭异常连接
                 httpClientConnectionManager.closeExpiredConnections();
                 //关闭keepAliveTimeout（保持连接时长）超时的不活跃的连接
@@ -578,14 +518,11 @@ public class HttpClientHelper
      *
      * @param closeable 可关闭对象
      */
-    private static void quietlyClose(java.io.Closeable closeable)
-    {
+    private static void quietlyClose(java.io.Closeable closeable) {
         if (null == closeable) return;
-        try
-        {
+        try {
             closeable.close();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

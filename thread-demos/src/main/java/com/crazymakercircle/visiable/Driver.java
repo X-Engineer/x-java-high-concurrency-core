@@ -6,13 +6,10 @@ import com.crazymakercircle.util.ThreadUtil;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
-class Driver
-{
+class Driver {
     private static final int N = 100; // 乘客数
 
-    public static void main(String[] args) throws InterruptedException
-
-    {
+    public static void main(String[] args) throws InterruptedException {
         CountDownLatch doneSignal = new CountDownLatch(N);
         //取得CPU密集型线程池
         Executor e = ThreadUtil.getCpuIntenseTargetThreadPool();
@@ -24,26 +21,21 @@ class Driver
         Print.tcfo("人数到期，开车");
     }
 
-    static class Person implements Runnable
-    {
+    static class Person implements Runnable {
         private final CountDownLatch doneSignal;
         private final int i;
 
-        Person(CountDownLatch doneSignal, int i)
-        {
+        Person(CountDownLatch doneSignal, int i) {
             this.doneSignal = doneSignal;
             this.i = i;
         }
 
-        public void run()
-        {
-            try
-            {
+        public void run() {
+            try {
                 //报数
                 Print.tcfo("第" + i + "个人以到");
                 doneSignal.countDown();
-            } catch (Exception ex)
-            {
+            } catch (Exception ex) {
             } // return;
         }
 

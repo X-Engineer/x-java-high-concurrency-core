@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.crazymakercircle.util.ThreadUtil.*;
+
 @Slf4j
 //懒汉式单例创建线程池：用于IO密集型任务
 public class IoIntenseTargetThreadPoolLazyHolder {

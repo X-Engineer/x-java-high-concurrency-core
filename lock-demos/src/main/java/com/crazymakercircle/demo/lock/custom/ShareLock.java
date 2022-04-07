@@ -11,8 +11,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
-public class ShareLock implements Lock
-{
+public class ShareLock implements Lock {
 
     private volatile Set<Thread> owners = Sets.newConcurrentHashSet();
 
@@ -21,60 +20,47 @@ public class ShareLock implements Lock
     private final ConcurrentLinkedQueue<Thread> waitersQueue =
             new ConcurrentLinkedQueue<Thread>();
 
-    public ShareLock(int shareNum)
-    {
+    public ShareLock(int shareNum) {
         this.state = new AtomicInteger(shareNum);
     }
 
-    public void lock()
-    {
+    public void lock() {
         Thread currentThread = Thread.currentThread();
-        if (owners != null && owners.contains(currentThread))
-        {
+        if (owners != null && owners.contains(currentThread)) {
             return;
         }
-        try
-        {
+        try {
             waitersQueue.add(currentThread);
-            while (true)
-            {
+            while (true) {
                 boolean succeed = false;
 
-                if (state.getAndDecrement() > 0)
-                {
+                if (state.getAndDecrement() > 0) {
                     succeed = true;
-                } else
-                {
+                } else {
                     state.getAndIncrement();//恢复回来
                 }
 
-                if (succeed)
-                {
+                if (succeed) {
                     owners.add(currentThread);
                     break;
                 }
                 LockSupport.park();
             }
-        } finally
-        {
+        } finally {
             waitersQueue.remove(currentThread);
         }
 
     }
 
-    public void unlock()
-    {
+    public void unlock() {
         Thread currentThread = Thread.currentThread();
-        if (owners != null && !owners.contains(currentThread))
-        {
+        if (owners != null && !owners.contains(currentThread)) {
             Print.tcfo(" Wrong state, this thread don't own this lock. owner:" + currentThread);
         }
         state.getAndIncrement();
         owners.remove(Thread.currentThread());
-        if (!waitersQueue.isEmpty())
-        {
-            for (Thread thread : waitersQueue)
-            {
+        if (!waitersQueue.isEmpty()) {
+            for (Thread thread : waitersQueue) {
                 LockSupport.unpark(thread);
             }
         }
@@ -110,8 +96,7 @@ public class ShareLock implements Lock
      * {@code false} otherwise
      */
     @Override
-    public boolean tryLock()
-    {
+    public boolean tryLock() {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
 
@@ -175,8 +160,7 @@ public class ShareLock implements Lock
      *                              acquisition is supported)
      */
     @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
 
@@ -230,8 +214,7 @@ public class ShareLock implements Lock
      *                              of lock acquisition is supported)
      */
     @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
+    public void lockInterruptibly() throws InterruptedException {
         throw new IllegalStateException("方法 'lockInterruptibly' 尚未实现!");
     }
 
@@ -256,8 +239,7 @@ public class ShareLock implements Lock
      *                                       implementation does not support conditions
      */
     @Override
-    public Condition newCondition()
-    {
+    public Condition newCondition() {
         throw new IllegalStateException("方法 'newCondition' 尚未实现!");
     }
 

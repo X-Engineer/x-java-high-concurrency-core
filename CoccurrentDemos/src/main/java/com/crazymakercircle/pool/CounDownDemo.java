@@ -1,30 +1,20 @@
 package com.crazymakercircle.pool;
 
 import com.crazymakercircle.util.Print;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.*;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by 尼恩 at 疯狂创客圈
  */
 
-public class CounDownDemo
-{
+public class CounDownDemo {
 
     public static final int SLEEP_GAP = 500;
 
 
-    public static String getCurThreadName()
-    {
+    public static String getCurThreadName() {
         return Thread.currentThread().getName();
     }
 
@@ -35,8 +25,7 @@ public class CounDownDemo
         public Boolean call() throws Exception //②
         {
 
-            try
-            {
+            try {
                 Print.tcfo("洗好水壶");
                 Print.tcfo("灌上凉水");
                 Print.tcfo("放在火上");
@@ -45,8 +34,7 @@ public class CounDownDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("水开了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 发生异常被中断.");
                 return false;
             }
@@ -56,16 +44,13 @@ public class CounDownDemo
         }
     }
 
-    static class WashJob implements Callable<Boolean>
-    {
+    static class WashJob implements Callable<Boolean> {
 
         @Override
-        public Boolean call() throws Exception
-        {
+        public Boolean call() throws Exception {
 
 
-            try
-            {
+            try {
                 Print.tcfo("洗茶壶");
                 Print.tcfo("洗茶杯");
                 Print.tcfo("拿茶叶");
@@ -73,8 +58,7 @@ public class CounDownDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("洗完了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 清洗工作 发生异常被中断.");
                 return false;
             }
@@ -85,8 +69,7 @@ public class CounDownDemo
     }
 
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
 
         Callable<Boolean> hJob = new HotWaterJob();//③
 
@@ -101,24 +84,19 @@ public class CounDownDemo
 
         ListenableFuture<Boolean> hFuture = gPool.submit(hJob);
 
-        Futures.addCallback(hFuture, new FutureCallback<Boolean>()
-        {
-            public void onSuccess(Boolean r)
-            {
-                if (!r)
-                {
+        Futures.addCallback(hFuture, new FutureCallback<Boolean>() {
+            public void onSuccess(Boolean r) {
+                if (!r) {
                     Print.tcfo("烧水失败，没有茶喝了");
 
-                } else
-                {
+                } else {
 
                     countDownLatch.countDown();
                 }
 
             }
 
-            public void onFailure(Throwable t)
-            {
+            public void onFailure(Throwable t) {
                 Print.tcfo("烧水失败，没有茶喝了");
             }
         });
@@ -126,31 +104,24 @@ public class CounDownDemo
 
         ListenableFuture<Boolean> wFuture = gPool.submit(wJob);
 
-        Futures.addCallback(wFuture, new FutureCallback<Boolean>()
-        {
-            public void onSuccess(Boolean r)
-            {
-                if (!r)
-                {
+        Futures.addCallback(wFuture, new FutureCallback<Boolean>() {
+            public void onSuccess(Boolean r) {
+                if (!r) {
                     Print.tcfo("杯子洗不了，没有茶喝了");
-                } else
-                {
+                } else {
 
                     countDownLatch.countDown();
 
                 }
             }
 
-            public void onFailure(Throwable t)
-            {
+            public void onFailure(Throwable t) {
                 Print.tcfo("杯子洗不了，没有茶喝了");
             }
         });
 
-        try
-        {
-            synchronized (countDownLatch)
-            {
+        try {
+            synchronized (countDownLatch) {
                 countDownLatch.await(5000, TimeUnit.MICROSECONDS);
             }
             Thread.currentThread().setName("主线程");
@@ -159,8 +130,7 @@ public class CounDownDemo
             Print.tcfo("泡茶喝");
 
 
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             Print.tcfo(getCurThreadName() + "发生异常被中断.");
         }
         Print.tcfo(getCurThreadName() + " 运行结束.");

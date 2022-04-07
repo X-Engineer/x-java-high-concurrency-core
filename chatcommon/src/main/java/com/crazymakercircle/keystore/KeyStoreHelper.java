@@ -6,12 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import sun.misc.BASE64Encoder;
 import sun.security.provider.X509Factory;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
 import java.security.KeyStore.PrivateKeyEntry;
@@ -21,11 +16,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.crazymakercircle.util.IOUtil.closeQuietly;
 import static com.crazymakercircle.util.IOUtil.readInputStream;
@@ -34,8 +25,7 @@ import static com.crazymakercircle.util.MathUtil.toHexString;
 @Slf4j
 
 @Data
-public class KeyStoreHelper
-{
+public class KeyStoreHelper {
     private static final byte[] CRLF = new byte[]{'\r', '\n'};
 
     /**
@@ -67,8 +57,7 @@ public class KeyStoreHelper
     private static String keyType = "JKS";
 
     public KeyStoreHelper(String keyStoreFile, String storePass,
-                          String keyPass, String alias, String dname)
-    {
+                          String keyPass, String alias, String dname) {
         this.keyStoreFile = keyStoreFile;
         this.storePass = storePass;
         this.keyPass = keyPass;
@@ -82,23 +71,19 @@ public class KeyStoreHelper
      * @return
      * @throws Throwable
      */
-    public boolean isExist() throws Exception
-    {
+    public boolean isExist() throws Exception {
         assert (StringUtils.isNotEmpty(alias));
         assert (StringUtils.isNotEmpty(keyPass));
         KeyStore ks = loadStore();
         PasswordProtection protection = new PasswordProtection(keyPass.toCharArray());
-        if (ks.isKeyEntry(alias))
-        {
+        if (ks.isKeyEntry(alias)) {
             PrivateKeyEntry userCert =
                     (PrivateKeyEntry) ks.getEntry(alias, protection);
             X509Certificate cert = (X509Certificate) userCert.getCertificate();
-            if (new Date().after(cert.getNotAfter()))
-            {
+            if (new Date().after(cert.getNotAfter())) {
                 return false;
 
-            } else
-            {
+            } else {
                 return true;
             }
         }
@@ -110,23 +95,19 @@ public class KeyStoreHelper
      *
      * @param outDir 导出到目标目录
      */
-    public boolean exportCert(String outDir) throws Exception
-    {
+    public boolean exportCert(String outDir) throws Exception {
         assert (StringUtils.isNotEmpty(alias));
         assert (StringUtils.isNotEmpty(keyPass));
         KeyStore ks = loadStore();
         PasswordProtection protection = new PasswordProtection(keyPass.toCharArray());
-        if (ks.isKeyEntry(alias))
-        {
+        if (ks.isKeyEntry(alias)) {
             PrivateKeyEntry entry =
                     (PrivateKeyEntry) ks.getEntry(alias, protection);
             X509Certificate cert = (X509Certificate) entry.getCertificate();
-            if (new Date().after(cert.getNotAfter()))
-            {
+            if (new Date().after(cert.getNotAfter())) {
                 return false;
 
-            } else
-            {
+            } else {
                 String certPath = outDir + "/" + alias + ".cer";
                 FileWriter wr = new java.io.FileWriter(new File(certPath));
                 String encode = new BASE64Encoder().encode(cert.getEncoded());
@@ -148,21 +129,17 @@ public class KeyStoreHelper
     /**
      * 从文件加载KeyStore密钥仓库
      */
-    public KeyStore loadStore() throws Exception
-    {
+    public KeyStore loadStore() throws Exception {
         log.debug("keyStoreFile: {}", keyStoreFile);
-        if (!new File(keyStoreFile).exists())
-        {
+        if (!new File(keyStoreFile).exists()) {
             createEmptyStore();
         }
         KeyStore ks = KeyStore.getInstance(keyType);
         java.io.FileInputStream fis = null;
-        try
-        {
+        try {
             fis = new java.io.FileInputStream(keyStoreFile);
             ks.load(fis, storePass.toCharArray());
-        } finally
-        {
+        } finally {
             closeQuietly(fis);
         }
         return ks;
@@ -171,22 +148,18 @@ public class KeyStoreHelper
     /**
      * 建立一个空的KeyStore仓库
      */
-    private void createEmptyStore() throws Exception
-    {
+    private void createEmptyStore() throws Exception {
         KeyStore keyStore = KeyStore.getInstance(keyType);
         File parentFile = new File(keyStoreFile).getParentFile();
-        if (!parentFile.exists())
-        {
+        if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
         java.io.FileOutputStream fos = null;
         keyStore.load(null, storePass.toCharArray());
-        try
-        {
+        try {
             fos = new java.io.FileOutputStream(keyStoreFile);
             keyStore.store(fos, storePass.toCharArray());
-        } finally
-        {
+        } finally {
             closeQuietly(fos);
         }
     }
@@ -194,8 +167,7 @@ public class KeyStoreHelper
     /**
      * 创建密钥和证书并且保存到密钥仓库文件
      */
-    public void createKeyEntry() throws Exception
-    {
+    public void createKeyEntry() throws Exception {
         KeyStore keyStore = loadStore();
         CertHelper certHelper = new CertHelper(dname);
         /**
@@ -212,15 +184,13 @@ public class KeyStoreHelper
         keyStore.setKeyEntry(alias, privateKey,
                 caPasswordArray, new Certificate[]{cert});
         java.io.FileOutputStream fos = null;
-        try
-        {
+        try {
             fos = new java.io.FileOutputStream(keyStoreFile);
             /**
              * 密钥仓库保存到文件
              */
             keyStore.store(fos, caPasswordArray);
-        } finally
-        {
+        } finally {
             closeQuietly(fos);
         }
     }
@@ -228,8 +198,7 @@ public class KeyStoreHelper
     /**
      * 追加新的密钥到密钥仓库文件
      */
-    public void appendKeyEntry() throws Exception
-    {
+    public void appendKeyEntry() throws Exception {
         KeyStore keyStore = loadStore();
         char[] caPasswordArray = storePass.toCharArray();
         //获取CA
@@ -237,8 +206,7 @@ public class KeyStoreHelper
         PrivateKeyEntry keyEntry =
                 (PrivateKeyEntry) keyStore.getEntry(this.alias, protection);
         X509Certificate x509Cert = (X509Certificate) keyEntry.getCertificate();
-        if (new Date().after(x509Cert.getNotAfter()))
-        {
+        if (new Date().after(x509Cert.getNotAfter())) {
             throw new Exception("仓库已经过期");
         }
         CertHelper certHelper = new CertHelper(dname);
@@ -253,15 +221,13 @@ public class KeyStoreHelper
          */
         keyStore.setKeyEntry(alias, privateKey, keyPass.toCharArray(), certs);
         java.io.FileOutputStream fos = null;
-        try
-        {
+        try {
             fos = new java.io.FileOutputStream(keyStoreFile);
             /**
              * 保存密钥仓库到文件
              */
             keyStore.store(fos, caPasswordArray);
-        } finally
-        {
+        } finally {
             closeQuietly(fos);
         }
     }
@@ -272,33 +238,27 @@ public class KeyStoreHelper
      *
      * @throws Exception
      */
-    public void importCert(String importAlias, String certPath) throws Exception
-    {
+    public void importCert(String importAlias, String certPath) throws Exception {
 
-        if (null == keyStore)
-        {
+        if (null == keyStore) {
             keyStore = loadStore();
         }
         InputStream inStream = null;
-        if (certPath != null)
-        {
+        if (certPath != null) {
             inStream = new FileInputStream(certPath);
         }
         //将证书按照别名增加到仓库中
         boolean succeed = addTrustedCert(importAlias, inStream);
-        if (succeed)
-        {
+        if (succeed) {
             log.debug("导入成功");
-        } else
-        {
+        } else {
             log.error("导入失败");
         }
     }
 
 
     private Collection<? extends Certificate> generateCertificates(InputStream in)
-            throws CertificateException, IOException
-    {
+            throws CertificateException, IOException {
         byte[] data = readInputStream(in);
 
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
@@ -308,8 +268,7 @@ public class KeyStoreHelper
     }
 
     private Certificate generateCertificate(InputStream in)
-            throws CertificateException, IOException
-    {
+            throws CertificateException, IOException {
         byte[] data = readInputStream(in);
 
         return CertificateFactory.getInstance("X.509")
@@ -321,25 +280,20 @@ public class KeyStoreHelper
      * 将证书按照别名增加到仓库中
      */
     private boolean addTrustedCert(String alias, InputStream in)
-            throws Exception
-    {
-        if (alias == null)
-        {
+            throws Exception {
+        if (alias == null) {
             throw new Exception("Must.specify.alias");
         }
         //如果别名已经存在，则抛出异常
-        if (keyStore.containsAlias(alias))
-        {
+        if (keyStore.containsAlias(alias)) {
             throw new Exception("别名已经存在");
         }
 
         // 从输入流中读取到证书
         X509Certificate cert = null;
-        try
-        {
+        try {
             cert = (X509Certificate) generateCertificate(in);
-        } catch (ClassCastException | CertificateException ce)
-        {
+        } catch (ClassCastException | CertificateException ce) {
             throw new Exception("证书读取失败");
         }
         //根据别名进行设置
@@ -347,12 +301,10 @@ public class KeyStoreHelper
         //保存到文件
         char[] caPasswordArray = storePass.toCharArray();
         java.io.FileOutputStream fos = null;
-        try
-        {
+        try {
             fos = new java.io.FileOutputStream(keyStoreFile);
             keyStore.store(fos, caPasswordArray);
-        } finally
-        {
+        } finally {
             closeQuietly(fos);
         }
         return true;
@@ -362,17 +314,14 @@ public class KeyStoreHelper
     /**
      * Prints all keystore entries.
      */
-    public void doPrintEntries() throws Exception
-    {
+    public void doPrintEntries() throws Exception {
 
-        if (null == keyStore)
-        {
+        if (null == keyStore) {
             keyStore = loadStore();
         }
         List<String> aliases = Collections.list(keyStore.aliases());
         aliases.sort(String::compareTo);
-        for (String alias : aliases)
-        {
+        for (String alias : aliases) {
             doPrintEntry(alias);
         }
     }
@@ -381,28 +330,22 @@ public class KeyStoreHelper
      * Prints a single keystore entry.
      */
     private void doPrintEntry(String alias)
-            throws Exception
-    {
+            throws Exception {
         log.info("{} 别名的证书信息如下：", alias);
         // Get the chain
         Certificate[] chain = keyStore.getCertificateChain(alias);
-        if (null == chain)
-        {
-            if (keyStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class))
-            {
+        if (null == chain) {
+            if (keyStore.entryInstanceOf(alias, KeyStore.TrustedCertificateEntry.class)) {
                 Certificate cert = keyStore.getCertificate(alias);
                 printX509Cert((X509Certificate) cert);
             }
             return;
         }
 
-        for (int i = 0; i < chain.length; i++)
-        {
-            if (chain[i] instanceof X509Certificate)
-            {
+        for (int i = 0; i < chain.length; i++) {
+            if (chain[i] instanceof X509Certificate) {
                 printX509Cert((X509Certificate) (chain[i]));
-            } else
-            {
+            } else {
                 dumpCert(chain[i]);
             }
         }
@@ -414,8 +357,7 @@ public class KeyStoreHelper
      * Prints a certificate in a human readable format.
      */
     private void printX509Cert(X509Certificate cert)
-            throws Exception
-    {
+            throws Exception {
         String sigName = cert.getSigAlgName();
         log.info("Owner: {}", cert.getSubjectDN());
         log.info("Issuer: {}", cert.getIssuerDN());
@@ -434,8 +376,7 @@ public class KeyStoreHelper
      * Gets the requested finger print of the certificate.
      */
     private String getCertFingerPrint(String mdAlg, Certificate cert)
-            throws Exception
-    {
+            throws Exception {
         byte[] encCertInfo = cert.getEncoded();
         MessageDigest md = MessageDigest.getInstance(mdAlg);
         byte[] digest = md.digest(encCertInfo);
@@ -447,8 +388,7 @@ public class KeyStoreHelper
      * stream.
      */
     private void dumpCert(Certificate cert)
-            throws IOException, CertificateException
-    {
+            throws IOException, CertificateException {
         log.info(X509Factory.BEGIN_CERT);
         log.info(Base64.getMimeEncoder(64, CRLF)
                 .encodeToString(cert.getEncoded()));

@@ -22,8 +22,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 @Slf4j
 @Data
-public class TransShard
-{
+public class TransShard {
 
     /**
      * 匹配传输范围的正则表达式
@@ -42,8 +41,7 @@ public class TransShard
      */
     long start, end, fileLength;
 
-    public TransShard(long fileLength)
-    {
+    public TransShard(long fileLength) {
 
         this.fileLength = fileLength;
 
@@ -56,12 +54,10 @@ public class TransShard
      * @param request 请求
      * @return 响应报文
      */
-    public DefaultHttpResponse compute(ChannelHandlerContext ctx, final HttpRequest request)
-    {
+    public DefaultHttpResponse compute(ChannelHandlerContext ctx, final HttpRequest request) {
         String range = request.headers().get(HttpHeaderNames.RANGE);
         //如果请求不带 range 头部，则返回文件的长度
-        if (null == range)
-        {
+        if (null == range) {
             log.info(" have no range, returning full content ", range);
             JSONObject object = new JSONObject();
             object.put("fileLength", fileLength);
@@ -71,8 +67,7 @@ public class TransShard
 
         //如果请求的 range 头部的值与正则表达式不匹配，则返回文件的长度
         Matcher matcher = SHARD_RANGE_PATTERN.matcher(range);
-        if (!matcher.matches())
-        {
+        if (!matcher.matches()) {
             log.info("range '{}' have no  byte-range, returning full content ", range);
             JsonObject object = new JsonObject();
             object.addProperty("fileLength", fileLength);
@@ -80,30 +75,25 @@ public class TransShard
             return null;
         }
 
-        try
-        {
-            if (!matcher.group(2).equals(""))
-            {
+        try {
+            if (!matcher.group(2).equals("")) {
                 end = Long.parseLong(matcher.group(2));
             }
             //如果结束地址大于文件长度
-            if (end > fileLength)
-            {
+            if (end > fileLength) {
                 end = fileLength - 1;
             }
 
             //解析起始地址
             start = Long.parseLong(matcher.group(1));
             //如果起始地址不正确
-            if (start >= end)
-            {
+            if (start >= end) {
                 log.error("416 Requested Range not satisfiable: start >= end");
                 HttpProtocolHelper.sendError(ctx, HttpResponseStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
                 return null;
             }
 
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             log.error("Couldn't parse Range Header", ex);
             HttpProtocolHelper.sendError(ctx, HttpResponseStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
             return null;
@@ -134,8 +124,7 @@ public class TransShard
      *
      * @return 分片的长度
      */
-    public long getLength()
-    {
+    public long getLength() {
         return end - start + 1;
     }
 }

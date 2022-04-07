@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Niklas Schlimm
  */
-public abstract class PoolSizeCalculator
-{
+public abstract class PoolSizeCalculator {
 
     /**
      * The sample queue size to calculate the size of a single {@link Runnable}
@@ -55,8 +54,7 @@ public abstract class PoolSizeCalculator
      *
      * @param targetUtilization the desired utilization of the CPUs (0 <= targetUtilization <=   *            1)     * @param targetQueueSizeBytes   *            the desired maximum work queue size of the thread pool (bytes)
      */
-    protected void calculateBoundaries(BigDecimal targetUtilization, BigDecimal targetQueueSizeBytes)
-    {
+    protected void calculateBoundaries(BigDecimal targetUtilization, BigDecimal targetQueueSizeBytes) {
         calculateOptimalCapacity(targetQueueSizeBytes);
         Runnable task = createTask();
         start(task);
@@ -69,8 +67,7 @@ public abstract class PoolSizeCalculator
         calculateOptimalThreadCount(cputime, waittime, targetUtilization);
     }
 
-    private void calculateOptimalCapacity(BigDecimal targetQueueSizeBytes)
-    {
+    private void calculateOptimalCapacity(BigDecimal targetQueueSizeBytes) {
         long mem = calculateMemoryUsage();
         BigDecimal queueCapacity = targetQueueSizeBytes.divide(new BigDecimal(mem), RoundingMode.HALF_UP);
         System.out.println("Target queue memory usage (bytes): " + targetQueueSizeBytes);
@@ -82,8 +79,7 @@ public abstract class PoolSizeCalculator
     /**
      * Brian Goetz' optimal thread count formula, see 'Java Concurrency in   * Practice' (chapter 8.2)   *       * @param cpu    *            cpu time consumed by considered task   * @param wait   *            wait time of considered task   * @param targetUtilization      *            target utilization of the system
      */
-    private void calculateOptimalThreadCount(long cpu, long wait, BigDecimal targetUtilization)
-    {
+    private void calculateOptimalThreadCount(long cpu, long wait, BigDecimal targetUtilization) {
         BigDecimal waitTime = new BigDecimal(wait);
         BigDecimal computeTime = new BigDecimal(cpu);
         BigDecimal numberOfCPU = new BigDecimal(Runtime.getRuntime().availableProcessors());
@@ -100,29 +96,23 @@ public abstract class PoolSizeCalculator
     /**
      * Runs the {@link Runnable} over a period defined in {@link #testtime}.     * Based on Heinz Kabbutz' ideas     * (http://www.javaspecialists.eu/archive/Issue124.html).    *       * @param task   *            the runnable under investigation
      */
-    public void start(Runnable task)
-    {
+    public void start(Runnable task) {
         long start = 0;
         int runs = 0;
         Print.tco("testtime=" + testtime);
         start = System.currentTimeMillis();
-        do
-        {
-            if (++runs > 50)
-            {
+        do {
+            if (++runs > 50) {
                 throw new IllegalStateException("Test not accurate");
             }
             expired.set(false);
             Timer timer = new Timer();
-            timer.schedule(new TimerTask()
-            {
-                public void run()
-                {
+            timer.schedule(new TimerTask() {
+                public void run() {
                     expired.set(true);
                 }
             }, testtime);
-            while (!expired.get())
-            {
+            while (!expired.get()) {
                 task.run();
             }
             timer.cancel();
@@ -130,16 +120,12 @@ public abstract class PoolSizeCalculator
         collectGarbage(3);
     }
 
-    private void collectGarbage(int times)
-    {
-        for (int i = 0; i < times; i++)
-        {
+    private void collectGarbage(int times) {
+        for (int i = 0; i < times; i++) {
             System.gc();
-            try
-            {
+            try {
                 Thread.sleep(10);
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 break;
             }
@@ -154,11 +140,9 @@ public abstract class PoolSizeCalculator
      * @return memory usage of a single {@link Runnable} element in the thread
      * pools work queue
      */
-    public long calculateMemoryUsage()
-    {
+    public long calculateMemoryUsage() {
         BlockingQueue queue = createWorkQueue();
-        for (int i = 0; i < SAMPLE_QUEUE_SIZE; i++)
-        {
+        for (int i = 0; i < SAMPLE_QUEUE_SIZE; i++) {
             queue.add(createTask());
         }
         long mem0 = Runtime.getRuntime().totalMemory()
@@ -170,8 +154,7 @@ public abstract class PoolSizeCalculator
         mem0 = Runtime.getRuntime().totalMemory()
                 - Runtime.getRuntime().freeMemory();
         queue = createWorkQueue();
-        for (int i = 0; i < SAMPLE_QUEUE_SIZE; i++)
-        {
+        for (int i = 0; i < SAMPLE_QUEUE_SIZE; i++) {
             queue.add(createTask());
         }
         collectGarbage(15);

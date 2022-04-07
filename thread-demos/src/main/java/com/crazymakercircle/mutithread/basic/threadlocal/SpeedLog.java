@@ -14,8 +14,7 @@ import java.util.Map;
  * AOP（面向切面编程）中，可以使用注解方式通过切入点执行logPoint(String point)方法，
  * 依旧可以获得方法的执行耗时。
  */
-public class SpeedLog
-{
+public class SpeedLog {
     /**
      * 记录调用耗时的本地Map变量
      */
@@ -25,8 +24,7 @@ public class SpeedLog
     /**
      * 记录调用耗时的本地Map变量的初始化方法
      */
-    public static Map<String, Long> initialStartTime()
-    {
+    public static Map<String, Long> initialStartTime() {
         Map<String, Long> map = new HashMap<>();
         map.put("start", System.currentTimeMillis());
         map.put("last", System.currentTimeMillis());
@@ -37,8 +35,7 @@ public class SpeedLog
     /**
      * 开始耗时记录
      */
-    public static final void beginSpeedLog()
-    {
+    public static final void beginSpeedLog() {
         Print.fo("开始耗时记录");
         TIME_RECORD_LOCAL.get();
     }
@@ -46,8 +43,7 @@ public class SpeedLog
     /**
      * 结束耗时记录
      */
-    public static final void endSpeedLog()
-    {
+    public static final void endSpeedLog() {
         TIME_RECORD_LOCAL.remove();
         Print.fo("结束耗时记录");
     }
@@ -55,8 +51,7 @@ public class SpeedLog
     /**
      * 记录方法的耗时
      */
-    public static final void logPoint(String point)
-    {
+    public static final void logPoint(String point) {
         //获取上一次的时间
         Long last = TIME_RECORD_LOCAL.get().get("last");
         //计算耗时，并且保存
@@ -69,13 +64,11 @@ public class SpeedLog
     /**
      * print方法的耗时
      */
-    public static final void printCost()
-    {
+    public static final void printCost() {
 
         Iterator<Map.Entry<String, Long>> it =
                 TIME_RECORD_LOCAL.get().entrySet().iterator();
-        while (it.hasNext())
-        {
+        while (it.hasNext()) {
             Map.Entry<String, Long> entry = it.next();
             Print.fo(entry.getKey() + " =>" + entry.getValue());
         }

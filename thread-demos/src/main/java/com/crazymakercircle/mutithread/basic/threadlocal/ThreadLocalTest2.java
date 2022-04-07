@@ -11,13 +11,11 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ThreadLocalTest2
-{
+public class ThreadLocalTest2 {
     /**
      * 模拟业务方法
      */
-    public void serviceMethod()
-    {
+    public void serviceMethod() {
         //睡眠500ms,模拟执行耗时
         sleepMilliSeconds(500);
 
@@ -35,8 +33,7 @@ public class ThreadLocalTest2
     /**
      * 模拟dao业务方法
      */
-    public void daoMethod()
-    {
+    public void daoMethod() {
         //睡眠400ms,模拟执行耗时
         sleepMilliSeconds(400);
 
@@ -48,8 +45,7 @@ public class ThreadLocalTest2
     /**
      * 模拟RPC远程业务方法
      */
-    public void rpcMethod()
-    {
+    public void rpcMethod() {
         //睡眠400ms,模拟执行耗时
         sleepMilliSeconds(600);
 
@@ -62,8 +58,7 @@ public class ThreadLocalTest2
      * 测试用例：线程方法调用的耗时
      */
     @org.junit.Test
-    public void testSpeedLog() throws InterruptedException
-    {
+    public void testSpeedLog() throws InterruptedException {
         Runnable runnable = () ->
         {
             //开始耗时记录
@@ -85,8 +80,7 @@ public class ThreadLocalTest2
 
 
     @org.junit.Test
-    public void testSpeedLogThreadPool() throws InterruptedException
-    {
+    public void testSpeedLogThreadPool() throws InterruptedException {
         SpeedLogThreadPool threadPool = new SpeedLogThreadPool();
         CountDownLatch latch = new CountDownLatch(2);
 
@@ -97,8 +91,7 @@ public class ThreadLocalTest2
             latch.countDown();
         };
 
-        for (int i = 0; i < 2; i++)
-        {
+        for (int i = 0; i < 2; i++) {
             threadPool.submit(runnable);
         }
         latch.await();
@@ -106,26 +99,22 @@ public class ThreadLocalTest2
 
 
     @org.junit.Test
-    public void testWeakReference() throws InterruptedException
-    {
+    public void testWeakReference() throws InterruptedException {
         Foo foo = new Foo();
         WeakReference<Foo> reference = new WeakReference<Foo>(foo);
         foo = null; // help for gc
         System.gc();
 
-        if (reference.get() == null)
-        {
+        if (reference.get() == null) {
             Print.tco(" reference value 已经被GC回收");
-        } else
-        {
+        } else {
             Print.tco(" reference value =" + reference.get());
         }
 
     }
 
     @org.junit.Test
-    public void testMemLeak() throws InterruptedException
-    {
+    public void testMemLeak() throws InterruptedException {
         Foo foo = new Foo();
         ThreadLocal<Foo> fooLocalRef = foo.fooThreadLocal;
         fooLocalRef.get();

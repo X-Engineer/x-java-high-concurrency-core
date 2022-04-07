@@ -5,11 +5,7 @@
 package com.crazymakercircle.cocurrent;
 
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.*;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
@@ -18,8 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class CallbackTaskScheduler extends Thread
-{
+public class CallbackTaskScheduler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass());
     private ConcurrentLinkedQueue<CallbackTask> executeTaskQueue =
             new ConcurrentLinkedQueue<CallbackTask>();// 任务队列
@@ -33,8 +28,7 @@ public class CallbackTaskScheduler extends Thread
 
     private static CallbackTaskScheduler inst = new CallbackTaskScheduler();
 
-    private CallbackTaskScheduler()
-    {
+    private CallbackTaskScheduler() {
         this.start();
     }
 
@@ -45,28 +39,22 @@ public class CallbackTaskScheduler extends Thread
      */
 
 
-    public static <R> void add(CallbackTask<R> executeTask)
-    {
+    public static <R> void add(CallbackTask<R> executeTask) {
         inst.executeTaskQueue.add(executeTask);
     }
 
     @Override
-    public void run()
-    {
-        while (true)
-        {
+    public void run() {
+        while (true) {
             handleTask();// 处理任务
             threadSleep(sleepTime);
         }
     }
 
-    private void threadSleep(long time)
-    {
-        try
-        {
+    private void threadSleep(long time) {
+        try {
             sleep(time);
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             logger.error(e);
         }
     }
@@ -74,18 +62,14 @@ public class CallbackTaskScheduler extends Thread
     /**
      * 处理任务队列，检查其中是否有任务
      */
-    private void handleTask()
-    {
-        try
-        {
+    private void handleTask() {
+        try {
             CallbackTask executeTask = null;
-            while (executeTaskQueue.peek() != null)
-            {
+            while (executeTaskQueue.peek() != null) {
                 executeTask = executeTaskQueue.poll();
                 handleTask(executeTask);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error(e);
         }
     }
@@ -95,13 +79,10 @@ public class CallbackTaskScheduler extends Thread
      *
      * @param executeTask
      */
-    private <R> void handleTask(CallbackTask<R> executeTask)
-    {
+    private <R> void handleTask(CallbackTask<R> executeTask) {
 
-        ListenableFuture<R> future = gPool.submit(new Callable<R>()
-        {
-            public R call() throws Exception
-            {
+        ListenableFuture<R> future = gPool.submit(new Callable<R>() {
+            public R call() throws Exception {
 
                 R r = executeTask.execute();
                 return r;
@@ -109,15 +90,12 @@ public class CallbackTaskScheduler extends Thread
 
         });
 
-        Futures.addCallback(future, new FutureCallback<R>()
-        {
-            public void onSuccess(R r)
-            {
+        Futures.addCallback(future, new FutureCallback<R>() {
+            public void onSuccess(R r) {
                 executeTask.onSuccess(r);
             }
 
-            public void onFailure(Throwable t)
-            {
+            public void onFailure(Throwable t) {
                 executeTask.onFailure(t);
             }
         });

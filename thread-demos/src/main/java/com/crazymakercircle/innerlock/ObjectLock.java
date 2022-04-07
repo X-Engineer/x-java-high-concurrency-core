@@ -7,20 +7,16 @@ import org.openjdk.jol.info.ClassLayout;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ObjectLock
-{
+public class ObjectLock {
     private Integer amount = 0;
 
-    public void increase()
-    {
-        synchronized (this)
-        {
+    public void increase() {
+        synchronized (this) {
             amount++;
         }
     }
 
-    public Integer getAmount()
-    {
+    public Integer getAmount() {
         return amount;
     }
 
@@ -58,8 +54,7 @@ public class ObjectLock
      *
      * @return hashCode
      */
-    public String hexHash()
-    {
+    public String hexHash() {
         //对象的原始 hash code，JAVA 默认为大端模式
         int hashCode = this.hashCode();
 
@@ -75,8 +70,7 @@ public class ObjectLock
      *
      * @return hashCode
      */
-    public String binaryHash()
-    {
+    public String binaryHash() {
         //对象的原始 hash code，JAVA 默认为大端模式
         int hashCode = this.hashCode();
 
@@ -84,8 +78,7 @@ public class ObjectLock
         byte[] hashCode_LE = ByteUtil.int2Bytes_LE(hashCode);
 
         StringBuffer buffer = new StringBuffer();
-        for (byte b : hashCode_LE)
-        {
+        for (byte b : hashCode_LE) {
             //转成二进制形式的字符串
             buffer.append(ByteUtil.byte2BinaryString(b));
             buffer.append(" ");
@@ -98,8 +91,7 @@ public class ObjectLock
      *
      * @return threadID_LE
      */
-    public String hexThreadId()
-    {
+    public String hexThreadId() {
         //当前线程的 threadID，JAVA 默认为大端模式
         long threadID = Thread.currentThread().getId();
 //        threadID=threadID<<2;
@@ -115,8 +107,7 @@ public class ObjectLock
      *
      * @return threadID_LE
      */
-    public String binaryThreadId()
-    {
+    public String binaryThreadId() {
         //当前线程的 threadID，JAVA 默认为大端模式
         long threadID = Thread.currentThread().getId();
 //        threadID=threadID<<2;
@@ -124,8 +115,7 @@ public class ObjectLock
         byte[] threadID_LE = ByteUtil.long2bytes_LE(threadID);
 
         StringBuffer buffer = new StringBuffer();
-        for (byte b : threadID_LE)
-        {
+        for (byte b : threadID_LE) {
             //转成二进制形式的字符串
             buffer.append(ByteUtil.byte2BinaryString(b));
             buffer.append(" ");
@@ -133,8 +123,7 @@ public class ObjectLock
         return buffer.toString();
     }
 
-    public void printSelf()
-    {
+    public void printSelf() {
         // 输出十六进制、小端模式的hashCode
         Print.fo("lock hexHash= " + hexHash());
 
@@ -147,8 +136,7 @@ public class ObjectLock
 
     }
 
-    public void printObjectStruct()
-    {
+    public void printObjectStruct() {
 
         String printable = ClassLayout.parseInstance(this).toPrintable();
 

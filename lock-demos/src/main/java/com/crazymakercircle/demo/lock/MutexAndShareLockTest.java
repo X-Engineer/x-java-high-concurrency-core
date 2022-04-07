@@ -8,16 +8,15 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class MutexAndShareLockTest
-{
+public class MutexAndShareLockTest {
 
 
     @org.junit.Test
-    public void testMutexLock()
-    {
+    public void testMutexLock() {
         // 每条线程的执行轮数
         final int TURNS = 1000;
         // 线程数
@@ -31,19 +30,15 @@ public class MutexAndShareLockTest
         // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
-        {
+        for (int i = 0; i < THREADS; i++) {
             pool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         IncrementData.lockAndFastIncrease(lock);
                     }
                     Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //等待所有线程结束
@@ -51,11 +46,9 @@ public class MutexAndShareLockTest
 
             });
         }
-        try
-        {
+        try {
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;
@@ -65,8 +58,7 @@ public class MutexAndShareLockTest
     }
 
     @org.junit.Test
-    public void testShareLock()
-    {
+    public void testShareLock() {
         // 每条线程的执行轮数
         final int TURNS = 1000;
         // 线程数
@@ -80,14 +72,11 @@ public class MutexAndShareLockTest
         // 倒数闩
         CountDownLatch countDownLatch = new CountDownLatch(THREADS);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < THREADS; i++)
-        {
+        for (int i = 0; i < THREADS; i++) {
             threadPool.submit(() ->
             {
-                try
-                {
-                    for (int j = 0; j < TURNS; j++)
-                    {
+                try {
+                    for (int j = 0; j < TURNS; j++) {
                         //抢占共享锁
                         shareLock.lock();
                         //模拟数据操作
@@ -96,8 +85,7 @@ public class MutexAndShareLockTest
                         shareLock.unlock();
                     }
                     Print.tcfo("本线程累加完成");
-                } catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //等待所有线程结束
@@ -105,11 +93,9 @@ public class MutexAndShareLockTest
 
             });
         }
-        try
-        {
+        try {
             countDownLatch.await();
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         float time = (System.currentTimeMillis() - start) / 1000F;

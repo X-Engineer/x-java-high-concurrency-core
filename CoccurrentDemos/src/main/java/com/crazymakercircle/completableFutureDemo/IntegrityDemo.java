@@ -10,13 +10,11 @@ import java.util.concurrent.CompletableFuture;
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
-public class IntegrityDemo
-{
+public class IntegrityDemo {
     /**
      * 模拟模拟RPC调用1
      */
-    public String rpc1()
-    {
+    public String rpc1() {
         //睡眠400ms,模拟执行耗时
         sleepMilliSeconds(600);
         Print.tcfo("模拟RPC调用：服务器 server 1");
@@ -26,8 +24,7 @@ public class IntegrityDemo
     /**
      * 模拟模拟RPC调用2
      */
-    public String rpc2()
-    {
+    public String rpc2() {
         //睡眠400ms,模拟执行耗时
         sleepMilliSeconds(600);
         Print.tcfo("模拟RPC调用：服务器 server 2");
@@ -35,8 +32,7 @@ public class IntegrityDemo
     }
 
     @Test
-    public void rpcDemo() throws Exception
-    {
+    public void rpcDemo() throws Exception {
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() ->
         {
             return rpc1();
@@ -52,8 +48,7 @@ public class IntegrityDemo
     }
 
     @Test
-    public void rxJavaDemo() throws Exception
-    {
+    public void rxJavaDemo() throws Exception {
         Observable<String> observable1 = Observable.fromCallable(() ->
         {
             return rpc1();

@@ -82,7 +82,7 @@ public class StatusDemo {
 
     @Test
     //让线程处于TIMED_WAITING状态
-    public  void testTimedWaiting() {
+    public void testTimedWaiting() {
         final Object lock = new Object();
         synchronized (lock) {
             try {
@@ -94,7 +94,7 @@ public class StatusDemo {
 
     //让线程处于WAITING状态
     @Test
-    public  void testWaiting() {
+    public void testWaiting() {
         final Object lock = new Object();
         synchronized (lock) {
             try {
@@ -106,7 +106,7 @@ public class StatusDemo {
 
     //让线程一直处于BLOCKED
     @Test
-    public  void testBlocked() {
+    public void testBlocked() {
         final Object lock = new Object();
         new Thread() {
             public void run() {

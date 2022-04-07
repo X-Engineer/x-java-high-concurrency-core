@@ -11,38 +11,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 安全的 ++ 运算
  */
-public class SafePlus
-{
+public class SafePlus {
     public static final int MAX_TURN = 1000000;
 
-    static class NotSafeCounter implements Runnable
-    {
+    static class NotSafeCounter implements Runnable {
         public AtomicInteger amount =
                 new AtomicInteger(0);
 
-        public void increase()
-        {
+        public void increase() {
             amount.incrementAndGet();
         }
 
         @Override
-        public void run()
-        {
+        public void run() {
             int turn = 0;
-            while (turn < MAX_TURN)
-            {
+            while (turn < MAX_TURN) {
                 ++turn;
                 increase();
             }
         }
     }
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
 
         NotSafeCounter counter = new NotSafeCounter();
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             Thread thread = new Thread(counter);
             thread.start();
         }

@@ -13,11 +13,9 @@ import java.security.cert.X509Certificate;
 import static com.crazymakercircle.util.IOUtil.closeQuietly;
 
 @Slf4j
-public class SSLContextHelper
-{
+public class SSLContextHelper {
 
-    public static SSLContext createSslContext(char[] passArray, KeyStore keyStore) throws Exception
-    {
+    public static SSLContext createSslContext(char[] passArray, KeyStore keyStore) throws Exception {
         String algorithm = KeyManagerFactory.getDefaultAlgorithm();
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
         kmf.init(keyStore, passArray);
@@ -43,8 +41,7 @@ public class SSLContextHelper
      * @return 上下文
      * @throws Exception
      */
-    public static SSLContext createSslContext(String pass, String keyStoreFile) throws Exception
-    {
+    public static SSLContext createSslContext(String pass, String keyStoreFile) throws Exception {
 
         char[] passArray = pass.toCharArray();
         KeyStore keyStore = KeyStore.getInstance("JKS");
@@ -63,8 +60,7 @@ public class SSLContextHelper
      * @return SSLContext
      * @throws Exception 异常
      */
-    public static SSLContext createServerSSLContext() throws Exception
-    {
+    public static SSLContext createServerSSLContext() throws Exception {
         //私钥
         String pass = "123456";
         //加载 keyStoreFile， 生成的秘钥仓库
@@ -74,8 +70,7 @@ public class SSLContextHelper
 
     X509Certificate[] serverCertificate = null;
 
-    public static TrustManager[] createTrustManagers(KeyStore keyStore) throws Exception
-    {
+    public static TrustManager[] createTrustManagers(KeyStore keyStore) throws Exception {
         X509TrustManagerFacade facade = new X509TrustManagerFacade();
         facade.init(keyStore);
         return new TrustManager[]{facade};
@@ -88,8 +83,7 @@ public class SSLContextHelper
      * @return SSLContext
      * @throws Exception 异常
      */
-    public static SSLContext createClientSSLContext() throws Exception
-    {
+    public static SSLContext createClientSSLContext() throws Exception {
         //私钥
         String pass = "123456";
         String keyStoreFile = SystemConfig.getKeystoreDir() + "/client.jks";

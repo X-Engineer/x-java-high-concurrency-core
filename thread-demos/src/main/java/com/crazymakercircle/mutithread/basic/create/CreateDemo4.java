@@ -2,15 +2,9 @@ package com.crazymakercircle.mutithread.basic.create;
 
 import com.crazymakercircle.util.Print;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
-import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
-import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
-import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+import static com.crazymakercircle.util.ThreadUtil.*;
 
 /**
  * Created by 尼恩@疯狂创客圈.

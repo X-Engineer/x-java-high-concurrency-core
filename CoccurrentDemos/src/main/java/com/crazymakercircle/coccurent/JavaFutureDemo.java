@@ -13,8 +13,7 @@ import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
  * Created by 尼恩 at 疯狂创客圈
  */
 
-public class JavaFutureDemo
-{
+public class JavaFutureDemo {
 
     public static final int SLEEP_GAP = 500;
 
@@ -24,8 +23,7 @@ public class JavaFutureDemo
         @Override
         public Boolean call() throws Exception //②
         {
-            try
-            {
+            try {
                 Print.tcfo("洗好水壶");
                 Print.tcfo("灌上凉水");
                 Print.tcfo("放在火上");
@@ -34,8 +32,7 @@ public class JavaFutureDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("水开了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 发生异常被中断.");
                 return false;
             }
@@ -45,13 +42,10 @@ public class JavaFutureDemo
         }
     }
 
-    static class WashJob implements Callable<Boolean>
-    {
+    static class WashJob implements Callable<Boolean> {
         @Override
-        public Boolean call() throws Exception
-        {
-            try
-            {
+        public Boolean call() throws Exception {
+            try {
                 Print.tcfo("洗茶壶");
                 Print.tcfo("洗茶杯");
                 Print.tcfo("拿茶叶");
@@ -59,8 +53,7 @@ public class JavaFutureDemo
                 Thread.sleep(SLEEP_GAP);
                 Print.tcfo("洗完了");
 
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 Print.tcfo(" 清洗工作 发生异常被中断.");
                 return false;
             }
@@ -69,23 +62,18 @@ public class JavaFutureDemo
         }
     }
 
-    public static void drinkTea(boolean waterOk, boolean cupOk)
-    {
-        if (waterOk && cupOk)
-        {
+    public static void drinkTea(boolean waterOk, boolean cupOk) {
+        if (waterOk && cupOk) {
             Print.tcfo("泡茶喝");
-        } else if (!waterOk)
-        {
+        } else if (!waterOk) {
             Print.tcfo("烧水失败，没有茶喝了");
-        } else if (!cupOk)
-        {
+        } else if (!cupOk) {
             Print.tcfo("杯子洗不了，没有茶喝了");
         }
 
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         Thread.currentThread().setName("主线程");
         Callable<Boolean> hJob = new HotWaterJob();//③
         FutureTask<Boolean> hTask =
@@ -99,8 +87,7 @@ public class JavaFutureDemo
         hotThread.start();
         washThread.start();
 
-        try
-        {
+        try {
 
             boolean waterOk = hTask.get();
             boolean cupOk = wTask.get();
@@ -108,11 +95,9 @@ public class JavaFutureDemo
             drinkTea(waterOk, cupOk);
 
 
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             Print.tcfo(getCurThreadName() + "发生异常被中断.");
-        } catch (ExecutionException e)
-        {
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         Print.tcfo(getCurThreadName() + " 运行结束.");

@@ -8,8 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class Master<T extends Task, R>
-{
+public class Master<T extends Task, R> {
     // 所有worker的集合
     private HashMap<String, Worker<T, R>> workers = new HashMap<>();
 
@@ -26,11 +25,9 @@ public class Master<T extends Task, R>
     //保持最终的和
     private AtomicLong sum = new AtomicLong(0);
 
-    public Master(int workerCount)
-    {
+    public Master(int workerCount) {
         // 每个worker对象都需要持有queue的引用, 用于领任务与提交结果
-        for (int i = 0; i < workerCount; i++)
-        {
+        for (int i = 0; i < workerCount; i++) {
             Worker<T, R> worker = new Worker<>();
             workers.put("子节点: " + i, worker);
         }
@@ -39,15 +36,13 @@ public class Master<T extends Task, R>
     }
 
     // 提交任务
-    public void submit(T task)
-    {
+    public void submit(T task) {
         taskQueue.add(task);
     }
 
 
     //结果处理的回调函数
-    private void resultCallBack(Object o)
-    {
+    private void resultCallBack(Object o) {
         Task<R> task = (Task<R>) o;
         String taskName = "Worker:" + task.getWorkerId() + "-" + "Task:" + task.getId();
 //        Print.tco(taskName + ":" + task.getResult());
@@ -58,22 +53,17 @@ public class Master<T extends Task, R>
     }
 
     // 启动所有的子任务
-    public void execute()
-    {
+    public void execute() {
 
-        for (; ; )
-        {
+        for (; ; ) {
             // 从任务队列中获取任务，然后Worker节点轮询,  轮流分配任务
-            for (Map.Entry<String, Worker<T, R>> entry : workers.entrySet())
-            {
+            for (Map.Entry<String, Worker<T, R>> entry : workers.entrySet()) {
                 T task = null;
-                try
-                {
+                try {
                     task = this.taskQueue.take();
                     Worker worker = entry.getValue();
                     worker.submit(task, this::resultCallBack);
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -83,11 +73,9 @@ public class Master<T extends Task, R>
 
 
     // 获取最终的结果
-    public void printResult()
-    {
+    public void printResult() {
         Print.tco("----------sum is :" + sum.get());
-        for (Map.Entry<String, R> entry : resultMap.entrySet())
-        {
+        for (Map.Entry<String, R> entry : resultMap.entrySet()) {
             String taskName = entry.getKey();
             Print.fo(taskName + ":" + entry.getValue());
         }

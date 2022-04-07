@@ -13,8 +13,7 @@ import java.util.concurrent.locks.StampedLock;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PetStoreWithStampedLock
-{
+public class PetStoreWithStampedLock {
     //数据缓冲区的大小
     public static final int MAX_AMOUNT = 10;
 
@@ -34,22 +33,18 @@ public class PetStoreWithStampedLock
      * @param goods 商品
      * @throws Exception
      */
-    public void add(IGoods goods)
-    {
+    public void add(IGoods goods) {
         // 抢占写锁
         long stamp = rtLock.writeLock();
-        try
-        {
-            if (amount.get() > MAX_AMOUNT)
-            {
+        try {
+            if (amount.get() > MAX_AMOUNT) {
                 Print.tcfo("队列已经满了！");
                 return;
             }
             goodsList.add(goods);
             Print.tcfo(goods + "");
             amount.incrementAndGet();
-        } finally
-        {
+        } finally {
             rtLock.unlock(stamp);// 释放写锁
         }
     }
@@ -60,17 +55,14 @@ public class PetStoreWithStampedLock
      * @param predicate 商品查询条件
      * @return 查询的结果集
      */
-    public List<IGoods> search(Predicate predicate)
-    {
+    public List<IGoods> search(Predicate predicate) {
         int count = 0;
         // 抢占读锁
         long stamp = rtLock.readLock();
-        try
-        {
+        try {
             //eg: Predicate predicate= goods-> example.equals(goods);
             return (List<IGoods>) CollectionUtils.select(goodsList, predicate);
-        } finally
-        {
+        } finally {
             rtLock.unlock(stamp);// 释放读锁
         }
     }
@@ -79,15 +71,12 @@ public class PetStoreWithStampedLock
     /**
      * 从数据区取出一个商品
      */
-    public IGoods fetch()
-    {
+    public IGoods fetch() {
         // 抢占写锁
         long stamp = rtLock.writeLock();
-        try
-        {
+        try {
             IGoods goods = null;
-            if (amount.get() <= 0)
-            {
+            if (amount.get() <= 0) {
                 Print.tcfo("队列已经空了！");
                 return null;
             }
@@ -95,8 +84,7 @@ public class PetStoreWithStampedLock
             Print.tcfo(goods + "");
             amount.decrementAndGet();
             return goods;
-        } finally
-        {
+        } finally {
             rtLock.unlock(stamp);// 释放写锁
         }
     }

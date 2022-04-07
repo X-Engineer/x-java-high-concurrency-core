@@ -11,14 +11,12 @@ import lombok.extern.slf4j.Slf4j;
  * 编码器
  */
 @Slf4j
-public class ProtobufEncoder extends MessageToByteEncoder<ProtoMsg.Message>
-{
+public class ProtobufEncoder extends MessageToByteEncoder<ProtoMsg.Message> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx,
                           ProtoMsg.Message msg, ByteBuf out)
-            throws Exception
-    {
+            throws Exception {
 
         byte[] bytes = msg.toByteArray();// 将对象转换为byte
 
@@ -40,8 +38,7 @@ public class ProtobufEncoder extends MessageToByteEncoder<ProtoMsg.Message>
                 + "][total length:" + length
                 + "][bare length:" + msg.getSerializedSize() + "]");
 
-        if (buf.refCnt() > 0)
-        {
+        if (buf.refCnt() > 0) {
             log.debug("释放临时缓冲");
             buf.release();
         }

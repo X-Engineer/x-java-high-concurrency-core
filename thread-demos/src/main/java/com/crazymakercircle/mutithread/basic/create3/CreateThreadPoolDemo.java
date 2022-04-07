@@ -2,24 +2,9 @@ package com.crazymakercircle.mutithread.basic.create3;
 
 import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.RandomUtil;
-import com.crazymakercircle.util.ThreadUtil;
 import org.junit.Test;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
@@ -35,7 +20,7 @@ public class CreateThreadPoolDemo {
     public static final int MAX_TURN = 5;
 
     //异步的执行目标类
-   public static class TargetTask implements Runnable {
+    public static class TargetTask implements Runnable {
         static AtomicInteger taskNo = new AtomicInteger(1);
         protected String taskName;
 
@@ -274,7 +259,7 @@ public class CreateThreadPoolDemo {
         };
 
 
-            pool.execute(new TargetTask());
+        pool.execute(new TargetTask());
 
         //等待10秒
         sleepSeconds(10);
@@ -282,7 +267,6 @@ public class CreateThreadPoolDemo {
         pool.shutdown();
 
     }
-
 
 
     @org.junit.Test
@@ -337,7 +321,7 @@ public class CreateThreadPoolDemo {
                 //返回200 - 300 之间的随机数
                 return RandomUtil.randInRange(200, 300);
             }
-        },100,TimeUnit.MILLISECONDS);
+        }, 100, TimeUnit.MILLISECONDS);
 
         try {
             Integer result = future.get();

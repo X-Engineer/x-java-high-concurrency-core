@@ -1,21 +1,27 @@
 package com.crazymakercircle.mutithread.basic.threadlocal;
+
 import com.crazymakercircle.util.ThreadUtil;
+
 public class SimpleDemo {
     static class DemoClass {
         private ThreadLocal<Integer> i = new ThreadLocal<Integer>() {
             Integer integer;
+
             @Override
             protected Integer initialValue() {
                 return 0;
             }
         };
+
         public Integer get() {
             return i.get();
         }
+
         public void set(Integer integer) {
             i.set(i.get() + integer);
         }
     }
+
     public static void main(String[] args) {
         DemoClass demoClass = new DemoClass();
         for (int i = 1; i <= 100; i++) {

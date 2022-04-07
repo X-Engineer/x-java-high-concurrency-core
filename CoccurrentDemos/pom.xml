@@ -32,13 +32,13 @@
             <version>2.1.17</version>
         </dependency>
 
-        <dependency >
-        <groupId> com.typesafe.akka</groupId >
-        <artifactId>akka-actor_2.10</artifactId>
-        <version>2.3.10</version>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.10</artifactId>
+            <version>2.3.10</version>
         </dependency>
-        <dependency >
-            <groupId> com.typesafe.akka</groupId >
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-persistence-experimental_2.10</artifactId>
             <version>2.3.10</version>
         </dependency>

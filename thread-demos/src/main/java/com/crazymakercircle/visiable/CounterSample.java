@@ -1,11 +1,9 @@
 package com.crazymakercircle.visiable;
 
-class CounterSample
-{
+class CounterSample {
     int sum = 0;
 
-    public void increase()
-    {
+    public void increase() {
         sum++;           //①②③⑤⑦④
     }
 }

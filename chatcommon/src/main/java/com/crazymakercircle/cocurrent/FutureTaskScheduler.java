@@ -12,8 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class FutureTaskScheduler extends Thread
-{
+public class FutureTaskScheduler extends Thread {
     private final Logger logger = Logger.getLogger(this.getClass());
     private ConcurrentLinkedQueue<ExecuteTask> executeTaskQueue =
             new ConcurrentLinkedQueue<ExecuteTask>();// 任务队列
@@ -22,8 +21,7 @@ public class FutureTaskScheduler extends Thread
 
     private static FutureTaskScheduler inst = new FutureTaskScheduler();
 
-    private FutureTaskScheduler()
-    {
+    private FutureTaskScheduler() {
         this.start();
     }
 
@@ -34,28 +32,22 @@ public class FutureTaskScheduler extends Thread
      */
 
 
-    public static void add(ExecuteTask executeTask)
-    {
+    public static void add(ExecuteTask executeTask) {
         inst.executeTaskQueue.add(executeTask);
     }
 
     @Override
-    public void run()
-    {
-        while (true)
-        {
+    public void run() {
+        while (true) {
             handleTask();// 处理任务
             threadSleep(sleepTime);
         }
     }
 
-    private void threadSleep(long time)
-    {
-        try
-        {
+    private void threadSleep(long time) {
+        try {
             sleep(time);
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             logger.error(e);
         }
     }
@@ -63,18 +55,14 @@ public class FutureTaskScheduler extends Thread
     /**
      * 处理任务队列，检查其中是否有任务
      */
-    private void handleTask()
-    {
-        try
-        {
+    private void handleTask() {
+        try {
             ExecuteTask executeTask;
-            while (executeTaskQueue.peek() != null)
-            {
+            while (executeTaskQueue.peek() != null) {
                 executeTask = executeTaskQueue.poll();
                 handleTask(executeTask);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.error(e);
         }
     }
@@ -84,22 +72,18 @@ public class FutureTaskScheduler extends Thread
      *
      * @param executeTask
      */
-    private void handleTask(ExecuteTask executeTask)
-    {
+    private void handleTask(ExecuteTask executeTask) {
         pool.execute(new ExecuteRunnable(executeTask));
     }
 
-    class ExecuteRunnable implements Runnable
-    {
+    class ExecuteRunnable implements Runnable {
         ExecuteTask executeTask;
 
-        ExecuteRunnable(ExecuteTask executeTask)
-        {
+        ExecuteRunnable(ExecuteTask executeTask) {
             this.executeTask = executeTask;
         }
 
-        public void run()
-        {
+        public void run() {
             executeTask.execute();
         }
     }

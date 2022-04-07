@@ -1,16 +1,13 @@
 package com.crazymakercircle.designmodel.singleton;
 
-public class ASingleton
-{
+public class ASingleton {
     private static ASingleton instance;
 
     // 私有化构造方法
-    private ASingleton()
-    {
+    private ASingleton() {
     }
 
-    static ASingleton getInstance()
-    {
+    static ASingleton getInstance() {
         if (instance == null) //①②③⑤⑦④
         {
             instance = new ASingleton(); //①②③⑤⑦④

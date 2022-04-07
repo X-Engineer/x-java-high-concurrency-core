@@ -3,19 +3,16 @@ package com.crazymakercircle.petstore.goods;
 
 import com.crazymakercircle.util.RandomUtil;
 
-public interface IGoods extends Comparable<IGoods>
-{
+public interface IGoods extends Comparable<IGoods> {
 
     void setId(int id);
 
-    enum Type
-    {
+    enum Type {
         PET,
         FOOD,
         CLOTHES;
 
-        public static Type randType()
-        {
+        public static Type randType() {
             int length = values().length;
             int typeNo = RandomUtil.randInMod(length) - 1;
             return values()[typeNo];

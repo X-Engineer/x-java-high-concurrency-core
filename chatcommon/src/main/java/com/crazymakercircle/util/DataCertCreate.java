@@ -5,23 +5,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import sun.misc.BASE64Encoder;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -29,15 +15,13 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Enumeration;
 
-public class DataCertCreate
-{
+public class DataCertCreate {
     private String path = "E:/";
 
     /**
      * 公钥方法
      */
-    static
-    {
+    static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -51,8 +35,7 @@ public class DataCertCreate
      * @throws InvalidKeyException
      */
     public X509Certificate generateCert(String[] info, KeyPair keyPair_root, KeyPair keyPair_user)
-            throws InvalidKeyException, NoSuchProviderException, SecurityException, SignatureException
-    {
+            throws InvalidKeyException, NoSuchProviderException, SecurityException, SignatureException {
         X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
         X509Certificate cert = null;
         certGen.setSerialNumber(new BigInteger(info[8]));
@@ -77,15 +60,12 @@ public class DataCertCreate
      * 创建空的jks文件 String[]
      * info长度为9，分别是{cn,ou,o,c,l,st,starttime,endtime,serialnumber}
      */
-    public void generateJKS(String[] info)
-    {
-        try
-        {
+    public void generateJKS(String[] info) {
+        try {
             KeyStore keyStore = KeyStore.getInstance("jks");
             keyStore.load(null, null);
             keyStore.store(new FileOutputStream("E:/" + info[0] + ".jks"), KEYSTORE_PASSWORD.toCharArray());
-        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e)
-        {
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -94,11 +74,9 @@ public class DataCertCreate
      * 使用空的jks创建自己的jks String[]
      * info长度为9，分别是{cn,ou,o,c,l,st,starttime,endtime,serialnumber}
      */
-    public void storeJKS(String[] info, KeyPair keyPair_root, KeyPair keyPair_user)
-    {
+    public void storeJKS(String[] info, KeyPair keyPair_root, KeyPair keyPair_user) {
         KeyStore keyStore;
-        try
-        {
+        try {
             // use exited jks file
             keyStore = KeyStore.getInstance("JKS");
             keyStore.load(new FileInputStream("E:/" + info[0] + ".jks"), KEYSTORE_PASSWORD.toCharArray());
@@ -120,8 +98,7 @@ public class DataCertCreate
             keyStore.setKeyEntry("mykey", keyPair_user.getPrivate(), KEYSTORE_PASSWORD.toCharArray(), chain);
             keyStore.setCertificateEntry("single_cert", cert);
             keyStore.store(new FileOutputStream("E:/" + info[0] + ".jks"), KEYSTORE_PASSWORD.toCharArray());
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -136,8 +113,7 @@ public class DataCertCreate
      * @return
      * @throws NoSuchAlgorithmException
      */
-    public KeyPair generateKeyPair(int seed) throws NoSuchAlgorithmException
-    {
+    public KeyPair generateKeyPair(int seed) throws NoSuchAlgorithmException {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
         kpg.initialize(1024, new SecureRandom(new byte[seed]));
         KeyPair keyPair = kpg.generateKeyPair();
@@ -151,20 +127,16 @@ public class DataCertCreate
      *
      * @param info
      */
-    public Boolean toPFX(String[] info)
-    {
-        try
-        {
+    public Boolean toPFX(String[] info) {
+        try {
             String pfx_keystore_file = "E:/" + info[0] + ".pfx";
             String jkx_keystore_file = "E:/" + info[0] + ".jks";
             KeyStore inputKeyStore = KeyStore.getInstance("JKS");
             FileInputStream fis = new FileInputStream(jkx_keystore_file);
             char[] nPassword = null;
-            if ((KEYSTORE_PASSWORD == null) || KEYSTORE_PASSWORD.trim().equals(""))
-            {
+            if ((KEYSTORE_PASSWORD == null) || KEYSTORE_PASSWORD.trim().equals("")) {
                 nPassword = null;
-            } else
-            {
+            } else {
                 nPassword = KEYSTORE_PASSWORD.toCharArray();
             }
             inputKeyStore.load(fis, nPassword);
@@ -172,12 +144,10 @@ public class DataCertCreate
             KeyStore outputKeyStore = KeyStore.getInstance("PKCS12");
             outputKeyStore.load(null, KEYSTORE_PASSWORD.toCharArray());
             Enumeration enums = inputKeyStore.aliases();
-            while (enums.hasMoreElements())
-            {
+            while (enums.hasMoreElements()) {
                 String keyAlias = (String) enums.nextElement();
                 Print.tcfo("alias=[" + keyAlias + "]");
-                if (inputKeyStore.isKeyEntry(keyAlias))
-                {
+                if (inputKeyStore.isKeyEntry(keyAlias)) {
                     Key key = inputKeyStore.getKey(keyAlias, nPassword);
                     java.security.cert.Certificate[] certChain = inputKeyStore.getCertificateChain(keyAlias);
                     outputKeyStore.setKeyEntry(keyAlias, key, KEYSTORE_PASSWORD.toCharArray(), certChain);
@@ -187,18 +157,15 @@ public class DataCertCreate
             outputKeyStore.store(out, nPassword);
             out.close();
             return true;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             Print.tcfo("toPFX :" + e.getMessage());
             return false;
         }
     }
 
-    public boolean createPublicKey(String[] info)
-    {
-        try
-        {
+    public boolean createPublicKey(String[] info) {
+        try {
             KeyPair keyPair_root = generateKeyPair(10);
             KeyPair keyPair_user = generateKeyPair(100);
             X509Certificate cert = generateCert(info, keyPair_root, keyPair_user);
@@ -210,18 +177,15 @@ public class DataCertCreate
             fos.write(cert.getEncoded());
             fos.close();
             return true;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             Print.tcfo("public key :" + e.getMessage());
             return false;
         }
     }
 
-    public boolean createPublicKeyBYDecode(String[] info)
-    {
-        try
-        {
+    public boolean createPublicKeyBYDecode(String[] info) {
+        try {
             KeyPair keyPair_root = generateKeyPair(10);
             KeyPair keyPair_user = generateKeyPair(100);
             X509Certificate cert = generateCert(info, keyPair_root, keyPair_user);
@@ -235,42 +199,35 @@ public class DataCertCreate
             wr.flush();
             wr.close();
             return true;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             Print.tcfo("public key :" + e.getMessage());
             return false;
         }
     }
 
-    public X509Certificate fromString(String cert)
-    {
-        try
-        {
+    public X509Certificate fromString(String cert) {
+        try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             String strCertificate = "-----BEGIN CERTIFICATE-----\n" + cert + "\n-----END CERTIFICATE-----\n";
             java.io.ByteArrayInputStream streamCertificate = new java.io.ByteArrayInputStream(
                     strCertificate.getBytes("UTF-8"));
             return (X509Certificate) certificateFactory.generateCertificate(streamCertificate);
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
 
             Print.tcfo(ex.getMessage());
         }
         return null;
     }
 
-    public boolean createPrivateKey(String[] info)
-    {
-        try
-        {
+    public boolean createPrivateKey(String[] info) {
+        try {
             KeyPair keyPair_root = generateKeyPair(10);
             KeyPair keyPair_user = generateKeyPair(100);
             generateJKS(info);
             storeJKS(info, keyPair_root, keyPair_user);
             return true;
-        } catch (NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             Print.tcfo("private key :" + e.getMessage());
             return false;
@@ -278,8 +235,7 @@ public class DataCertCreate
     }
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException,
-            NoSuchProviderException, SecurityException, SignatureException, CertificateEncodingException, IOException
-    {
+            NoSuchProviderException, SecurityException, SignatureException, CertificateEncodingException, IOException {
         DataCertCreate dataCertCreate = new DataCertCreate();
         String[] info = {"huahua_user", "hnu", "university", "china", "hunan", "changsha", "111111", "11111111", "1"};
         // 生成公钥

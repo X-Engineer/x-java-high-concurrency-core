@@ -7,16 +7,14 @@ import io.netty.util.internal.StringUtil;
 import io.netty.util.internal.SystemPropertyUtil;
 
 @ConfigFileAnno(file = "/system.properties")
-public class SystemConfig extends ConfigProperties
-{
+public class SystemConfig extends ConfigProperties {
 
 
     //依照属性,从配置文件中，装载配置项
     static ConfigProperties singleton
             = new SystemConfig("/system.properties");
 
-    private SystemConfig(String fileName)
-    {
+    private SystemConfig(String fileName) {
         super(fileName);
         super.loadFromFile();
     }
@@ -85,10 +83,8 @@ public class SystemConfig extends ConfigProperties
      *
      * @return
      */
-    public static String getFileServerDir()
-    {
-        if (StringUtil.isNullOrEmpty(FILE_SERVER_BASE_DIR))
-        {
+    public static String getFileServerDir() {
+        if (StringUtil.isNullOrEmpty(FILE_SERVER_BASE_DIR)) {
             return System.getProperty("user.dir");
 //            return SystemPropertyUtil.get("user.dir");
         }
@@ -102,10 +98,8 @@ public class SystemConfig extends ConfigProperties
             singleton.getValue("keystore.dir");
 
 
-    public static String getKeystoreDir()
-    {
-        if (StringUtil.isNullOrEmpty(KEYSTORE_DIR))
-        {
+    public static String getKeystoreDir() {
+        if (StringUtil.isNullOrEmpty(KEYSTORE_DIR)) {
             return SystemPropertyUtil.get("user.dir");
         }
         return FILE_SERVER_BASE_DIR;

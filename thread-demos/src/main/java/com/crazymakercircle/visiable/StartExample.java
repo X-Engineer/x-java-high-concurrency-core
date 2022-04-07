@@ -2,14 +2,12 @@ package com.crazymakercircle.visiable;
 
 import com.crazymakercircle.util.Print;
 
-public class StartExample
-{
+public class StartExample {
     private int x = 0;
     private int y = 1;
     private boolean flag = false;
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
         Thread.currentThread().setName("线程A");
         StartExample startExample = new StartExample();
 
@@ -24,8 +22,7 @@ public class StartExample
         Print.tcfo("线程结束");
     }
 
-    public void writer()
-    {
+    public void writer() {
         Print.tcfo("x:" + x);
         Print.tcfo("y:" + y);
         Print.tcfo("flag:" + flag);

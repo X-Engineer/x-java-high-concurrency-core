@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class ReadWriteLockTest2
-{
+public class ReadWriteLockTest2 {
     //创建一个集合
     final static Map<String, String> MAP = new HashMap<String, String>();
     //创建一个读写锁
@@ -22,11 +22,9 @@ public class ReadWriteLockTest2
     final static Lock WRITE_LOCK = LOCK.writeLock();
 
     //写操作
-    public static Object put(String key, String value)
-    {
+    public static Object put(String key, String value) {
         WRITE_LOCK.lock();
-        try
-        {
+        try {
             Print.tco(DateUtil.getNowTime() + " 抢占了WRITE_LOCK，开始执行write操作");
             Thread.sleep(1000);
             String put = MAP.put(key, value);
@@ -37,11 +35,9 @@ public class ReadWriteLockTest2
 
 
             return put;
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             READ_LOCK.unlock();
             WRITE_LOCK.unlock();
         }
@@ -50,11 +46,9 @@ public class ReadWriteLockTest2
     }
 
     //写操作
-    public static Object get(String key)
-    {
+    public static Object get(String key) {
         READ_LOCK.lock();
-        try
-        {
+        try {
             Print.tco(DateUtil.getNowTime() + " 抢占了READ_LOCK，开始执行read操作");
             Thread.sleep(1000);
             String value = MAP.get(key);
@@ -64,19 +58,16 @@ public class ReadWriteLockTest2
             Print.tco(Thread.currentThread().getName() + "读锁升级为写锁成功");
 
             return value;
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally
-        {
+        } finally {
             READ_LOCK.unlock();
         }
         return null;
 
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         //创建Runnable可执行实例
         Runnable writeTarget = () -> put("key", "value");
         Runnable readTarget = () -> get("key");

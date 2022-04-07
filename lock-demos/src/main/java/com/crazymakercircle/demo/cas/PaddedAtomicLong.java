@@ -2,8 +2,7 @@ package com.crazymakercircle.demo.cas;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class PaddedAtomicLong extends AtomicLong
-{
+public class PaddedAtomicLong extends AtomicLong {
     private static final long serialVersionUID = -3415778863941386253L;
 
     /**
@@ -14,21 +13,18 @@ public class PaddedAtomicLong extends AtomicLong
     /**
      * Constructors from {@link AtomicLong}
      */
-    public PaddedAtomicLong()
-    {
+    public PaddedAtomicLong() {
         super();
     }
 
-    public PaddedAtomicLong(long initialValue)
-    {
+    public PaddedAtomicLong(long initialValue) {
         super(initialValue);
     }
 
     /**
      * To prevent GC optimizations for cleaning unused padded references
      */
-    public long sumPaddingToPreventOptimization()
-    {
+    public long sumPaddingToPreventOptimization() {
         return p1 + p2 + p3 + p4 + p5 + p6;
     }
 

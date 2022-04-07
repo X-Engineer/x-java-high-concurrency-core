@@ -1,16 +1,13 @@
 package com.crazymakercircle.designmodel.singleton;
 
-public class FSingleton
-{
-    private  static final FSingleton instance = new FSingleton();
+public class FSingleton {
+    private static final FSingleton instance = new FSingleton();
 
     // 私有化构造方法
-    private FSingleton()
-    {
+    private FSingleton() {
     }
 
-    static FSingleton getInstance()
-    {
+    static FSingleton getInstance() {
         return instance;
     }
 

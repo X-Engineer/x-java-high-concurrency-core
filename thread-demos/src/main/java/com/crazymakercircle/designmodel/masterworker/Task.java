@@ -6,8 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Data
-public class Task<R>
-{
+public class Task<R> {
     static AtomicInteger index = new AtomicInteger(1);
     //任务的回调函数
     public Consumer<Task<R>> resultAction;
@@ -20,21 +19,18 @@ public class Task<R>
     //计算结果
     R result = null;
 
-    public Task()
-    {
+    public Task() {
         this.id = index.getAndIncrement();
     }
 
-    public void execute()
-    {
+    public void execute() {
         this.result = this.doExecute();
         //执行回调函数
         resultAction.accept(this);
     }
 
     //由子类实现
-    protected R doExecute()
-    {
+    protected R doExecute() {
         return null;
     }
 }

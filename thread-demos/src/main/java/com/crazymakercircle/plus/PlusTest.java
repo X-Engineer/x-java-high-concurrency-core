@@ -7,8 +7,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PlusTest
-{
+public class PlusTest {
     final int MAX_TREAD = 10;
     final int MAX_TURN = 1000;
     CountDownLatch latch = new CountDownLatch(MAX_TREAD);
@@ -17,19 +16,16 @@ public class PlusTest
      * 测试用例：测试不安全的累加器
      */
     @org.junit.Test
-    public void testNotSafePlus() throws InterruptedException
-    {
+    public void testNotSafePlus() throws InterruptedException {
         NotSafePlus counter = new NotSafePlus();
         Runnable runnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
+            for (int i = 0; i < MAX_TURN; i++) {
                 counter.selfPlus();
             }
             latch.countDown();
         };
-        for (int i = 0; i < MAX_TREAD; i++)
-        {
+        for (int i = 0; i < MAX_TREAD; i++) {
             new Thread(runnable).start();
         }
         latch.await();
@@ -42,19 +38,16 @@ public class PlusTest
      * 测试用例：安全的累加器
      */
     @org.junit.Test
-    public void testSafePlus() throws InterruptedException
-    {
+    public void testSafePlus() throws InterruptedException {
         SafePlus counter = new SafePlus();
         Runnable runnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
+            for (int i = 0; i < MAX_TURN; i++) {
                 counter.selfPlus();
             }
             latch.countDown();
         };
-        for (int i = 0; i < MAX_TREAD; i++)
-        {
+        for (int i = 0; i < MAX_TREAD; i++) {
             new Thread(runnable).start();
         }
         latch.await();

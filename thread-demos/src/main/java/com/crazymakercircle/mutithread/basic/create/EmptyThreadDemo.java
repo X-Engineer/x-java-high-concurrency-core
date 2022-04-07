@@ -7,11 +7,9 @@ import com.crazymakercircle.util.ThreadUtil;
  * Created by 尼恩@疯狂创客圈 on 2017/2/22.
  */
 
-public class EmptyThreadDemo
-{
+public class EmptyThreadDemo {
 
-    public static void main(String args[]) throws InterruptedException
-    {
+    public static void main(String args[]) throws InterruptedException {
         //使用Thread类创建和启动线程
         Thread thread = new Thread();
         Print.cfo("线程名称：" + thread.getName());

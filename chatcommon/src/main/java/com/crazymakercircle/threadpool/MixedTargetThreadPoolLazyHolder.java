@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.crazymakercircle.util.ThreadUtil.*;
+
 @Slf4j
 
 //懒汉式单例创建线程池：用于混合型任务
@@ -25,7 +26,6 @@ public class MixedTargetThreadPoolLazyHolder {
             TimeUnit.SECONDS,
             new LinkedBlockingQueue(QUEUE_SIZE),
             new CustomThreadFactory("mixed"));
-
 
 
     public static ThreadPoolExecutor getInnerExecutor() {

@@ -8,28 +8,23 @@ import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class RunnableDemo
-{
+public class RunnableDemo {
 
     public static final int SLEEP_GAP = 500;
     public static final long MAX_TURN = 1000;
     static int turn = 0;
 
-    static class RunnableThread extends Thread
-    {
+    static class RunnableThread extends Thread {
 
-        public RunnableThread()
-        {
+        public RunnableThread() {
             super("runnableThread");
         }
 
-        public void run()
-        {
+        public void run() {
             Print.cfo(getName() + " 运行开始.");
             Print.cfo(getName() + ", 状态为" + getState());
 
-            for (; turn < MAX_TURN; turn++)
-            {
+            for (; turn < MAX_TURN; turn++) {
                 Print.cfo(getName() +
                         "- turn -" + turn +
                         "- 状态为" + getState());
@@ -41,8 +36,7 @@ public class RunnableDemo
 
     }
 
-    public static void main(String args[]) throws InterruptedException
-    {
+    public static void main(String args[]) throws InterruptedException {
 
 
         Thread sThread = new RunnableThread();
@@ -50,8 +44,7 @@ public class RunnableDemo
 
         sThread.start();
 
-        for (; turn < MAX_TURN; turn++)
-        {
+        for (; turn < MAX_TURN; turn++) {
             Print.cfo(sThread.getName() +
                     "- turn -" + turn +
                     "- 状态为" + sThread.getState());

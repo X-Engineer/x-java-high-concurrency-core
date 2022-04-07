@@ -9,8 +9,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 
-public class MutexLock implements Lock
-{
+public class MutexLock implements Lock {
 
 
     private volatile Thread owner;
@@ -21,52 +20,40 @@ public class MutexLock implements Lock
             new ConcurrentLinkedQueue<Thread>();
 
 
-    public void lock()
-    {
+    public void lock() {
         Thread currentThread = Thread.currentThread();
-        if (owner != null && (owner == Thread.currentThread()))
-        {
+        if (owner != null && (owner == Thread.currentThread())) {
             return;
         }
-        try
-        {
+        try {
             waitersQueue.add(currentThread);
-            while (true)
-            {
+            while (true) {
                 boolean succeed = state.compareAndSet(0, 1);
-                if (succeed)
-                {
+                if (succeed) {
                     owner = currentThread;
                     break;
                 }
                 LockSupport.park();
             }
-        } finally
-        {
+        } finally {
             waitersQueue.remove(currentThread);
         }
 
     }
 
-    public void unlock()
-    {
-        if (owner != null && (owner != Thread.currentThread()))
-        {
+    public void unlock() {
+        if (owner != null && (owner != Thread.currentThread())) {
             Print.tcfo(" Wrong state, this thread don't own this lock. owner:" + owner);
         }
-        while (true)
-        {
-            if (state.compareAndSet(1, 0))
-            {
+        while (true) {
+            if (state.compareAndSet(1, 0)) {
                 break;
             }
         }
         owner = null;
-        if (!waitersQueue.isEmpty())
-        {
+        if (!waitersQueue.isEmpty()) {
 
-            for (Thread thread : waitersQueue)
-            {
+            for (Thread thread : waitersQueue) {
                 LockSupport.unpark(thread);
             }
         }
@@ -80,27 +67,21 @@ public class MutexLock implements Lock
      * @return 是否成功
      * @throws InterruptedException 中断异常
      */
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException
-    {
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
         long maxWaitInMills = -1L;
-        if (time > 0)
-        {
+        if (time > 0) {
             maxWaitInMills = TimeUnit.MILLISECONDS.convert(time, unit);
         }
         Thread currentThread = Thread.currentThread();
-        try
-        {
+        try {
             waitersQueue.add(currentThread);
-            if (maxWaitInMills > 0)
-            {
+            if (maxWaitInMills > 0) {
                 boolean acquired = false;
                 long left = maxWaitInMills * 1000L * 1000L;
                 long cost = 0;
-                while (true)
-                {
+                while (true) {
                     //
-                    if (state.compareAndSet(0, 1))
-                    {
+                    if (state.compareAndSet(0, 1)) {
                         owner = currentThread;
                         acquired = true;
                         break;
@@ -108,20 +89,16 @@ public class MutexLock implements Lock
 
                     left = left - cost;
                     long mark = System.nanoTime();
-                    if (left <= 0)
-                    {
+                    if (left <= 0) {
                         break;
                     }
                     LockSupport.parkNanos(left);
                     cost = mark - System.nanoTime();
                 }
                 return acquired;
-            } else
-            {
-                while (true)
-                {
-                    if (state.compareAndSet(0, 1))
-                    {
+            } else {
+                while (true) {
+                    if (state.compareAndSet(0, 1)) {
                         owner = currentThread;
                         break;
                     }
@@ -129,8 +106,7 @@ public class MutexLock implements Lock
                 }
                 return true;
             }
-        } finally
-        {
+        } finally {
             waitersQueue.remove(currentThread);
         }
 
@@ -164,8 +140,7 @@ public class MutexLock implements Lock
      * {@code false} otherwise
      */
     @Override
-    public boolean tryLock()
-    {
+    public boolean tryLock() {
         throw new IllegalStateException(
                 "方法 'tryLock' 尚未实现!");
 
@@ -219,8 +194,7 @@ public class MutexLock implements Lock
      *                              of lock acquisition is supported)
      */
     @Override
-    public void lockInterruptibly() throws InterruptedException
-    {
+    public void lockInterruptibly() throws InterruptedException {
         throw new IllegalStateException("方法 'lockInterruptibly' 尚未实现!");
     }
 
@@ -245,8 +219,7 @@ public class MutexLock implements Lock
      *                                       implementation does not support conditions
      */
     @Override
-    public Condition newCondition()
-    {
+    public Condition newCondition() {
         throw new IllegalStateException("方法 'newCondition' 尚未实现!");
     }
 }

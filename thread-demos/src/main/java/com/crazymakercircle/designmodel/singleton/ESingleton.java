@@ -1,20 +1,16 @@
 package com.crazymakercircle.designmodel.singleton;
 
-public class ESingleton
-{
-    private   static volatile ESingleton instance;
+public class ESingleton {
+    private static volatile ESingleton instance;
 
     // 私有化构造方法
-    private ESingleton()
-    {
+    private ESingleton() {
     }
 
-    static ESingleton getInstance()
-    {
+    static ESingleton getInstance() {
         if (instance == null)  //①②③⑤⑦④
         {
-            synchronized (ESingleton.class)
-            {
+            synchronized (ESingleton.class) {
                 if (instance == null) //①②③⑤⑦④
                 {
                     instance = new ESingleton();

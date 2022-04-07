@@ -2,8 +2,7 @@ package test.mybatis.springboot.model;
 
 import java.util.Date;
 
-public class User
-{
+public class User {
     /**
      * 用户id
      */
@@ -29,8 +28,7 @@ public class User
      *
      * @return user_id - 用户id
      */
-    public Integer getUserId()
-    {
+    public Integer getUserId() {
         return userId;
     }
 
@@ -39,8 +37,7 @@ public class User
      *
      * @param userId 用户id
      */
-    public void setUserId(Integer userId)
-    {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -49,8 +46,7 @@ public class User
      *
      * @return user_name - 用户名称
      */
-    public String getUserName()
-    {
+    public String getUserName() {
         return userName;
     }
 
@@ -59,8 +55,7 @@ public class User
      *
      * @param userName 用户名称
      */
-    public void setUserName(String userName)
-    {
+    public void setUserName(String userName) {
         this.userName = userName;
     }
 
@@ -69,8 +64,7 @@ public class User
      *
      * @return nick_name - 昵称
      */
-    public String getNickName()
-    {
+    public String getNickName() {
         return nickName;
     }
 
@@ -79,8 +73,7 @@ public class User
      *
      * @param nickName 昵称
      */
-    public void setNickName(String nickName)
-    {
+    public void setNickName(String nickName) {
         this.nickName = nickName;
     }
 
@@ -89,8 +82,7 @@ public class User
      *
      * @return register_time - 注册时间
      */
-    public Date getRegisterTime()
-    {
+    public Date getRegisterTime() {
         return registerTime;
     }
 
@@ -99,8 +91,7 @@ public class User
      *
      * @param registerTime 注册时间
      */
-    public void setRegisterTime(Date registerTime)
-    {
+    public void setRegisterTime(Date registerTime) {
         this.registerTime = registerTime;
     }
 }

@@ -6,16 +6,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
-public class PoolSizeCaculatorDemo extends PoolSizeCalculator
-{
+public class PoolSizeCaculatorDemo extends PoolSizeCalculator {
     /**
      * 模拟的混合型任务
      */
-    static class MockMixedTask implements Runnable
-    {
+    static class MockMixedTask implements Runnable {
         @Override
-        public void run()
-        {
+        public void run() {
             //模拟的混合型任务的平均执行
             sleepMilliSeconds(800);
         }
@@ -27,8 +24,7 @@ public class PoolSizeCaculatorDemo extends PoolSizeCalculator
      * 创建线程池中的异步任务
      */
     @Override
-    protected Runnable createTask()
-    {
+    protected Runnable createTask() {
         return new MockMixedTask();
     }
 
@@ -36,20 +32,17 @@ public class PoolSizeCaculatorDemo extends PoolSizeCalculator
      * 创建线程池中的阻塞队列实例
      */
     @Override
-    protected BlockingQueue createWorkQueue()
-    {
+    protected BlockingQueue createWorkQueue() {
         return new LinkedBlockingQueue(1000);
     }
 
     @Override
-    protected long getCurrentThreadCPUTime()
-    {
+    protected long getCurrentThreadCPUTime() {
         return System.currentTimeMillis();
 //        return ManagementFactory.getThreadMXBean().getCurrentThreadCpuTime();
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         PoolSizeCalculator poolSizeCalculator = new PoolSizeCaculatorDemo();
         //期望 CPU 利用率为 1.0（即 100%）
         BigDecimal targetUtilization = new BigDecimal(0.8);

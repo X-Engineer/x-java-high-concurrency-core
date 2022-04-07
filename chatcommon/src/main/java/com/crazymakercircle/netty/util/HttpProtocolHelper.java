@@ -6,15 +6,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.http.*;
 import io.netty.util.AttributeKey;
 import io.netty.util.CharsetUtil;
 
@@ -25,23 +17,14 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
-import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
-import static io.netty.handler.codec.http.HttpResponseStatus.FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-public class HttpProtocolHelper
-{
+public class HttpProtocolHelper {
     public static final int HTTP_CACHE_SECONDS = 60;
 
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
@@ -60,11 +43,9 @@ public class HttpProtocolHelper
      * @param ctx     上下文
      * @param request 报文
      */
-    public static void cacheHttpProtocol(ChannelHandlerContext ctx, final FullHttpRequest request)
-    {
+    public static void cacheHttpProtocol(ChannelHandlerContext ctx, final FullHttpRequest request) {
         //每一个连接设置一次即可，不需要重复设置
-        if (ctx.channel().attr(KEEP_ALIVE_KEY).get() == null)
-        {
+        if (ctx.channel().attr(KEEP_ALIVE_KEY).get() == null) {
             ctx.channel().attr(PROTOCOL_VERSION_KEY).set(request.protocolVersion());
             final boolean keepAlive = HttpUtil.isKeepAlive(request);
             ctx.channel().attr(KEEP_ALIVE_KEY).set(keepAlive);
@@ -72,24 +53,19 @@ public class HttpProtocolHelper
     }
 
 
-    public static void setKeepAlive(ChannelHandlerContext ctx, boolean val)
-    {
+    public static void setKeepAlive(ChannelHandlerContext ctx, boolean val) {
         ctx.channel().attr(KEEP_ALIVE_KEY).set(val);
     }
 
-    public static String sanitizeUri(String uri, String dir)
-    {
+    public static String sanitizeUri(String uri, String dir) {
         // Decode the path.
-        try
-        {
+        try {
             uri = URLDecoder.decode(uri, "UTF-8");
-        } catch (UnsupportedEncodingException e)
-        {
+        } catch (UnsupportedEncodingException e) {
             throw new Error(e);
         }
 
-        if (uri.isEmpty() || uri.charAt(0) != '/')
-        {
+        if (uri.isEmpty() || uri.charAt(0) != '/') {
             return null;
         }
 
@@ -101,8 +77,7 @@ public class HttpProtocolHelper
         if (uri.contains(File.separator + '.') ||
                 uri.contains('.' + File.separator) ||
                 uri.charAt(0) == '.' || uri.charAt(uri.length() - 1) == '.' ||
-                INSECURE_URI.matcher(uri).matches())
-        {
+                INSECURE_URI.matcher(uri).matches()) {
             return null;
         }
 
@@ -113,8 +88,7 @@ public class HttpProtocolHelper
     private static final Pattern ALLOWED_FILE_NAME = Pattern.compile("[^-\\._]?[^<>&\\\"]*");
 
     public static void sendListing(ChannelHandlerContext ctx, final FullHttpRequest request,
-                                   File dir, String dirPath)
-    {
+                                   File dir, String dirPath) {
         StringBuilder buf = new StringBuilder()
                 .append("<!DOCTYPE html>\r\n")
                 .append("<html><head><meta charset='utf-8' /><title>")
@@ -130,18 +104,14 @@ public class HttpProtocolHelper
                 .append("<li><a href=\"../\">..</a></li>\r\n");
 
         File[] files = dir.listFiles();
-        if (files != null)
-        {
-            for (File f : files)
-            {
-                if (f.isHidden() || !f.canRead())
-                {
+        if (files != null) {
+            for (File f : files) {
+                if (f.isHidden() || !f.canRead()) {
                     continue;
                 }
 
                 String name = f.getName();
-                if (!ALLOWED_FILE_NAME.matcher(name).matches())
-                {
+                if (!ALLOWED_FILE_NAME.matcher(name).matches()) {
                     continue;
                 }
 
@@ -164,16 +134,14 @@ public class HttpProtocolHelper
         sendAndCleanupConnection(ctx, response);
     }
 
-    public static void sendRedirect(ChannelHandlerContext ctx, final FullHttpRequest request, String newUri)
-    {
+    public static void sendRedirect(ChannelHandlerContext ctx, final FullHttpRequest request, String newUri) {
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, FOUND, Unpooled.EMPTY_BUFFER);
         response.headers().set(HttpHeaderNames.LOCATION, newUri);
 
         sendAndCleanupConnection(ctx, response);
     }
 
-    public static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status)
-    {
+    public static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
         HttpVersion version = getHttpVersion(ctx);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 version, status, Unpooled.copiedBuffer("Failure: " + status + "\r\n", CharsetUtil.UTF_8));
@@ -188,8 +156,7 @@ public class HttpProtocolHelper
      * @param ctx     上下文
      * @param content 响应内容
      */
-    public static void sendContent(ChannelHandlerContext ctx, String content)
-    {
+    public static void sendContent(ChannelHandlerContext ctx, String content) {
         HttpVersion version = getHttpVersion(ctx);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 version, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
@@ -204,8 +171,7 @@ public class HttpProtocolHelper
      * @param ctx     上下文
      * @param content 响应内容
      */
-    public static void sendWebPage(ChannelHandlerContext ctx, String content)
-    {
+    public static void sendWebPage(ChannelHandlerContext ctx, String content) {
         HttpVersion version = getHttpVersion(ctx);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 version, OK, Unpooled.copiedBuffer(content, CharsetUtil.UTF_8));
@@ -220,8 +186,7 @@ public class HttpProtocolHelper
      * @param ctx     上下文
      * @param content 响应内容
      */
-    public static void sendJsonContent(ChannelHandlerContext ctx, String content)
-    {
+    public static void sendJsonContent(ChannelHandlerContext ctx, String content) {
         HttpVersion version = getHttpVersion(ctx);
         /**
          * 构造一个默认的FullHttpResponse实例
@@ -241,37 +206,30 @@ public class HttpProtocolHelper
     /**
      * 发送响应
      */
-    public static void sendAndCleanupConnection(ChannelHandlerContext ctx, FullHttpResponse response)
-    {
+    public static void sendAndCleanupConnection(ChannelHandlerContext ctx, FullHttpResponse response) {
         final boolean keepAlive = ctx.channel().attr(KEEP_ALIVE_KEY).get();
         HttpUtil.setContentLength(response, response.content().readableBytes());
-        if (!keepAlive)
-        {
+        if (!keepAlive) {
             // 如果不是长连接，设置 connection:close 头部
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        } else if (isHTTP_1_0(ctx))
-        {
+        } else if (isHTTP_1_0(ctx)) {
             // 如果是1.0版本的长连接，设置 connection:keep-alive 头部
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
         //发送内容
         ChannelFuture flushPromise = ctx.writeAndFlush(response);
 
-        if (!keepAlive)
-        {
+        if (!keepAlive) {
             // 如果不是长连接，发送完成之后，关闭连接
             flushPromise.addListener(ChannelFutureListener.CLOSE);
         }
     }
 
-    private static HttpVersion getHttpVersion(ChannelHandlerContext ctx)
-    {
+    private static HttpVersion getHttpVersion(ChannelHandlerContext ctx) {
         HttpVersion version;
-        if (isHTTP_1_0(ctx))
-        {
+        if (isHTTP_1_0(ctx)) {
             version = HTTP_1_0;
-        } else
-        {
+        } else {
             version = HTTP_1_1;
         }
         return version;
@@ -282,8 +240,7 @@ public class HttpProtocolHelper
      *
      * @param ctx Context
      */
-    public static void sendNotModified(ChannelHandlerContext ctx)
-    {
+    public static void sendNotModified(ChannelHandlerContext ctx) {
         HttpVersion version = getHttpVersion(ctx);
         FullHttpResponse response = new DefaultFullHttpResponse(version, NOT_MODIFIED, Unpooled.EMPTY_BUFFER);
         setDateHeader(response);
@@ -292,17 +249,14 @@ public class HttpProtocolHelper
     }
 
 
-    public static boolean isHTTP_1_0(ChannelHandlerContext ctx)
-    {
+    public static boolean isHTTP_1_0(ChannelHandlerContext ctx) {
 
         HttpVersion protocol_version =
                 ctx.channel().attr(PROTOCOL_VERSION_KEY).get();
-        if (null == protocol_version)
-        {
+        if (null == protocol_version) {
             return false;
         }
-        if (protocol_version.equals(HTTP_1_0))
-        {
+        if (protocol_version.equals(HTTP_1_0)) {
             return true;
         }
         return false;
@@ -313,8 +267,7 @@ public class HttpProtocolHelper
      *
      * @param response HTTP response
      */
-    public static void setDateHeader(FullHttpResponse response)
-    {
+    public static void setDateHeader(FullHttpResponse response) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
         dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
@@ -328,8 +281,7 @@ public class HttpProtocolHelper
      * @param response    HTTP response
      * @param fileToCache file to extract content type
      */
-    public static void setDateAndCacheHeaders(HttpResponse response, File fileToCache)
-    {
+    public static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
         dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
@@ -353,30 +305,25 @@ public class HttpProtocolHelper
      * @param response HTTP response
      * @param file     file to extract content type
      */
-    public static void setContentTypeHeader(HttpResponse response, File file)
-    {
+    public static void setContentTypeHeader(HttpResponse response, File file) {
         MimetypesFileTypeMap mimeTypesMap = new MimetypesFileTypeMap();
         response.headers().set(HttpHeaderNames.CONTENT_TYPE,
                 mimeTypesMap.getContentType(file.getPath()));
     }
 
 
-    public static void setKeepAlive(ChannelHandlerContext ctx, HttpResponse response)
-    {
+    public static void setKeepAlive(ChannelHandlerContext ctx, HttpResponse response) {
         final boolean keepAlive = ctx.channel().attr(KEEP_ALIVE_KEY).get();
 
-        if (!keepAlive)
-        {
+        if (!keepAlive) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        } else if (isHTTP_1_0(ctx))
-        {
+        } else if (isHTTP_1_0(ctx)) {
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
 
     }
 
-    public static boolean isKeepAlive(ChannelHandlerContext ctx)
-    {
+    public static boolean isKeepAlive(ChannelHandlerContext ctx) {
         boolean keepAlive = ctx.channel().attr(KEEP_ALIVE_KEY).get();
         return keepAlive;
     }
@@ -388,15 +335,13 @@ public class HttpProtocolHelper
      * @param request 请求
      * @return 文件对象
      */
-    public static File sendErrorOrDirectory(ChannelHandlerContext ctx, FullHttpRequest request)
-    {
+    public static File sendErrorOrDirectory(ChannelHandlerContext ctx, FullHttpRequest request) {
         /**
          * 路径不对
          */
         final String uri = request.uri();
         final String path = HttpProtocolHelper.sanitizeUri(uri, SystemConfig.getFileServerDir());
-        if (path == null)
-        {
+        if (path == null) {
             HttpProtocolHelper.sendError(ctx, FORBIDDEN);
             return null;
         }
@@ -405,8 +350,7 @@ public class HttpProtocolHelper
         /**
          * 文件不存在
          */
-        if (!file.exists())
-        {
+        if (!file.exists()) {
             HttpProtocolHelper.sendError(ctx, NOT_FOUND);
             return null;
         }
@@ -415,13 +359,10 @@ public class HttpProtocolHelper
         /**
          * 发送文件目录
          */
-        if (file.isDirectory())
-        {
-            if (uri.endsWith("/"))
-            {
+        if (file.isDirectory()) {
+            if (uri.endsWith("/")) {
                 HttpProtocolHelper.sendListing(ctx, request, file, uri);
-            } else
-            {
+            } else {
                 HttpProtocolHelper.sendRedirect(ctx, request, uri + '/');
             }
             return null;
@@ -429,8 +370,7 @@ public class HttpProtocolHelper
         /**
          * 文件不可用访问
          */
-        if (!file.isFile())
-        {
+        if (!file.isFile()) {
             HttpProtocolHelper.sendError(ctx, FORBIDDEN);
             return null;
         }
@@ -445,14 +385,11 @@ public class HttpProtocolHelper
      * @param file 文件
      * @return 随机访问文件实例
      */
-    public static RandomAccessFile openFile(ChannelHandlerContext ctx, File file)
-    {
+    public static RandomAccessFile openFile(ChannelHandlerContext ctx, File file) {
         RandomAccessFile raf = null;
-        try
-        {
+        try {
             raf = new RandomAccessFile(file, "r");
-        } catch (FileNotFoundException ignore)
-        {
+        } catch (FileNotFoundException ignore) {
             HttpProtocolHelper.sendError(ctx, NOT_FOUND);
             return null;
         }

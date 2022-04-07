@@ -6,12 +6,10 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
-public class DrinkTea
-{
+public class DrinkTea {
     private static final int SLEEP_GAP = 3;//等待3秒
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         // 任务 1：洗水壶 -> 烧开水
         CompletableFuture<Boolean> hotJob =
                 CompletableFuture.supplyAsync(() ->
@@ -42,8 +40,7 @@ public class DrinkTea
         CompletableFuture<String> drinkJob =
                 hotJob.thenCombine(washJob, (hotOk, washOK) ->
                 {
-                    if (hotOk && washOK)
-                    {
+                    if (hotOk && washOK) {
                         Print.tcfo("泡茶喝，茶喝完");
                         return "茶喝完了";
                     }

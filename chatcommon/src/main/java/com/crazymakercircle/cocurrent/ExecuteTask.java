@@ -5,8 +5,7 @@
 package com.crazymakercircle.cocurrent;
 
 
-public interface ExecuteTask
-{
+public interface ExecuteTask {
 
     void execute();
 }

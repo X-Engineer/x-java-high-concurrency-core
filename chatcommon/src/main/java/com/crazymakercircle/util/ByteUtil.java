@@ -1,19 +1,11 @@
 package com.crazymakercircle.util;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * byte数组工具类实现byte[]与文件之间的相互转换
  */
-public class ByteUtil
-{
+public class ByteUtil {
     /**
      * 字节数据转字符串专用集合
      */
@@ -27,17 +19,14 @@ public class ByteUtil
      * @param data 输入数据
      * @return 十六进制内容
      */
-    public static String byteArrayToString(byte[] data)
-    {
+    public static String byteArrayToString(byte[] data) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < data.length; i++)
-        {
+        for (int i = 0; i < data.length; i++) {
             // 取出字节的高四位 作为索引得到相应的十六进制标识符 注意无符号右移
             stringBuilder.append(HEX_CHAR[(data[i] & 0xf0) >>> 4]);
             // 取出字节的低四位 作为索引得到相应的十六进制标识符
             stringBuilder.append(HEX_CHAR[(data[i] & 0x0f)]);
-            if (i < data.length - 1)
-            {
+            if (i < data.length - 1) {
                 stringBuilder.append(' ');
             }
         }
@@ -50,17 +39,13 @@ public class ByteUtil
      * @param byteArray
      * @return
      */
-    public static String byteToHex(byte[] byteArray)
-    {
+    public static String byteToHex(byte[] byteArray) {
         StringBuffer strBuff = new StringBuffer();
-        for (int i = 0; i < byteArray.length; i++)
-        {
-            if (Integer.toHexString(0xFF & byteArray[i]).length() == 1)
-            {
+        for (int i = 0; i < byteArray.length; i++) {
+            if (Integer.toHexString(0xFF & byteArray[i]).length() == 1) {
                 strBuff.append("0").append(
                         Integer.toHexString(0xFF & byteArray[i]));
-            } else
-            {
+            } else {
                 strBuff.append(Integer.toHexString(0xFF & byteArray[i]));
             }
             strBuff.append(" ");
@@ -71,26 +56,22 @@ public class ByteUtil
     /**
      * 以字节为单位读取文件，常用于读二进制文件，如图片、声音、影像等文件。
      */
-    public static byte[] readFileByBytes(String fileName)
-    {
+    public static byte[] readFileByBytes(String fileName) {
         File file = new File(fileName);
         InputStream in = null;
         byte[] txt = new byte[(int) file.length()];
-        try
-        {
+        try {
             // 一次读一个字节
             in = new FileInputStream(file);
             int tempByte;
             int i = 0;
-            while ((tempByte = in.read()) != -1)
-            {
+            while ((tempByte = in.read()) != -1) {
                 txt[i] = (byte) tempByte;
                 i++;
             }
             in.close();
             return txt;
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
             return txt;
         }
@@ -99,28 +80,23 @@ public class ByteUtil
     /**
      * 获得指定文件的byte数组
      */
-    public static byte[] getBytes(String filePath)
-    {
+    public static byte[] getBytes(String filePath) {
         byte[] buffer = null;
-        try
-        {
+        try {
             File file = new File(filePath);
             FileInputStream fis = new FileInputStream(file);
             ByteArrayOutputStream bos = new ByteArrayOutputStream(1000);
             byte[] b = new byte[1000];
             int n;
-            while ((n = fis.read(b)) != -1)
-            {
+            while ((n = fis.read(b)) != -1) {
                 bos.write(b, 0, n);
             }
             fis.close();
             bos.close();
             buffer = bos.toByteArray();
-        } catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return buffer;
@@ -129,45 +105,34 @@ public class ByteUtil
     /**
      * 根据byte数组，生成文件
      */
-    public static void saveFile(byte[] bfile, String filePath)
-    {
+    public static void saveFile(byte[] bfile, String filePath) {
         BufferedOutputStream bos = null;
         FileOutputStream fos = null;
         File file = null;
-        try
-        {
+        try {
             File dir = new File(filePath);
             //判断文件目录是否存在
-            if (!dir.exists() && dir.isDirectory())
-            {
+            if (!dir.exists() && dir.isDirectory()) {
                 dir.mkdirs();
             }
             file = new File(filePath);
             fos = new FileOutputStream(file);
             bos = new BufferedOutputStream(fos);
             bos.write(bfile);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally
-        {
-            if (bos != null)
-            {
-                try
-                {
+        } finally {
+            if (bos != null) {
+                try {
                     bos.close();
-                } catch (IOException e1)
-                {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
-            if (fos != null)
-            {
-                try
-                {
+            if (fos != null) {
+                try {
                     fos.close();
-                } catch (IOException e1)
-                {
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
@@ -184,8 +149,7 @@ public class ByteUtil
      * @param iValue
      * @return
      */
-    public static byte[] int2Bytes_LE(int iValue)
-    {
+    public static byte[] int2Bytes_LE(int iValue) {
         byte[] rst = new byte[4];
         // 先写int的最后一个字节
         rst[0] = (byte) (iValue & 0xFF);
@@ -204,11 +168,9 @@ public class ByteUtil
      * @param num
      * @return
      */
-    public static byte[] long2bytes(long num)
-    {
+    public static byte[] long2bytes(long num) {
         byte[] b = new byte[8];
-        for (int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             b[i] = (byte) (num >>> (56 - (i * 8)));
         }
         return b;
@@ -220,12 +182,10 @@ public class ByteUtil
      * @param input
      * @return
      */
-    public static byte[] bytes2bytes_LE(byte[] input)
-    {
+    public static byte[] bytes2bytes_LE(byte[] input) {
         int len = input.length;
         byte[] b = new byte[len];
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             b[i] = input[len - 1 - i];
         }
         return b;
@@ -237,8 +197,7 @@ public class ByteUtil
      * @param num
      * @return
      */
-    public static byte[] long2bytes_LE(long num)
-    {
+    public static byte[] long2bytes_LE(long num) {
         byte[] b = long2bytes(num);
         return bytes2bytes_LE(b);
     }
@@ -249,12 +208,10 @@ public class ByteUtil
      * @param b 字节
      * @return
      */
-    public static long bytes2long(byte[] b)
-    {
+    public static long bytes2long(byte[] b) {
         long temp = 0;
         long res = 0;
-        for (int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             res <<= 8;
             temp = b[i] & 0xff;
             res |= temp;
@@ -262,8 +219,7 @@ public class ByteUtil
         return res;
     }
 
-    public static int bytes2int(byte[] bytes)
-    {
+    public static int bytes2int(byte[] bytes) {
         int num = bytes[0] & 0xFF;
         num |= ((bytes[1] << 8) & 0xFF00);
         num |= ((bytes[2] << 16) & 0xFF0000);
@@ -277,10 +233,8 @@ public class ByteUtil
      * @param str
      * @return
      */
-    public static byte[] string2Bytes_LE(String str)
-    {
-        if (str == null)
-        {
+    public static byte[] string2Bytes_LE(String str) {
+        if (str == null) {
             return null;
         }
         char[] chars = str.toCharArray();
@@ -297,16 +251,14 @@ public class ByteUtil
      * @param chars 字符数组
      * @return 若指定的定长不足返回null, 否则返回byte数组
      */
-    public static byte[] chars2Bytes_LE(char[] chars)
-    {
+    public static byte[] chars2Bytes_LE(char[] chars) {
         if (chars == null)
             return null;
 
         int iCharCount = chars.length;
         byte[] rst = new byte[iCharCount * UNICODE_LEN];
         int i = 0;
-        for (i = 0; i < iCharCount; i++)
-        {
+        for (i = 0; i < iCharCount; i++) {
             rst[i * 2] = (byte) (chars[i] & 0xFF);
             rst[i * 2 + 1] = (byte) ((chars[i] & 0xFF00) >> 8);
         }
@@ -321,8 +273,7 @@ public class ByteUtil
      * @return
      * @note 数组长度至少为4，按小端方式转换,即传入的bytes是小端的，按这个规律组织成int
      */
-    public static int bytes2Int_LE(byte[] bytes)
-    {
+    public static int bytes2Int_LE(byte[] bytes) {
         if (bytes.length < 4)
             return -1;
         int iRst = (bytes[0] & 0xFF);
@@ -340,8 +291,7 @@ public class ByteUtil
      * @return
      * @note 数组长度至少为4，按小端方式转换，即传入的bytes是大端的，按这个规律组织成int
      */
-    public static int bytes2Int_BE(byte[] bytes)
-    {
+    public static int bytes2Int_BE(byte[] bytes) {
         if (bytes.length < 4)
             return -1;
         int iRst = (bytes[0] << 24) & 0xFF;
@@ -359,8 +309,7 @@ public class ByteUtil
      * @return
      * @note 数组长度至少为2，按小端方式转换
      */
-    public static char Bytes2Char_LE(byte[] bytes)
-    {
+    public static char Bytes2Char_LE(byte[] bytes) {
         if (bytes.length < 2)
             return (char) -1;
         int iRst = (bytes[0] & 0xFF);
@@ -376,8 +325,7 @@ public class ByteUtil
      * @return
      * @note 数组长度至少为2，按小端方式转换
      */
-    public static char Bytes2Char_BE(byte[] bytes)
-    {
+    public static char Bytes2Char_BE(byte[] bytes) {
         if (bytes.length < 2)
             return (char) -1;
         int iRst = (bytes[0] << 8) & 0xFF;
@@ -386,17 +334,13 @@ public class ByteUtil
         return (char) iRst;
     }
 
-    public static String byte2BinaryString(byte nByte)
-    {
+    public static String byte2BinaryString(byte nByte) {
         StringBuilder nStr = new StringBuilder();
-        for (int i = 7; i >= 0; i--)
-        {
+        for (int i = 7; i >= 0; i--) {
             int j = (int) nByte & (int) (Math.pow(2, (double) i));
-            if (j > 0)
-            {
+            if (j > 0) {
                 nStr.append("1");
-            } else
-            {
+            } else {
                 nStr.append("0");
             }
         }

@@ -9,10 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static com.crazymakercircle.util.ThreadUtil.MIXED_THREAD_AMOUNT;
-import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
-import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
-import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+import static com.crazymakercircle.util.ThreadUtil.*;
 
 /**
  * Created by 尼恩@疯狂创客圈.

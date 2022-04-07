@@ -10,16 +10,14 @@ import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class InnerLockTest
-{
+public class InnerLockTest {
     final int MAX_TREAD = 10;
     final int MAX_TURN = 1000;
     CountDownLatch latch = new CountDownLatch(MAX_TREAD);
 
 
     @org.junit.Test
-    public void showNoLockObject() throws InterruptedException
-    {
+    public void showNoLockObject() throws InterruptedException {
         //输出JVM的信息
         Print.fo(VM.current().details());
         //创建一个对象
@@ -31,8 +29,7 @@ public class InnerLockTest
 
 
     @org.junit.Test
-    public void showBiasedLock() throws InterruptedException
-    {
+    public void showBiasedLock() throws InterruptedException {
         Print.tcfo(VM.current().details());
         //JVM延迟偏向锁
         sleepMilliSeconds(5000);
@@ -46,13 +43,10 @@ public class InnerLockTest
         CountDownLatch latch = new CountDownLatch(1);
         Runnable runnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
-                synchronized (lock)
-                {
+            for (int i = 0; i < MAX_TURN; i++) {
+                synchronized (lock) {
                     lock.increase();
-                    if (i == MAX_TURN / 2)
-                    {
+                    if (i == MAX_TURN / 2) {
                         Print.tcfo("占有锁, lock 的状态: ");
                         lock.printObjectStruct();
                         //读取字符串型输入,阻塞线程
@@ -74,8 +68,7 @@ public class InnerLockTest
     }
 
     @org.junit.Test
-    public void showLightweightLock() throws InterruptedException
-    {
+    public void showLightweightLock() throws InterruptedException {
 
         Print.tcfo(VM.current().details());
         //JVM延迟偏向锁
@@ -90,13 +83,10 @@ public class InnerLockTest
         CountDownLatch latch = new CountDownLatch(2);
         Runnable runnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
-                synchronized (lock)
-                {
+            for (int i = 0; i < MAX_TURN; i++) {
+                synchronized (lock) {
                     lock.increase();
-                    if (i == 1)
-                    {
+                    if (i == 1) {
                         Print.tcfo("第一个线程占有锁, lock 的状态: ");
                         lock.printObjectStruct();
                     }
@@ -107,8 +97,7 @@ public class InnerLockTest
             latch.countDown();
 
             //线程虽然释放锁，但是一直存在
-            for (int j = 0; ; j++)
-            {
+            for (int j = 0; ; j++) {
                 //每一次循环等待1ms
                 sleepMilliSeconds(1);
             }
@@ -120,13 +109,10 @@ public class InnerLockTest
 
         Runnable lightweightRunnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
-                synchronized (lock)
-                {
+            for (int i = 0; i < MAX_TURN; i++) {
+                synchronized (lock) {
                     lock.increase();
-                    if (i == MAX_TURN / 2)
-                    {
+                    if (i == MAX_TURN / 2) {
                         Print.tcfo("第二个线程占有锁, lock 的状态: ");
                         lock.printObjectStruct();
                     }
@@ -148,8 +134,7 @@ public class InnerLockTest
     }
 
     @org.junit.Test
-    public void showHeavyweightLock() throws InterruptedException
-    {
+    public void showHeavyweightLock() throws InterruptedException {
 
         Print.tcfo(VM.current().details());
         //JVM延迟偏向锁
@@ -164,13 +149,10 @@ public class InnerLockTest
         CountDownLatch latch = new CountDownLatch(3);
         Runnable runnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
-                synchronized (counter)
-                {
+            for (int i = 0; i < MAX_TURN; i++) {
+                synchronized (counter) {
                     counter.increase();
-                    if (i == 0)
-                    {
+                    if (i == 0) {
                         Print.tcfo("第一个线程占有锁, counter 的状态: ");
                         counter.printObjectStruct();
                     }
@@ -181,8 +163,7 @@ public class InnerLockTest
             latch.countDown();
 
             //线程虽然释放锁，但是一直存在
-            for (int j = 0; ; j++)
-            {
+            for (int j = 0; ; j++) {
                 //每一次循环等待1ms
                 sleepMilliSeconds(1);
             }
@@ -194,13 +175,10 @@ public class InnerLockTest
 
         Runnable lightweightRunnable = () ->
         {
-            for (int i = 0; i < MAX_TURN; i++)
-            {
-                synchronized (counter)
-                {
+            for (int i = 0; i < MAX_TURN; i++) {
+                synchronized (counter) {
                     counter.increase();
-                    if (i == 0)
-                    {
+                    if (i == 0) {
                         Print.tcfo("占有锁, counter 的状态: ");
                         counter.printObjectStruct();
                     }

@@ -10,8 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PetStore5
-{
+public class PetStore5 {
     public static final int CONSUME_GAP = 1000;
     public static final int PRODUCE_GAP = 1000;
 
@@ -22,31 +21,24 @@ public class PetStore5
     private AtomicInteger amount = new AtomicInteger(0);
     private ArrayList<IGoods> goodsList = new ArrayList<IGoods>();
 
-    private PetStore5()
-    {
+    private PetStore5() {
     }
 
-    public static PetStore5 inst()
-    {
+    public static PetStore5 inst() {
         return instance;
     }
 
 
-    public void consume()
-    {
+    public void consume() {
 
-        synchronized (LOCK_CONSUME)
-        {
+        synchronized (LOCK_CONSUME) {
             Print.cfo("goodsList.size=" + goodsList.size());
             IGoods goods = goodsList.get(0);
-            while (goods == null)
-            {
+            while (goods == null) {
                 Print.cfo("队列已经空了！");
-                try
-                {
+                try {
                     LOCK_CONSUME.wait();
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -56,8 +48,7 @@ public class PetStore5
             amount.decrementAndGet();
         }
 
-        synchronized (LOCK_PRODUCE)
-        {
+        synchronized (LOCK_PRODUCE) {
             LOCK_PRODUCE.notify();
         }
 
@@ -65,19 +56,14 @@ public class PetStore5
     }
 
 
-    public void produce()
-    {
+    public void produce() {
 
-        synchronized (LOCK_PRODUCE)
-        {
-            while (amount.get() > MAX_AMOUNT)
-            {
+        synchronized (LOCK_PRODUCE) {
+            while (amount.get() > MAX_AMOUNT) {
                 Print.cfo("队列已经满了！");
-                try
-                {
+                try {
                     LOCK_PRODUCE.wait();
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -88,37 +74,30 @@ public class PetStore5
             Print.cfo(goods + "");
 
         }
-        synchronized (LOCK_CONSUME)
-        {
+        synchronized (LOCK_CONSUME) {
             LOCK_CONSUME.notify();
         }
     }
 
 
-    static class Producer extends Thread
-    {
+    static class Producer extends Thread {
         static int producerNo = 1;
 
-        public Producer()
-        {
+        public Producer() {
             super("生产者" + producerNo++);
         }
 
         @Override
-        public void run()
-        {
-            while (true)
-            {
+        public void run() {
+            while (true) {
                 Print.hint(super.getName() + "开始生产！");
 
                 PetStore5.inst().produce();
 
 
-                try
-                {
+                try {
                     Thread.sleep(PRODUCE_GAP);
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -126,31 +105,24 @@ public class PetStore5
         }
     }
 
-    static class Consumer extends Thread
-    {
+    static class Consumer extends Thread {
         static int consumerNO = 1;
 
-        public Consumer()
-        {
+        public Consumer() {
             super("消费者" + consumerNO++);
         }
 
         @Override
-        public void run()
-        {
-            while (true)
-            {
+        public void run() {
+            while (true) {
                 Print.hint(super.getName() + "开始消费！");
-                try
-                {
+                try {
                     Thread.sleep(CONSUME_GAP);
                     PetStore5.inst().consume();
 
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (IndexOutOfBoundsException e)
-                {
+                } catch (IndexOutOfBoundsException e) {
                     Print.cfo("队列已经空了！");
 //                    e.printStackTrace();
                 }
@@ -160,11 +132,9 @@ public class PetStore5
 
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
 
-        for (int i = 0; i < 5; i++)
-        {
+        for (int i = 0; i < 5; i++) {
             new Producer().start();
             new Consumer().start();
         }

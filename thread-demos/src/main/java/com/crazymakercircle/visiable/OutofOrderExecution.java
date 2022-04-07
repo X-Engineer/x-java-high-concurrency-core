@@ -5,9 +5,9 @@ import com.crazymakercircle.util.Print;
 public class OutofOrderExecution {
     private static int x = 0, y = 0;
     private static int a = 0, b = 0;
-    
+
     public static void main(String[] args)
-        throws InterruptedException {
+            throws InterruptedException {
         Thread t1 = new Thread(new Runnable() {
             public void run() {
                 a = 1;
@@ -24,6 +24,6 @@ public class OutofOrderExecution {
         t2.start();
         t1.join();
         t2.join();
-        Print.tco("x="+x+" y="+y);
+        Print.tco("x=" + x + " y=" + y);
     }
 }

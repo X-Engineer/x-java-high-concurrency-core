@@ -5,29 +5,24 @@ import com.crazymakercircle.util.Print;
 import java.util.concurrent.locks.LockSupport;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class LockSupportDemo
-{
-    public static class ChangeObjectThread extends Thread
-    {
-        public ChangeObjectThread(String name)
-        {
+public class LockSupportDemo {
+    public static class ChangeObjectThread extends Thread {
+        public ChangeObjectThread(String name) {
             super(name);
         }
 
         @Override
-        public void run()
-        {
+        public void run() {
             Print.tco("即将进入无限时阻塞");
             //阻塞当前线程
             LockSupport.park();
-            if (Thread.currentThread().isInterrupted())
-            {
+            if (Thread.currentThread().isInterrupted()) {
                 Print.tco("被中断了，但任然会继续执行");
-            } else
-            {
+            } else {
                 Print.tco("被重新唤醒了");
             }
         }
@@ -35,8 +30,7 @@ public class LockSupportDemo
 
 
     @org.junit.Test
-    public void testLockSupport()
-    {
+    public void testLockSupport() {
         ChangeObjectThread t1 = new ChangeObjectThread("线程一");
         ChangeObjectThread t2 = new ChangeObjectThread("线程二");
         //启动线程一
@@ -52,15 +46,12 @@ public class LockSupportDemo
     }
 
     @org.junit.Test
-    public void testLockSupport2()
-    {
+    public void testLockSupport2() {
         Thread t1 = new Thread(() ->
         {
-            try
-            {
+            try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             Print.tco("即将进入无限时阻塞");

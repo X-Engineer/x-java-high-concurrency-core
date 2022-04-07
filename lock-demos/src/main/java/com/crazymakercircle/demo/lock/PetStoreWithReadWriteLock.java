@@ -14,8 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PetStoreWithReadWriteLock
-{
+public class PetStoreWithReadWriteLock {
     //数据缓冲区的大小
     public static final int MAX_AMOUNT = 10;
 
@@ -40,21 +39,17 @@ public class PetStoreWithReadWriteLock
      * @param goods 商品
      * @throws Exception
      */
-    public void add(IGoods goods)
-    {
+    public void add(IGoods goods) {
         writeLock.lock();// 抢占写锁
-        try
-        {
-            if (amount.get() > MAX_AMOUNT)
-            {
+        try {
+            if (amount.get() > MAX_AMOUNT) {
                 Print.tcfo("队列已经满了！");
                 return;
             }
             goodsList.add(goods);
             Print.tcfo(goods + "");
             amount.incrementAndGet();
-        } finally
-        {
+        } finally {
             writeLock.unlock();// 释放写锁
         }
     }
@@ -65,16 +60,13 @@ public class PetStoreWithReadWriteLock
      * @param predicate 商品查询条件
      * @return 查询的结果集
      */
-    public List<IGoods> search(Predicate predicate)
-    {
+    public List<IGoods> search(Predicate predicate) {
         int count = 0;
         readLock.lock();// 抢占读锁
-        try
-        {
+        try {
             //eg: Predicate predicate= goods-> example.equals(goods);
             return (List<IGoods>) CollectionUtils.select(goodsList, predicate);
-        } finally
-        {
+        } finally {
             readLock.unlock();// 释放读锁
         }
     }
@@ -83,14 +75,11 @@ public class PetStoreWithReadWriteLock
     /**
      * 从数据区取出一个商品
      */
-    public IGoods fetch()
-    {
+    public IGoods fetch() {
         writeLock.lock();// 抢占写锁
-        try
-        {
+        try {
             IGoods goods = null;
-            if (amount.get() <= 0)
-            {
+            if (amount.get() <= 0) {
                 Print.tcfo("队列已经空了！");
                 return null;
             }
@@ -98,8 +87,7 @@ public class PetStoreWithReadWriteLock
             Print.tcfo(goods + "");
             amount.decrementAndGet();
             return goods;
-        } finally
-        {
+        } finally {
             writeLock.unlock();// 释放写锁
         }
     }

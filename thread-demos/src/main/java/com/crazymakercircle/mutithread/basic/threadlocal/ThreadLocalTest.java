@@ -112,12 +112,14 @@ public class ThreadLocalTest {
     }
 
     public ThreadLocal<String> local = ThreadLocal.withInitial(() -> "foo");
+
     @Test
     public void testFinalThreadLocal() {
         //设置本地变量的值
         local.set("bar");
         Logger.fo("local:" + local.get());
-        funcB();funcC();
+        funcB();
+        funcC();
     }
 
     public void funcB() {
@@ -125,6 +127,7 @@ public class ThreadLocalTest {
         local = new ThreadLocal<>();
         Logger.fo("local:" + local.get());
     }
+
     public void funcC() {
         Logger.fo("local:" + local.get());
     }
@@ -179,7 +182,8 @@ public class ThreadLocalTest {
         //函数末尾
     }
 
-   private static final Foo SF_FOO=new Foo();
+    private static final Foo SF_FOO = new Foo();
+
     @Test
     public void testWeakReference3() {
         WeakReference<Foo> weakReference = new WeakReferenceFoo(SF_FOO);

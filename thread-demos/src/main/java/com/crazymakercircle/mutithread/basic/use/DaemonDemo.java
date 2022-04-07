@@ -9,26 +9,21 @@ import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
  * Created by 尼恩@疯狂创客圈.
  */
 
-public class DaemonDemo
-{
+public class DaemonDemo {
     public static final int SLEEP_GAP = 500; //每一轮的睡眠时长
     public static final int MAX_TURN = 4; //用户线程执行轮次
 
     //守护线程实现类
-    static class DaemonThread extends Thread
-    {
+    static class DaemonThread extends Thread {
 
-        public DaemonThread()
-        {
+        public DaemonThread() {
             super("daemonThread");
         }
 
-        public void run()
-        {
+        public void run() {
             Print.synTco("--daemon线程开始.");
 
-            for (int i = 1; ; i++)
-            {
+            for (int i = 1; ; i++) {
                 Print.synTco("--轮次：" + i + "--守护状态为:" + isDaemon());
                 // 线程睡眠一会
                 sleepMilliSeconds(SLEEP_GAP);
@@ -38,8 +33,7 @@ public class DaemonDemo
     }
 
 
-    public static void main(String args[]) throws InterruptedException
-    {
+    public static void main(String args[]) throws InterruptedException {
 
         Thread daemonThread = new DaemonThread();
         daemonThread.setDaemon(true);
@@ -48,8 +42,7 @@ public class DaemonDemo
         Thread userThread = new Thread(() ->
         {
             Print.synTco(">>用户线程开始.");
-            for (int i = 1; i <= MAX_TURN; i++)
-            {
+            for (int i = 1; i <= MAX_TURN; i++) {
                 Print.synTco(">>轮次：" + i + " -守护状态为:" + getCurThread().isDaemon());
                 sleepMilliSeconds(SLEEP_GAP);
             }

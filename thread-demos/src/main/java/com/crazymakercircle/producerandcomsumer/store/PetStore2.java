@@ -9,19 +9,16 @@ import java.util.ArrayList;
 /**
  * Created by 尼恩@疯狂创客圈.
  */
-public class PetStore2
-{
+public class PetStore2 {
     public static final int CONSUME_GAP = 1000;
     public static final int PRODUCE_GAP = 1000;
 
     private static PetStore2 instance = new PetStore2();
 
-    private PetStore2()
-    {
+    private PetStore2() {
     }
 
-    public static PetStore2 inst()
-    {
+    public static PetStore2 inst() {
         return instance;
     }
 
@@ -29,12 +26,10 @@ public class PetStore2
     private ArrayList<IGoods> goodsList = new ArrayList<IGoods>();
 
 
-    public void consume()
-    {
+    public void consume() {
         Print.cfo("goodsList.size=" + goodsList.size());
         IGoods goods = goodsList.get(0);
-        if (goods == null)
-        {
+        if (goods == null) {
             Print.cfo("队列已经空了！");
             return;
         }
@@ -43,8 +38,7 @@ public class PetStore2
     }
 
 
-    public void produce()
-    {
+    public void produce() {
         Print.cfo("goodsList.size=" + goodsList.size());
 
         IGoods goods = Goods.produceOne();
@@ -52,8 +46,7 @@ public class PetStore2
         Print.cfo(goods + "");
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
 
         Producer producer = new Producer();
         Consumer consumer = new Consumer();
@@ -64,27 +57,22 @@ public class PetStore2
     }
 
 
-    static class Producer implements Runnable
-    {
+    static class Producer implements Runnable {
         int turn = 0;
 
 
         @Override
-        public void run()
-        {
-            while (true)
-            {
+        public void run() {
+            while (true) {
                 ++turn;
-                try
-                {
+                try {
 
                     Thread.sleep(PRODUCE_GAP);
                     Print.hint(Thread.currentThread().getName() + "第" + turn + "轮生产！");
 
                     PetStore2.inst().produce();
 
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -92,27 +80,21 @@ public class PetStore2
         }
     }
 
-    static class Consumer implements Runnable
-    {
+    static class Consumer implements Runnable {
         int turn = 0;
 
 
         @Override
-        public void run()
-        {
-            while (true)
-            {
+        public void run() {
+            while (true) {
                 ++turn;
-                try
-                {
+                try {
                     Thread.sleep(CONSUME_GAP);
                     Print.hint(Thread.currentThread().getName() + "第" + turn + "轮消费！");
                     PetStore2.inst().consume();
-                } catch (InterruptedException e)
-                {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-                } catch (IndexOutOfBoundsException e)
-                {
+                } catch (IndexOutOfBoundsException e) {
                     Print.cfo("队列已经空了！");
 //                    e.printStackTrace();
                 }

@@ -6,8 +6,6 @@ import com.crazymakercircle.petstore.goods.Goods;
 import com.crazymakercircle.petstore.goods.IGoods;
 import com.crazymakercircle.util.JvmUtil;
 import com.crazymakercircle.util.Print;
-import com.crazymakercircle.util.ThreadUtil;
-import org.apache.curator.utils.ThreadUtils;
 
 import java.util.LinkedList;
 import java.util.List;

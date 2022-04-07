@@ -6,19 +6,14 @@ import org.bouncycastle.x509.X509V3CertificateGenerator;
 
 import javax.security.auth.x500.X500Principal;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
+import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 @Slf4j
 @SuppressWarnings("all")
-public class CertHelper
-{
+public class CertHelper {
     /**
      * 指定证书拥有者信息。
      * 例如："CN=名字与姓氏,OU=组织单位名称,O=组织名称,L=城市或区域名称,ST=州或省份名称,C=单位的两字母国家代码"
@@ -26,14 +21,12 @@ public class CertHelper
     String dname = "C=CN,ST=Province,L=city,O=crazymaker,OU=crazymaker.com,CN=user";
     String CA_SHA = "SHA256WithRSAEncryption";
 
-    public CertHelper(String dname)
-    {
+    public CertHelper(String dname) {
 
         this.dname = dname;
     }
 
-    static
-    {
+    static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -44,8 +37,7 @@ public class CertHelper
     protected KeyPair keyPair = null;
 
 
-    public KeyPair getKeyPair()
-    {
+    public KeyPair getKeyPair() {
         return keyPair;
     }
 
@@ -55,11 +47,9 @@ public class CertHelper
      * @param user
      * @return
      */
-    public X509Certificate genCert()
-    {
+    public X509Certificate genCert() {
         X509Certificate cert = null;
-        try
-        {
+        try {
             // 采用 RSA 非对称算法加密
             kpg = KeyPairGenerator.getInstance("RSA");
             // 初始化为 2048 位，这个长度的密钥目前可认为无法被暴力破解
@@ -97,8 +87,7 @@ public class CertHelper
             // 签名算法
             certGen.setSignatureAlgorithm(CA_SHA);
             cert = certGen.generateX509Certificate(privateKey, "BC");
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e.getClass() + e.getMessage());
             e.printStackTrace();
         }

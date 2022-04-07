@@ -4,16 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateUtil
-{
+public class DateUtil {
 
     /**
      * 取得今天的日期
      *
      * @return
      */
-    public static String getToday()
-    {
+    public static String getToday() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -25,8 +23,7 @@ public class DateUtil
      *
      * @return
      */
-    public static String getYestoday()
-    {
+    public static String getYestoday() {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = Calendar.getInstance();
@@ -35,16 +32,15 @@ public class DateUtil
         return sdf.format(date.getTime());
     }
 
-    public static String getNow()
-    {
+    public static String getNow() {
         //HH表示用24小时制，如18；hh表示用12小时制
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         return sdf.format(new Date().getTime());
 
     }
-    public static String getNowTime()
-    {
+
+    public static String getNowTime() {
         //HH表示用24小时制，如18；hh表示用12小时制
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
@@ -52,8 +48,7 @@ public class DateUtil
 
     }
 
-    public static String getTime()
-    {
+    public static String getTime() {
         //HH表示用24小时制，如18；hh表示用12小时制
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 

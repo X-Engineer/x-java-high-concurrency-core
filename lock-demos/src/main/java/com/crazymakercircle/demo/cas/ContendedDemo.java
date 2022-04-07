@@ -2,8 +2,7 @@ package com.crazymakercircle.demo.cas;
 
 import sun.misc.Contended;
 
-public class ContendedDemo
-{
+public class ContendedDemo {
     //有填充的演示成员
     @Contended
     public volatile long padVar;

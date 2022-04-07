@@ -9,37 +9,30 @@ import com.crazymakercircle.util.Print;
 /**
  * 不安全的自增 运算
  */
-public class NotSafePlus
-{
+public class NotSafePlus {
     public static final int MAX_TURN = 1000000;
 
-    static class NotSafeCounter implements Runnable
-    {
+    static class NotSafeCounter implements Runnable {
         public int amount = 0;
 
-        public void increase()
-        {
+        public void increase() {
             amount++;
         }
 
         @Override
-        public void run()
-        {
+        public void run() {
             int turn = 0;
-            while (turn < MAX_TURN)
-            {
+            while (turn < MAX_TURN) {
                 ++turn;
                 increase();
             }
         }
     }
 
-    public static void main(String[] args) throws InterruptedException
-    {
+    public static void main(String[] args) throws InterruptedException {
 
         NotSafeCounter counter = new NotSafeCounter();
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             Thread thread = new Thread(counter);
             thread.start();
         }
