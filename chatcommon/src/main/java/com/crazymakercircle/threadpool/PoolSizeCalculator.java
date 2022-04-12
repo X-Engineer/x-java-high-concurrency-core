@@ -54,7 +54,7 @@ public abstract class PoolSizeCalculator {
      *
      * @param targetUtilization the desired utilization of the CPUs (0 <= targetUtilization <=   *            1)     * @param targetQueueSizeBytes   *            the desired maximum work queue size of the thread pool (bytes)
      */
-    protected void calculateBoundaries(BigDecimal targetUtilization, BigDecimal targetQueueSizeBytes) {
+    public void calculateBoundaries(BigDecimal targetUtilization, BigDecimal targetQueueSizeBytes) {
         calculateOptimalCapacity(targetQueueSizeBytes);
         Runnable task = createTask();
         start(task);

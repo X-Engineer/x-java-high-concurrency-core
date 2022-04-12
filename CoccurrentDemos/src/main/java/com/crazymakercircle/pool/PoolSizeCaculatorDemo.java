@@ -1,4 +1,6 @@
-package com.crazymakercircle.threadpool;
+package com.crazymakercircle.pool;
+
+import com.crazymakercircle.threadpool.PoolSizeCalculator;
 
 import java.math.BigDecimal;
 import java.util.concurrent.BlockingQueue;
@@ -50,6 +52,9 @@ public class PoolSizeCaculatorDemo extends PoolSizeCalculator {
         BigDecimal targetQueueSizeBytes = new BigDecimal(10000);
         poolSizeCalculator.calculateBoundaries(targetUtilization, targetQueueSizeBytes);
     }
+
+
+
 }
 
 
