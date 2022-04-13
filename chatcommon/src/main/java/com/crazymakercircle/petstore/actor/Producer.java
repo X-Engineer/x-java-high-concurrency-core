@@ -16,6 +16,9 @@ public class Producer implements Runnable {
     public static final int PRODUCE_GAP = 200;
 
     //总次数
+    // 注意：
+    // 不是单个的次数
+    // 是所有生产者的总的生产次数
     static final AtomicInteger TURN = new AtomicInteger(0);
 
     //生产者对象编号
