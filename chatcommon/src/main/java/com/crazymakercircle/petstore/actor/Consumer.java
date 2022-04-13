@@ -18,6 +18,9 @@ public class Consumer implements Runnable {
 
 
     //消费总次数
+    // 注意：
+    // 不是单个消费者的次数
+    // 是所有消费者的总的消费次数
     static final AtomicInteger TURN = new AtomicInteger(0);
 
     //消费者对象编号
