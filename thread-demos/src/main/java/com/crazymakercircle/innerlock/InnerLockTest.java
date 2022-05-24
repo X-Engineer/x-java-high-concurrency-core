@@ -1,6 +1,7 @@
 package com.crazymakercircle.innerlock;
 
 import com.crazymakercircle.util.Print;
+import org.openjdk.jol.info.ClassLayout;
 import org.openjdk.jol.vm.VM;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +26,28 @@ public class InnerLockTest {
         Print.fo("object status: ");
         //输出对象的布局信息
         objectLock.printSelf();
+    }
+
+    static class  MyOrder{
+        private long orderId;
+        private long userId;
+        private byte state;
+        private long createMillis;
+    }
+    @org.junit.Test
+    public void showObjectStructSize() throws InterruptedException {
+
+
+        //输出JVM的信息
+        Print.fo(VM.current().details());
+        //创建一个对象
+        MyOrder objectLock = new MyOrder();
+        Print.fo("object status: ");
+        //输出对象的布局信息
+
+        String printable = ClassLayout.parseInstance(objectLock).toPrintable();
+        //输出对象布局
+        Print.fo("lock = " + printable);
     }
 
 
