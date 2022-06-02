@@ -1,17 +1,17 @@
 package com.crazymakercircle.coccurent;
 
 import com.crazymakercircle.util.Logger;
-import com.google.common.util.concurrent.*;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.GenericFutureListener;
+import io.netty.util.concurrent.Promise;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Created by 尼恩 at 疯狂创客圈
  */
 
-public class GuavaFutureDemo {
+public class NettyPromiseDemo {
 
     public static final int SLEEP_GAP = 5000;
 
@@ -20,33 +20,45 @@ public class GuavaFutureDemo {
         return Thread.currentThread().getName();
     }
 
-    static class HotWaterJob implements Callable<Boolean> //①
+    static class HotWaterJob implements Runnable //①
     {
 
+        private final Promise<Object> hotPromise;
+
+        public HotWaterJob(Promise<Object> hotPromise) {
+            this.hotPromise = hotPromise;
+        }
+
         @Override
-        public Boolean call() throws Exception //②
+        public void run()  //②
         {
 
             try {
-                Logger.info("洗好水壶");
+                Logger.info("开始烧水");
                 Logger.info("灌上凉水");
                 Logger.info("放在火上");
 
                 //线程睡眠一段时间，代表烧水中
                 Thread.sleep(SLEEP_GAP);
                 Logger.info("水开了");
+                hotPromise.trySuccess(true);
 
             } catch (InterruptedException e) {
                 Logger.info(" 发生异常被中断.");
-                return false;
+                hotPromise.trySuccess(false);
             }
             Logger.info(" 烧水工作，运行结束.");
-
-            return true;
         }
     }
 
     static class WashJob implements Callable<Boolean> {
+
+        private final Promise<Object> washPromise;
+
+        public WashJob(Promise<Object> washPromise) {
+            this.washPromise = washPromise;
+
+        }
 
         @Override
         public Boolean call() throws Exception {
@@ -57,14 +69,16 @@ public class GuavaFutureDemo {
                 Logger.info("洗茶杯");
                 Logger.info("拿茶叶");
                 //线程睡眠一段时间，代表清洗中
-                Thread.sleep(SLEEP_GAP);
+                Thread.sleep(SLEEP_GAP/5);
                 Logger.info("洗完了");
 
             } catch (InterruptedException e) {
                 Logger.info(" 清洗工作 发生异常被中断.");
+                washPromise.trySuccess(true);
                 return false;
             }
             Logger.info(" 清洗工作  运行结束.");
+            washPromise.trySuccess(true);
             return true;
         }
 
@@ -81,9 +95,9 @@ public class GuavaFutureDemo {
         public void run() {
             while (true) {
                 try {
-                    Logger.info("读书中......");
                     Thread.sleep(gap);
-                 } catch (InterruptedException e) {
+                    Logger.info("读书中......");
+                } catch (InterruptedException e) {
                     Logger.info(getCurThreadName() + "发生异常被中断.");
                 }
 
@@ -94,16 +108,12 @@ public class GuavaFutureDemo {
 
         public void drinkTea() {
             if (waterOk && cupOk) {
-
                 Logger.info("泡茶喝，茶喝完");
-
                 this.waterOk = false;
-
                 this.gap = SLEEP_GAP * 100;
-
             } else if (!waterOk) {
                 Logger.info("烧水 没有完成，没有茶喝了");
-            } else if (!cupOk ) {
+            } else if (!cupOk) {
                 Logger.info("洗杯子  没有完成，没有茶喝了");
             }
 
@@ -118,58 +128,59 @@ public class GuavaFutureDemo {
         mainThread.setName("喝茶线程");
         mainThread.start();
 
+        //创建netty  线程池
+        DefaultEventExecutorGroup npool = new DefaultEventExecutorGroup(2);
+
+        Promise<Object> hotPromise = npool.next().newPromise();
         //烧水的业务逻辑
-        Callable<Boolean> hotJob = new HotWaterJob();
+        Runnable hotJob = new HotWaterJob(hotPromise);
+
+
+        //绑定任务执行完成后的回调，到异步任务
+        hotPromise.addListener(new GenericFutureListener() {
+            @Override
+            public void operationComplete(io.netty.util.concurrent.Future future) throws Exception {
+                if (future.isSuccess()) {
+                    mainJob.waterOk = true;
+                    Logger.info("烧水 完成，尝试着去吃吃茶!");
+                    mainJob.drinkTea();
+                } else {
+                    mainJob.waterOk = false;
+                    Logger.info("烧水 失败啦!");
+                }
+            }
+        });
+
+
+        //绑定任务执行完成后的回调，到异步任务
+
+        Promise<Object> washPromise = npool.next().newPromise();
+
         //清洗的业务逻辑
-        Callable<Boolean> washJob = new WashJob();
+        Callable<Boolean> washJob = new WashJob(washPromise);
 
-        //创建java 线程池
-        ExecutorService jPool =
-                Executors.newFixedThreadPool(10);
+        washPromise.addListener(new GenericFutureListener() {
+            @Override
+            public void operationComplete(io.netty.util.concurrent.Future future) throws Exception {
+                if (future.isSuccess()) {
+                    mainJob.cupOk = true;
+                    Logger.info("杯子洗 完成，尝试着去吃吃茶!");
+                    mainJob.drinkTea();
+                } else {
+                    mainJob.cupOk = false;
+                    Logger.info("杯子洗不了，没有茶喝了");
 
-        //包装java线程池，构造guava 线程池
-        ListeningExecutorService gPool =
-                MoreExecutors.listeningDecorator(jPool);
+                }
+            }
+        });
+
 
         //提交烧水的业务逻辑，取到异步任务
-        ListenableFuture<Boolean> hotFuture = gPool.submit(hotJob);
-
-        //绑定任务执行完成后的回调，到异步任务
-        Futures.addCallback(hotFuture, new FutureCallback<Boolean>() {
-            public void onSuccess(Boolean r) {
-                Logger.info("烧水成功，尝试喝茶");
-
-                if (r) {
-                    mainJob.waterOk = true;
-                    mainJob.drinkTea();
-                }
-            }
-
-            public void onFailure(Throwable t) {
-                Logger.info("烧水失败，没有茶喝了");
-            }
-        });
-
-
+        io.netty.util.concurrent.Future hotFuture = npool.submit(hotJob);
         //提交清洗的业务逻辑，取到异步任务
 
-        ListenableFuture<Boolean> washFuture = gPool.submit(washJob);
-        //绑定任务执行完成后的回调，到异步任务
-        Futures.addCallback(washFuture, new FutureCallback<Boolean>() {
-            public void onSuccess(Boolean r) {
-                Logger.info("杯子洗  成功，尝试喝茶");
-                if (r) {
-                    mainJob.cupOk = true;
-                    mainJob.drinkTea();
-                }
+        io.netty.util.concurrent.Future<Boolean> washFuture = npool.submit(washJob);
 
-
-            }
-
-            public void onFailure(Throwable t) {
-                Logger.info("杯子洗不了，没有茶喝了");
-            }
-        });
     }
 
 
