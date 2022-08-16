@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
+import static com.crazymakercircle.util.ThreadUtil.yieldThread;
 
 public class YieldDemo {
     public static final int MAX_TURN = 100;//执行次数
@@ -38,7 +39,9 @@ public class YieldDemo {
                 metric.get(this.getName()).incrementAndGet();
                 if (i % 2 == 0) {
                     //让步：出让执行的权限
-                    Thread.yield();
+                     //  Thread.yield();
+                    yieldThread();
+
                 }
             }
             //输出线程的执行次数

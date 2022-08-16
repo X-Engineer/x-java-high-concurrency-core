@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import static com.crazymakercircle.util.ThreadUtil.yieldThread;
+
 public class SpinLock implements Lock {
     /**
      * 使用拥有者 Thread 作为同步状态，比使用一个简单的整数状态可以携带更多信息
@@ -20,7 +22,10 @@ public class SpinLock implements Lock {
         //自旋
         while (!owner.compareAndSet(null, t)) {
             // DO nothing
-            Thread.yield();//让出当前剩余的CPU时间片
+            //让出当前剩余的CPU时间片
+            //  Thread.yield();
+            yieldThread();
+
         }
     }
 

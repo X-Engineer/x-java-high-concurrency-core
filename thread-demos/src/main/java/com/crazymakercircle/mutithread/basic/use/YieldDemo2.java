@@ -2,6 +2,8 @@ package com.crazymakercircle.mutithread.basic.use;
 
 import com.crazymakercircle.util.Print;
 
+import static com.crazymakercircle.util.ThreadUtil.yieldThread;
+
 /**
  * Created by 尼恩@疯狂创客圈.
  */
@@ -47,7 +49,8 @@ public class YieldDemo2 {
 
         jThread.start();
         try {
-            Thread.yield();
+             //  Thread.yield();
+            yieldThread();
 
             Print.cfo(getCurThreadName() + ",洗茶壶");
             Print.cfo(getCurThreadName() + ",洗茶杯");

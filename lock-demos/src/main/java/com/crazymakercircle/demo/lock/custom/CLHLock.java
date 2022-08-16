@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
+import static com.crazymakercircle.util.ThreadUtil.yieldThread;
+
 public class CLHLock implements Lock {
 
     /**
@@ -46,7 +48,9 @@ public class CLHLock implements Lock {
         // 若前继节点的locked状态为true，则表示前一线程还在抢占或者占有锁
         while (curNode.getPrevNode().isLocked()) {
             //让出CPU时间片，提高性能
-            Thread.yield();
+          //  Thread.yield();
+            yieldThread();
+
         }
         // 能执行到这里，说明当前线程获取到了锁
         //  Print.tcfo("获取到了锁！！！");

@@ -267,4 +267,23 @@ public class ThreadUtil {
         }
     }
 
+    public static void yieldThread() {
+        // 老版本使用的是  Thread.yield();
+
+//         Thread.yield();
+
+        // yield只是对cpu调度器的一个提示,如果cpu调度器没有忽略这个提示,他会导致线程上下文的切换
+        //关键是：cpu调度器, 有可能忽略这个提示
+
+
+        try {
+
+            // “Thread.Sleep(0)作用,就是“触发操作系统立刻重新进行一次CPU竞争”。
+            // 竞争的结果也许是当前线程仍然获得CPU控制权,也许会换成别的线程获得CPU控制权。
+
+            Thread.sleep(0);
+        } catch (InterruptedException e) {
+            System.err.println( e.fillInStackTrace());
+        }
+    }
 }
