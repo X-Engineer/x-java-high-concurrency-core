@@ -16,15 +16,19 @@ public class PoolSheduler {
 
     @Test
     public void test() {
-        int num = 45;
-        System.out.print(num + "个任务执行耗时: ");
+        int n = 45;
+        System.out.print(n + "个任务执行耗时: ");
 
         long start = System.currentTimeMillis();
 
-        CountDownLatch latch = new CountDownLatch(num);
+        CountDownLatch latch = new CountDownLatch(n);
 
 
-        for (int i = 0; i < num; i++) {
+        // n个任务 并发执行
+        for (int i = 0; i < n; i++) {
+
+            //每一个任务 ，封装为一个 runnable， 提交到 pool
+            // 异步执行完成之后， 闭锁 做一次 countDown 操作
             executor.execute(() -> {
                 try {
                     Thread.sleep(500);
@@ -37,6 +41,7 @@ public class PoolSheduler {
 
         try {
             latch.await();
+            // 发起请求的 线程，等待 异步结果
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
