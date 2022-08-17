@@ -40,9 +40,9 @@ public class PoolSheduler {
         }
 
         try {
-            latch.await();
             // 发起请求的 线程，等待 异步结果
-        } catch (InterruptedException e) {
+            latch.await();
+         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
