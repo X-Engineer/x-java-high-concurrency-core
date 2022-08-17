@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class PoolSheduler {
 
+    ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 1,
+            TimeUnit.SECONDS, new LinkedBlockingDeque<>(30));
 
     @Test
     public void test() {
@@ -21,8 +23,6 @@ public class PoolSheduler {
 
         CountDownLatch latch = new CountDownLatch(num);
 
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(10, 20, 1,
-                TimeUnit.SECONDS, new LinkedBlockingDeque<>(30));
 
         for (int i = 0; i < num; i++) {
             executor.execute(() -> {
