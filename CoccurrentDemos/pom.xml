@@ -15,7 +15,10 @@
     </parent>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.crazymakercircle</groupId>
             <artifactId>chatCommon</artifactId>

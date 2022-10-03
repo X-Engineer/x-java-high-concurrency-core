@@ -131,6 +131,7 @@ public class DisruptorTaskScheduler {
                     event.setTarget(target);
                 }
             }, target);
+
             //lambda式写法，
             // ringBuffer.publishEvent((event, sequence, data) -> event.setMessage(data), message);
         }
