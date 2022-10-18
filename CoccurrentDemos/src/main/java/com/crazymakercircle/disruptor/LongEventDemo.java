@@ -1,6 +1,5 @@
 package com.crazymakercircle.disruptor;
 
-import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
