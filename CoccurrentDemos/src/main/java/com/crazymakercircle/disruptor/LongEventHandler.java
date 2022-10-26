@@ -1,5 +1,6 @@
 package com.crazymakercircle.disruptor;
 
+import com.crazymakercircle.util.Print;
 import com.lmax.disruptor.EventHandler;
 
 /**
@@ -9,6 +10,6 @@ import com.lmax.disruptor.EventHandler;
 class LongEventHandler implements EventHandler<LongEvent> {
     @Override
     public void onEvent(LongEvent longEvent, long l, boolean b) throws Exception {
-        System.out.println(longEvent.getValue());
+        Print.tcfo(longEvent.getValue());
     }
 }

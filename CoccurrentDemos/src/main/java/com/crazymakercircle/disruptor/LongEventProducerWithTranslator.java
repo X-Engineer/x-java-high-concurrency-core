@@ -1,5 +1,6 @@
 package com.crazymakercircle.disruptor;
 
+import com.crazymakercircle.util.Print;
 import com.lmax.disruptor.EventTranslatorOneArg;
 import com.lmax.disruptor.RingBuffer;
 
@@ -20,6 +21,8 @@ class LongEventProducerWithTranslator {
         }
 
         public void onData(Long data) {
+
+            Print.tcfo("生产一个数据：" + data);
             ringBuffer.publishEvent(TRANSLATOR, data);
         }
     }

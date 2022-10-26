@@ -21,6 +21,7 @@ public class FalseShareTest {
     @org.junit.Test
     public void testContendedDemo() {
         ContendedDemo contendedDemo = new ContendedDemo();
+
         String printable = ClassLayout.parseInstance(contendedDemo).toPrintable();
 
         Print.tcfo("printable = " + printable);

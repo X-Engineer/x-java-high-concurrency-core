@@ -1,14 +1,17 @@
 package com.crazymakercircle.falseShare;
 
+import sun.misc.Contended;
+
 public class CacheLineWithPadding implements SomeOneEntity {
 
     //模拟  disruptor 的 Sequence
 
-    protected volatile long p1, p2, p3, p4, p5, p6, p7;
+    protected  long p1, p2, p3, p4, p5, p6, p7;
 
+    @Contended
     public volatile long x = 1L;
 
-    protected volatile long p9, p10, p11, p12, p13, p14, p15;
+    protected  long p9, p10, p11, p12, p13, p14, p15;
 
 
     @Override

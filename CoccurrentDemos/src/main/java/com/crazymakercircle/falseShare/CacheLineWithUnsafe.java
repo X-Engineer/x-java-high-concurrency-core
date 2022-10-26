@@ -13,22 +13,32 @@ public class CacheLineWithUnsafe implements SomeOneEntity {
 
     protected  volatile long p9, p10, p11, p12, p13, p14, p15;
 
+
+
+
     private static final Unsafe UNSAFE;
-    private static final long VALUE_OFFSET;
+    private static final long X_VALUE_OFFSET;
 
     static {
         UNSAFE = Util.getUnsafe();
         try {
-            VALUE_OFFSET = UNSAFE.objectFieldOffset(CacheLineWithUnsafe.class.getDeclaredField("x"));
-        } catch (final Exception e) {
+            X_VALUE_OFFSET = UNSAFE.objectFieldOffset(CacheLineWithUnsafe.class.getDeclaredField("x"));
+           } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
     public void setValue(long value) {
-//        UNSAFE.putLongVolatile(this, VALUE_OFFSET, value);
-        UNSAFE.putOrderedLong(this, VALUE_OFFSET, value);
+//        UNSAFE.putLongVolatile(this, X_VALUE_OFFSET, value);
+
+        // 和平常写volatile比如  x=n;
+
+        UNSAFE.putOrderedLong(this, X_VALUE_OFFSET, value);
+
+        // 和平常非volatile比如  y=n;
+
     }
+
 
 }

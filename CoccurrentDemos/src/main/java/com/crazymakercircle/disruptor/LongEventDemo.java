@@ -13,8 +13,10 @@ public class LongEventDemo {
     public void testSimpleDisruptor() throws InterruptedException {
         // 消费者线程池
         Executor executor = Executors.newCachedThreadPool();
+
         // 事件工厂
         LongEventFactory eventFactory = new LongEventFactory();
+
         // 环形队列大小，2的指数
         int bufferSize = 1024;
 
@@ -23,6 +25,7 @@ public class LongEventDemo {
 
         // 连接 消费者 处理器
         disruptor.handleEventsWith(new LongEventHandler());
+//        disruptor.handleEventsWith(new LongEventHandler(),new LongEventHandler());
         // 开启 分裂者（事件分发）
         disruptor.start();
 

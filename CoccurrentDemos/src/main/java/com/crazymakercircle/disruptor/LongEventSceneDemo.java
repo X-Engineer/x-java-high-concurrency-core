@@ -2,14 +2,31 @@ package com.crazymakercircle.disruptor;
 
 import com.crazymakercircle.util.Print;
 import com.crazymakercircle.util.ThreadUtil;
+import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import net.openhft.affinity.AffinityStrategies;
+import net.openhft.affinity.AffinityThreadFactory;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+
+import static net.openhft.affinity.AffinityStrategies.DIFFERENT_CORE;
+import static net.openhft.affinity.AffinityStrategies.SAME_SOCKET;
 
 public class LongEventSceneDemo {
 
@@ -43,7 +60,8 @@ public class LongEventSceneDemo {
                 new YieldingWaitStrategy());
         // 连接 消费者 处理器
         // 可以使用lambda来注册一个EventHandler
-        disruptor.handleEventsWith(LongEventSceneDemo::handleEvent1,
+        disruptor.handleEventsWith(
+                LongEventSceneDemo::handleEvent1,
                 LongEventSceneDemo::handleEvent1, LongEventSceneDemo::handleEvent1);
         // 开启 分裂者（事件分发）
         disruptor.start();
@@ -189,7 +207,7 @@ public class LongEventSceneDemo {
         disruptor.handleEventsWith(LongEventSceneDemo::handleEvent1, LongEventSceneDemo::handleEvent2)
                 .then(LongEventSceneDemo::handleEvent3);
 
-        disruptor.handleEventsWithWorkerPool(new LongEventWorkHandler(), new LongEventWorkHandler());
+//        disruptor.handleEventsWithWorkerPool(new LongEventWorkHandler(), new LongEventWorkHandler());
 
         // 开启 分裂者（事件分发）
         disruptor.start();
@@ -225,6 +243,7 @@ public class LongEventSceneDemo {
         // 可以使用lambda来注册一个EventHandler
         disruptor.handleEventsWith(LongEventSceneDemo::handleEvent1)
                 .then(LongEventSceneDemo::handleEvent2);
+
         disruptor.handleEventsWith(LongEventSceneDemo::handleEvent3)
                 .then(LongEventSceneDemo::handleEvent4);
         // 开启 分裂者（事件分发）
@@ -315,7 +334,6 @@ public class LongEventSceneDemo {
     }
 
 
-
     @org.junit.Test
     public void testHexagonConsumerDisruptorWithMethodRef() throws InterruptedException {
         // 消费者线程池
@@ -336,10 +354,10 @@ public class LongEventSceneDemo {
         // 连接 消费者 处理器
         // 可以使用lambda来注册一个EventHandler
 
-        disruptor.handleEventsWith(consumer1,consumer2);
+        disruptor.handleEventsWith(consumer1, consumer2);
         disruptor.after(consumer1).handleEventsWith(consumer3);
         disruptor.after(consumer2).handleEventsWith(consumer4);
-        disruptor.after(consumer3,consumer4).handleEventsWith(consumer5);
+        disruptor.after(consumer3, consumer4).handleEventsWith(consumer5);
         // 开启 分裂者（事件分发）
         disruptor.start();
         // 获取环形队列，用于生产 事件
@@ -358,5 +376,47 @@ public class LongEventSceneDemo {
         thread.start();
         ThreadUtil.sleepSeconds(5);
     }
+
+
+    @org.junit.Test
+    public void testConsumerDisruptorWithAffinityThreadFactory() throws InterruptedException {
+
+
+        AffinityThreadFactory affinityThreadFactory = new AffinityThreadFactory("affinityWorker", DIFFERENT_CORE, SAME_SOCKET);
+
+        // 消费者线程池
+        // 环形队列大小，2的指数
+        int bufferSize = 1024;
+        // 构造  分裂者 （事件分发者）
+        Disruptor<LongEvent> disruptor = new Disruptor<LongEvent>(LongEvent::new, bufferSize,
+                affinityThreadFactory,
+                ProducerType.SINGLE,  //单个生产者
+                new BusySpinWaitStrategy());
+
+        EventHandler consumer1 = new LongEventHandlerWithName("consumer 1");
+        EventHandler consumer2 = new LongEventHandlerWithName("consumer 2");
+        // 连接 消费者 处理器
+        // 可以使用lambda来注册一个EventHandler
+
+        disruptor.handleEventsWith(consumer1, consumer2);
+        // 开启 分裂者（事件分发）
+        disruptor.start();
+        // 获取环形队列，用于生产 事件
+        RingBuffer<LongEvent> ringBuffer = disruptor.getRingBuffer();
+        //1生产者，并发生产数据
+        LongEventProducerWithTranslator producer = new LongEventProducerWithTranslator(ringBuffer);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                for (long i = 0; true; i++) {
+                    producer.onData(i);
+                    ThreadUtil.sleepSeconds(1);
+                }
+            }
+        };
+        thread.start();
+        ThreadUtil.sleepSeconds(Integer.MAX_VALUE);
+    }
+
 
 }
