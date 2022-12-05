@@ -1,6 +1,7 @@
 package com.crazymakercircle.cache;
 
 import com.crazymakercircle.util.Logger;
+import com.crazymakercircle.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -38,6 +39,8 @@ public class LruDemo {
         Logger.cfo(cache.get(1));        // 返回 -1 (未找到)
         Logger.cfo(cache.get(3));        // 返回  3
         Logger.cfo(cache.get(4));        // 返回  4
+
+        ThreadUtil.sleepSeconds(10);
     }
 
     
@@ -167,10 +170,10 @@ public class LruDemo {
          * 把节点添加到尾部
          */
         private void addToBack(Entry node) {
-            head.after.before = node;
-            node.after = head.after;
-            head.after = node;
-            node.before = head;
-        }
+            tail.before.after = node;
+            node.before = tail.before;
+            tail.before = node;
+            node.after=tail;
+         }
     }
 }
