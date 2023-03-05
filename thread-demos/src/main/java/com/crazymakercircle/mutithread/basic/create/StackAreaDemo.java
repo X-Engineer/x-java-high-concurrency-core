@@ -3,7 +3,7 @@ package com.crazymakercircle.mutithread.basic.create;
 import com.crazymakercircle.util.Print;
 
 public class StackAreaDemo {
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Print.cfo("当前线程名称：" + Thread.currentThread().getName());
         Print.cfo("当前线程ID：" + Thread.currentThread().getId());
         Print.cfo("当前线程状态：" + Thread.currentThread().getState());

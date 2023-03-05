@@ -5,6 +5,7 @@ import com.crazymakercircle.util.Print;
 import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
 
 /**
+ * 通过继承 Thread 类创建多线程
  * Created by 尼恩@疯狂创客圈.
  */
 
@@ -25,6 +26,7 @@ public class CreateDemo {
             super("Mall-" + threadNo++);
         }
 
+        @Override
         public void run() {
             for (int i = 1; i < MAX_TURN; i++) {
                 Print.cfo(getName() + ", 轮次：" + i);
@@ -34,7 +36,7 @@ public class CreateDemo {
     }
 
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Thread thread = null;
         //方法一：使用Thread子类创建和启动线程
         for (int i = 0; i < 2; i++) {
