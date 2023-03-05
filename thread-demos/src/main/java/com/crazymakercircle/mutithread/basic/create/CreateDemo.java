@@ -15,6 +15,10 @@ public class CreateDemo {
 
     static int threadNo = 1;
 
+    /**
+     * 这里为什么要将DemoThread设计成静态内部类呢？主要是为了方便访问外部类的成员属性和方法，和线程的使用没有任何关系。
+     * 如果将DemoThread设计成外部类，最终的执行结果是一样的。
+     */
     static class DemoThread extends Thread {
 
         public DemoThread() {

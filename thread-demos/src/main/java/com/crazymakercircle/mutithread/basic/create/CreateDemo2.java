@@ -19,6 +19,11 @@ public class CreateDemo2 {
         public void run()  //② 在这些写业务逻辑
         {
             for (int j = 1; j < MAX_TURN; j++) {
+                /**
+                 * run()方法实现版本中在获取当前线程的名称时，所用的方法是在外部类ThreadUtil中定义的getCurThreadName()静态方法，而不是Thread类的getName()实例方法。
+                 * 原因是：这个RunTarget内部类和Thread类不再是继承关系，无法直接调用Thread类的任何实例方法。通过实现Runnable接口的方式创建的执行目标类，
+                 * 如果需要访问线程的任何属性和方法，必须通过Thread.currentThread()获取当前的线程对象，通过当前线程对象间接访问。
+                 */
                 Print.cfo(getCurThreadName() + ", 轮次：" + j);
             }
 
