@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 import static com.crazymakercircle.util.ThreadUtil.*;
 
 /**
+ * 通过线程池创建线程
  * Created by 尼恩@疯狂创客圈.
  */
 
@@ -19,13 +20,10 @@ public class CreateDemo4 {
 
         pool.execute(new DemoThread()); //执行线程实例
         //执行Runnable执行目标实例
-        pool.execute(new Runnable() {
-            @Override
-            public void run() {
-                for (int j = 1; j < MAX_TURN; j++) {
-                    Print.cfo(getCurThreadName() + ", 轮次：" + j);
-                    sleepMilliSeconds(10);
-                }
+        pool.execute(() -> {
+            for (int j = 1; j < MAX_TURN; j++) {
+                Print.cfo(getCurThreadName() + ", 轮次：" + j);
+                sleepMilliSeconds(10);
             }
         });
         //提交Callable 执行目标实例
@@ -57,6 +55,7 @@ public class CreateDemo4 {
 
     static class ReturnableTask implements Callable<Long> {
         //返回并发执行的时间
+        @Override
         public Long call() throws Exception {
             long startTime = System.currentTimeMillis();
             Print.cfo(getCurThreadName() + " 线程运行开始.");

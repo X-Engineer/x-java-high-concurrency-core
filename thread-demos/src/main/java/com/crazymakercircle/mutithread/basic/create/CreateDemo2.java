@@ -5,6 +5,7 @@ import com.crazymakercircle.util.Print;
 import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
 
 /**
+ * 实现Runnable接口创建线程目标类
  * Created by 尼恩@疯狂创客圈.
  */
 
@@ -16,6 +17,7 @@ public class CreateDemo2 {
 
     static class RunTarget implements Runnable  //① 实现Runnable接口
     {
+        @Override
         public void run()  //② 在这些写业务逻辑
         {
             for (int j = 1; j < MAX_TURN; j++) {
@@ -31,7 +33,7 @@ public class CreateDemo2 {
         }
     }
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         Thread thread = null;
 
         //方法2.1：使用实现Runnable的实现类创建和启动线程

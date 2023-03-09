@@ -6,11 +6,13 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
 /**
+ * 线程状态的简单演示案例
  * Created by 尼恩@疯狂创客圈.
  */
 
@@ -58,7 +60,7 @@ public class StatusDemo {
         }
     }
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
 
         addStatusThread(Thread.currentThread());
 

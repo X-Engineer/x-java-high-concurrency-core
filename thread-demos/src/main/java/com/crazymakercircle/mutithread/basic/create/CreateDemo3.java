@@ -9,17 +9,18 @@ import java.util.concurrent.FutureTask;
 import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
 
 /**
+ * 使用Callable和FutureTask创建线程
  * Created by 尼恩@疯狂创客圈.
  */
-
+// 省略import
 public class CreateDemo3 {
-
     public static final int MAX_TURN = 5;
     public static final int COMPUTE_TIMES = 100000000;
 
-
+    //①创建一个 Callable 接口的实现类
     static class ReturnableTask implements Callable<Long> {
-        //返回并发执行的时间
+        //②编写好异步执行的具体逻辑，可以有返回值
+        @Override
         public Long call() throws Exception {
             long startTime = System.currentTimeMillis();
             Print.cfo(getCurThreadName() + " 线程运行开始.");
@@ -34,12 +35,11 @@ public class CreateDemo3 {
         }
     }
 
-    public static void main(String args[]) throws InterruptedException {
-        ReturnableTask task = new ReturnableTask();
-        FutureTask<Long> futureTask = new FutureTask<Long>(task);
-        Thread thread = new Thread(futureTask, "returnableThread");
-        thread.start();
-
+    public static void main(String[] args) throws InterruptedException {
+        ReturnableTask task = new ReturnableTask();//③
+        FutureTask<Long> futureTask = new FutureTask<>(task);//④
+        Thread thread = new Thread(futureTask, "returnableThread");//⑤
+        thread.start();//⑥
         Thread.sleep(500);
         Print.cfo(getCurThreadName() + " 让子弹飞一会儿.");
         Print.cfo(getCurThreadName() + " 做一点自己的事情.");
@@ -48,9 +48,9 @@ public class CreateDemo3 {
         }
 
         Print.cfo(getCurThreadName() + " 获取并发任务的执行结果.");
-
         try {
-            Print.cfo(thread.getName() + "线程占用时间：" + futureTask.get());
+            Print.cfo(thread.getName() + "线程占用时间："
+                    + futureTask.get());//⑦
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
