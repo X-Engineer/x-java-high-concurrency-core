@@ -6,6 +6,10 @@ import com.crazymakercircle.util.Print;
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
+/**
+ * 线程名称操作实例
+ */
+
 public class ThreadNameDemo {
     private static final int MAX_TURN = 3;
 
@@ -19,7 +23,7 @@ public class ThreadNameDemo {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         RunTarget target = new RunTarget();    // 实例化Runnable异步执行目标类
         new Thread(target).start();        // 系统自动设置线程名称
         new Thread(target).start();        // 系统自动命令线程名称

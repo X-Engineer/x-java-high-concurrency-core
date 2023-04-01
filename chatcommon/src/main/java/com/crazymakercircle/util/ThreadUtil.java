@@ -281,8 +281,8 @@ public class ThreadUtil {
         //yield() 只是给CPU提醒该线程愿意暂时释放CPU资源，CPU资源不紧张的时候，会忽略掉这个提醒；若CPU没有忽略掉这个提醒，它会导致线程的应用上下文的切换；
         //sleep() 会导致线程的阻塞（block），会在给定的时间内释放CPU资源；
         //yield() 会导致RUNNING状态的线程进入 RUNNABLE (如果CPU没有忽略掉这个提醒);
-        //sleep() 方法会百分之百的执行让线程暂停指定的时间，但 yiled() 方法的时候收到 CPU 资源的影响，并不会百分百的发生；
-        //一个线程sleep()另一个线程调用 interrupte 会捕捉到中断的信号，而yield不会;
+        //sleep() 方法会百分之百的执行让线程暂停指定的时间，但 yield() 方法的时候受到 CPU 资源的影响，并不会百分百的发生；
+        //一个线程sleep()，另一个线程调用 interrupt 会捕捉到中断的信号，而yield不会;
 
 
         try {
