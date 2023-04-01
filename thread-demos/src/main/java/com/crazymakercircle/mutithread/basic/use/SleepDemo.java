@@ -8,6 +8,9 @@ import static com.crazymakercircle.util.JvmUtil.getProcessID;
 import static com.crazymakercircle.util.ThreadUtil.getCurThreadName;
 
 /**
+ * 线程的 sleep 操作
+ * sleep的作用是让目前正在执行的线程休眠，让CPU去执行其他的任务。从线程状态来说，就是从执行状态变成限时阻塞状态。Sleep()方法定义在Thread类中，是一组静态方法
+ * sleep()方法会有InterruptException受检异常抛出，如果调用了sleep()方法，就必须进行异常审查，捕获InterruptedException异常，或者再次通过方法声明存在InterruptedException异常。
  * Created by 尼恩@疯狂创客圈.
  */
 
@@ -40,7 +43,7 @@ public class SleepDemo {
 
     }
 
-    public static void main(String args[]) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
         for (int i = 0; i < 5; i++) {
             Thread thread = new SleepThread();
             thread.start();

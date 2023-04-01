@@ -11,7 +11,7 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 import static com.crazymakercircle.util.ThreadUtil.yieldThread;
 
 public class YieldDemo {
-    public static final int MAX_TURN = 100;//执行次数
+    public static final int MAX_TURN = 1000;//执行次数
     public static AtomicInteger index = new AtomicInteger(0);//执行编号
 
     // 记录线程的执行次数
@@ -60,5 +60,13 @@ public class YieldDemo {
         thread1.start();
         thread2.start();
         sleepSeconds(100);
+        /**
+         *  [YieldThread-1]：metric = {YieldThread-1=686, YieldThread-2=314}
+         *  [YieldThread-1]：YieldThread-1 运行结束.
+         *  [YieldThread-2]：metric = {YieldThread-1=686, YieldThread-2=314}
+         * 从输出的结果可以看出，优先级高的YieldThread-1执行的次数比优先级低的YieldThread-2执行的次数多很多。
+         * 得到的结论是：线程调用yield之后，操作系统在重新进行线程调度时偏向于将执行机会让给优先级较高的线程。
+         */
+
     }
 }
