@@ -10,6 +10,10 @@ import static com.crazymakercircle.util.ThreadUtil.sleepSeconds;
 
 /**
  * Created by 尼恩@疯狂创客圈.
+ * 由于ThreadLocal使用不当会导致严重的内存泄漏问题，所以为了更好地避免内存泄漏问题的发生，我们使用ThreadLocal时遵守以下两个原则：
+ * （1）尽量使用private static final修饰ThreadLocal实例。使用private与final修饰符主要是为了尽可能不让他人修改、变更ThreadLocal变量的引用，使用static修饰符主要是为了确保ThreadLocal实例的全局唯一。
+ * （2）ThreadLocal使用完成之后务必调用remove()方法。这是简单、有效地避免ThreadLocal引发内存泄漏问题的方法。
+ * 使用ThreadLocal能实现每个线程都有一份变量的本地值，其原因是每个线程都有自己独立的ThreadLocalMap空间，本质上属于以空间换时间的设计思路，该设计思路属于另一种意义的“无锁编程”。
  */
 public class ThreadLocalTest2 {
     /**
