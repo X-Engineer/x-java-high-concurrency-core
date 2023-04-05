@@ -32,7 +32,7 @@ public class ThreadLocalTest {
     }
 
     //定义线程本地变量
-    private static final ThreadLocal<Foo> LOCAL_FOO = new ThreadLocal<Foo>();
+    private static final ThreadLocal<Foo> LOCAL_FOO = new ThreadLocal<>();
 
     @Test
     public void testThreadLocal() throws InterruptedException {
@@ -111,11 +111,16 @@ public class ThreadLocalTest {
         }
     }
 
+    /**
+     * 如果希望从线程本地变量获取到初始值，而且不想采用以上的“判空后设值”这种相对烦琐的方式，
+     * 可以调用ThreadLocal.withInitial(…)静态工厂方法，在定义ThreadLocal对象时设置一个获取初始值的回调函数
+     */
     public ThreadLocal<String> local = ThreadLocal.withInitial(() -> "foo");
 
     @Test
     public void testFinalThreadLocal() {
         //设置本地变量的值
+        Logger.fo("local:" + local.get());
         local.set("bar");
         Logger.fo("local:" + local.get());
         funcB();
@@ -182,10 +187,11 @@ public class ThreadLocalTest {
         //函数末尾
     }
 
-    private static final Foo SF_FOO = new Foo();
+    private  Foo SF_FOO ;
 
     @Test
     public void testWeakReference3() {
+        SF_FOO = new Foo();
         WeakReference<Foo> weakReference = new WeakReferenceFoo(SF_FOO);
         System.gc(); // 垃圾回收，释放弱引用的内存
         if (weakReference.get() != null) {
