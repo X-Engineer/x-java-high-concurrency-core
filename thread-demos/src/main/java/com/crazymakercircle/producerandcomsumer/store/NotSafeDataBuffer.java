@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //共享数据区，类定义
+
+/**
+ * 不安全的数据区
+ * @param <T>
+ */
 class NotSafeDataBuffer<T> {
     public static final int MAX_AMOUNT = 10;
     private List<T> dataList = new LinkedList<>();

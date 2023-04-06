@@ -9,6 +9,8 @@ import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
 /**
  * 消费者任务的定义
+ * 生产者-消费者模式在本书中有多个不同版本的实现，这些版本的区别在于数据缓冲区（DataBuffer）类以及相应的生产、消费动作（Action）不同，而生产者类、消费者类的执行逻辑是相同的。“分离变与不变”是软件设计的一个基本原则。
+ * 现在将生产者类、消费者类与具体的生产、消费动作解耦，从而使得生产者类、消费者类的代码在后续可以复用。
  * Created by 尼恩@疯狂创客圈.
  */
 public class Consumer implements Runnable {
