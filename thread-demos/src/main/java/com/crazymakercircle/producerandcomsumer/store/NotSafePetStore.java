@@ -11,6 +11,10 @@ import java.util.concurrent.Executors;
 
 /**
  * Created by 尼恩@疯狂创客圈.
+ * 在向数据缓冲区进行元素的增加或者提取时，多个线程在并发执行对amount、dataList两个成员操作时次序已经混乱，导致出现数据不一致和线程安全问题
+ * （1）数据缓冲区静态实例。以元素类型为IGoods，定义了一个不安全的NotSafeDataBuffer数据缓冲区实例。
+ * （2）生产者动作静态实例。这是一个Callable<IGoods>类型的匿名对象，其具体的动作为：首先调用Goods.produceOne()产生一个随机的商品，然后通过调用notSafeDataBuffer.add()方法将这个随机商品加入数据缓冲区实例中，完成生产者的动作。
+ * （3）消费者动作静态实例。这也是一个Callable<IGoods>类型的匿名对象，其具体的动作为：调用notSafeDataBuffer.fetch()方法从数据区取出一个商品，完成消费者的动作。
  */
 public class NotSafePetStore {
     //共享数据区，实例对象
