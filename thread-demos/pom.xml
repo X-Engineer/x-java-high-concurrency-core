@@ -15,6 +15,11 @@
     </parent>
 
     <dependencies>
+        <!--
+        OpenJDK提供的JOL（Java Object Layout）包是一个非常好的工具，
+        可以帮我们在运行时计算某个对象的大小。JOL是分析JVM中对象的结构布局的工具，
+        该工具大量使用了Unsafe、JVMTI来解码内部布局情况，它的分析结果相对比较精准。
+        -->
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>

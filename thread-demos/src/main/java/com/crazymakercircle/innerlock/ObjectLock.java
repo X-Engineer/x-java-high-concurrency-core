@@ -2,10 +2,28 @@ package com.crazymakercircle.innerlock;
 
 import com.crazymakercircle.util.ByteUtil;
 import com.crazymakercircle.util.Print;
+import org.junit.Test;
 import org.openjdk.jol.info.ClassLayout;
 
+import java.util.Arrays;
+
 /**
- * Created by 尼恩@疯狂创客圈.
+ * Java 对象结构与内置锁
+ * Java内置锁的很多重要信息都存放在对象结构中。作为铺垫，在介绍Java内置锁之前，先为大家介绍一下Java对象结构。
+ * Java对象（Object实例）结构包括三部分：对象头、对象体和对齐字节。
+ * 对象头包括三个字段：
+ * - 第一个字段叫作Mark Word（标记字），用于存储自身运行时的数据，例如GC标志位、哈希码、锁状态等信息。
+ * - 第二个字段叫作Class Pointer（类对象指针），用于存放方法区Class对象的地址，虚拟机通过这个指针来确定这个对象是哪个类的实例。
+ * - 第三个字段叫作Array Length（数组长度）。如果对象是一个Java数组，那么此字段必须有，用于记录数组长度的数据；如果对象不是一个Java数组，那么此字段不存在，所以这是一个可选字段。
+ * 对象体：
+ * 对象体包含对象的实例变量（成员变量），用于成员属性值，包括父类的成员属性值。这部分内存按4字节对齐。
+ * 对齐字段：
+ * 对齐字节也叫作填充对齐，其作用是用来保证Java对象所占内存字节数为8的倍数HotSpot VM的内存管理要求对象起始地址必须是8字节的整数倍。对象头本身是8的倍数，当对象的实例变量数据不是8的倍数时，便需要填充数据来保证8字节的对齐。
+ *
+ * 使用 JOL 工具查看对象的布局
+ * OpenJDK提供的JOL（Java Object Layout）包是一个非常好的工具，可以帮我们在运行时计算某个对象的大小。
+ * JOL是分析JVM中对象的结构布局的工具，该工具大量使用了Unsafe、JVMTI来解码内部布局情况，它的分析结果相对比较精准。
+ *
  */
 public class ObjectLock {
     private Integer amount = 0;
@@ -60,7 +78,7 @@ public class ObjectLock {
 
         //转成小端模式的字节数组
         byte[] hashCode_LE = ByteUtil.int2Bytes_LE(hashCode);
-
+        System.out.println("hashCode_LE:"+ Arrays.toString(hashCode_LE));
         //转成十六进制形式的字符串
         return ByteUtil.byteToHex(hashCode_LE);
     }
