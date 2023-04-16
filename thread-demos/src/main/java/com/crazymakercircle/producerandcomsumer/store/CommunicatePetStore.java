@@ -14,7 +14,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by 尼恩@疯狂创客圈.
+ * 为了避免空轮询导致CPU时间片浪费，提高生产者-消费者实现版本的性能，接下来演示使用“等待-通知”的方式在生产者与消费者之间进行线程间通信。
+ * 此实现版本大致需要定义以下三个同步对象：
+ * （1）LOCK_OBJECT：用于临界区同步，临界区资源为数据缓冲区的dataList变量和amount变量。
+ * （2）NOT_FULL：用于数据缓冲区的未满条件等待和通知。生产者在添加元素前需要判断数据区是否已满，如果是，生产者就进入NOT_FULL的同步区等待被通知，只要消费者消耗一个元素，数据区就是未满的，进入NOT_FULL的同步区发送通知。
+ * （3）NOT_EMPTY：用于数据缓冲区的非空条件等待和通知。消费者在消耗元素前需要判断数据区是否已空，如果是，消费者就进入NOT_EMPTY的同步区等待被通知，只要生产者添加一个元素，数据区就是非空的，生产者会进入NOT_EMPTY的同步区发送通知。
+ *
+ * 调用wait()和notify()系列方法进行线程通信的要点如下：
+ * （1）调用某个同步对象locko的wait()和notify()类型方法前，必须要取得这个锁对象的监视锁，所以wait()和notify()类型方法必须放在synchronized(locko)同步块中，如果没有获得监视锁，JVM就会报IllegalMonitorStateException异常。
+ * （2）调用wait()方法时使用while进行条件判断，如果是在某种条件下进行等待，对条件的判断就不能使用if语句做一次性判断，而是使用while循环进行反复判断。只有这样才能在线程被唤醒后继续检查wait的条件，并在条件没有满足的情况下继续等待。
  */
 public class CommunicatePetStore {
 
