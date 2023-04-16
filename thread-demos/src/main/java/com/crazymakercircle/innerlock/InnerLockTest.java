@@ -277,7 +277,81 @@ public class InnerLockTest {
 
     }
 
-    @org.junit.Test
+    /**
+     * 在JVM中，每个对象都关联一个监视器，这里的对象包含Object实例和Class实例。监视器是一个同步工具，相当于一个许可证，拿到许可证的线程即可进入临界区进行操作，没有拿到则需要阻塞等待。重量级锁通过监视器的方式保障了任何时间只允许一个线程通过受到监视器保护的临界区代码。
+     * VM中每个对象都会有一个监视器，监视器和对象一起创建、销毁。监视器相当于一个用来监视这些线程进入的特殊房间，其义务是保证（同一时间）只有一个线程可以访问被保护的临界区代码块。
+     * 本质上，监视器是一种同步工具，也可以说是一种同步机制，主要特点是：
+     * （1）同步。监视器所保护的临界区代码是互斥地执行的。一个监视器是一个运行许可，任一线程进入临界区代码都需要获得这个许可，离开时把许可归还。
+     * （2）协作。监视器提供Signal机制，允许正持有许可的线程暂时放弃许可进入阻塞等待状态，等待其他线程发送Signal去唤醒；其他拥有许可的线程可以发送Signal，唤醒正在阻塞等待的线程，让它可以重新获得许可并启动执行。
+     *
+     * 在Hotspot虚拟机中，监视器是由C++类ObjectMonitor实现的。
+     * ObjectMonitor的Owner（_owner）、WaitSet（_WaitSet）、Cxq（_cxq）、EntryList（_EntryList）这几个属性比较关键。
+     * ObjectMonitor的WaitSet、Cxq、EntryList这三个队列存放抢夺重量级锁的线程，而ObjectMonitor的Owner所指向的线程即为获得锁的线程。
+     * Cxq、EntryList、WaitSet这三个队列的说明如下：
+     * （1）Cxq：竞争队列（Contention Queue），所有请求锁的线程首先被放在这个竞争队列中。
+     * （2）EntryList：Cxq中那些有资格成为候选资源的线程被移动到EntryList中。
+     * （3）WaitSet：某个拥有ObjectMonitor的线程在调用Object.wait()方法之后将被阻塞，然后该线程将被放置在WaitSet链表中。
+     *
+     * 重量级锁的演示案例
+     * 在程序启动运行5秒之后，ObjectLock的锁状态为偏向锁，在程序运行的第二个阶段有一个线程占有锁，此时的ObjectLock实例的锁状态仍然为偏向锁
+     * 在程序运行的第三个阶段开启了两个线程去抢占锁：
+     * 此时ObjectLock实例的锁状态已经膨胀为轻量级锁，其lock标记为00。
+     * 第二个抢锁线程比第一个抢锁线程晚启动100毫秒，此时ObjectLock实例的锁状态已经从轻量级锁膨胀为重量级锁，其lock标记为10，说明此时存在激烈的锁争用
+     *
+     *
+     * [main|InnerLockTest.showHeavyweightLock]：抢占锁前, counter 的状态:
+     * [main] INFO com.crazymakercircle.threadpool.SeqOrScheduledTargetThreadPoolLazyHolder - 线程池已经初始化
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           05 00 00 00 (00000101 00000000 00000000 00000000) (5)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         0
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [Thread-0|InnerLockTest.lambda$showHeavyweightLock$3]：第一个线程占有锁, counter 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           05 38 c0 2f (00000101 00111000 11000000 00101111) (801126405)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         1
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [抢锁线程1|InnerLockTest.lambda$showHeavyweightLock$4]：占有锁, counter 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           88 ed dd 30 (10001000 11101101 11011101 00110000) (819850632)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         1001
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [抢锁线程2|InnerLockTest.lambda$showHeavyweightLock$4]：占有锁, counter 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           ca 84 c8 2a (11001010 10000100 11001000 00101010) (717784266)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         1079
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [main|InnerLockTest.showHeavyweightLock]：释放锁后, counter 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         3000
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     * @throws InterruptedException
+     */
+    @Test
     public void showHeavyweightLock() throws InterruptedException {
 
         Print.tcfo(VM.current().details());
