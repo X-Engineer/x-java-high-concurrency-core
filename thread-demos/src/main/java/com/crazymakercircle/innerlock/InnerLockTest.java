@@ -154,7 +154,64 @@ public class InnerLockTest {
 
     }
 
-    @org.junit.Test
+    /**
+     * 轻量级锁的演示案例
+     *
+     * 轻量级锁主要有两种：普通自旋锁和自适应自旋锁。
+     * 轻量级锁也被称为非阻塞同步、乐观锁，因为这个过程并没有把线程阻塞挂起，而是让线程空循环等待。
+     * - 所谓普通自旋锁，就是指当有线程来竞争锁时，抢锁线程会在原地循环等待，而不是被阻塞，直到那个占有锁的线程释放锁之后，这个抢锁线程才可以获得锁。
+     * - 所谓自适应自旋锁，就是等待线程空循环的自旋次数并非是固定的，而是会动态地根据实际情况来改变自旋等待的次数，自旋次数由前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定，总的思想是：根据上一次自旋的时间与结果调整下一次自旋的时间。
+     *
+     * 轻量级锁的问题在哪里呢？虽然大部分临界区代码的执行时间都是很短的，但是也会存在执行得很慢的临界区代码。临界区代码执行耗时较长，在其执行期间，其他线程都在原地自旋等待，会空消耗CPU。因此，如果竞争这个同步锁的线程很多，就会有多个线程在原地等待继续空循环消耗CPU（空自旋），这会带来很大的性能损耗。
+     * 轻量级锁的本意是为了减少多线程进入操作系统底层的互斥锁（Mutex Lock）的概率，并不是要替代操作系统互斥锁。所以，在争用激烈的场景下，轻量级锁会膨胀为基于操作系统内核互斥锁实现的重量级锁。
+     * @throws InterruptedException
+     *
+     * - 程序启动运行5秒之后，ObjectLock实例的锁状态为偏向锁
+     * - 现在执行第一个抢锁线程，在抢占完成之后，ObjectLock实例的锁状态还是为偏向锁，只不过ObjectLock实例的Mark Word记录了第一个抢占线程的ID
+     * - 接着开始第二个抢锁线程，在第二个线程抢锁成功之后，ObjectLock实例的锁状态为轻量级锁，ObjectLock实例Mark Word的lock标记位改为00（轻量级锁标志），其ptr_to_lock_record（锁记录指针）更新为抢锁线程栈帧中锁记录的地址，此时的锁为轻量级锁
+     * - 轻量级锁被释放之后，ObjectLock实例变成无锁状态，其lock标记位改为01（无锁标志）
+     *
+     * [main|InnerLockTest.showLightweightLock]：抢占锁前, lock 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           05 00 00 00 (00000101 00000000 00000000 00000000) (5)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         0
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [Thread-0|InnerLockTest.lambda$showLightweightLock$1]：第一个线程占有锁, lock 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           05 e8 8b 2c (00000101 11101000 10001011 00101100) (747366405)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         2
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [Thread-1|InnerLockTest.lambda$showLightweightLock$2]：第二个线程占有锁, lock 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           98 ef ed 30 (10011000 11101111 11101101 00110000) (820899736)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         1501
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     *
+     * [main|InnerLockTest.showLightweightLock]：释放锁后, lock 的状态:
+     * [ObjectLock.printObjectStruct]：lock = com.crazymakercircle.innerlock.ObjectLock object internals:
+     *  OFFSET  SIZE                TYPE DESCRIPTION                               VALUE
+     *       0     4                     (object header)                           01 00 00 00 (00000001 00000000 00000000 00000000) (1)
+     *       4     4                     (object header)                           00 00 00 00 (00000000 00000000 00000000 00000000) (0)
+     *       8     4                     (object header)                           5b 0f 01 f8 (01011011 00001111 00000001 11111000) (-134148261)
+     *      12     4   java.lang.Integer ObjectLock.amount                         2000
+     * Instance size: 16 bytes
+     * Space losses: 0 bytes internal + 0 bytes external = 0 bytes total
+     */
+    @Test
     public void showLightweightLock() throws InterruptedException {
 
         Print.tcfo(VM.current().details());
