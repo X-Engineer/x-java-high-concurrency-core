@@ -10,6 +10,14 @@ import sun.misc.Unsafe;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 这里使用CAS无锁编程算法实现一个轻量级的安全自增实现版本：
+ * 总计10个线程并行运行，每个线程通过CAS自旋对一个共享数据进行自增运算，并且每个线程需要成功自增运算1000次。
+ *
+ * 从输出结果可以看出，调用Unsafe.objectFieldOffset(…)方法所获取到的value属性的偏移量为12。
+ * 其实通过 JOL 输出的结果可以看出，一个TestCompareAndSwap对象的Object Header占用了12字节，
+ * 而value属性的内存位置紧挨在Object Header之后，所以value属性的相对偏移量值为12。
+ */
 public class TestCompareAndSwap {
     // 模拟CAS 算法
     static class OptimisticLockingPlus {

@@ -8,7 +8,12 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 
-
+/**
+ * Jvm 工具类
+ * - 获取 JVM 运行实例的 ID
+ * - 获得当前线程的名字
+ * - 获得 Unsafe 类的实例
+ */
 public class JvmUtil {
 
     public static final int getProcessID() {
@@ -63,6 +68,11 @@ public class JvmUtil {
         return sb.toString();
     }
 
+    /**
+     * 我们无法在外部对Unsafe进行实例化，那么怎么获取Unsafe的实例呢？可以通过反射的方式自定义地获取Unsafe实例
+     *
+     * @return
+     */
     public static Unsafe getUnsafe() {
         try {
             Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
