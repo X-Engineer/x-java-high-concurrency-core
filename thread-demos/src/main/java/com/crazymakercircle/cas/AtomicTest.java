@@ -10,10 +10,37 @@ import java.util.concurrent.atomic.*;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
+/**
+ * Atomic操作翻译成中文是指一个不可中断的操作，即使在多个线程一起执行Atomic类型操作的时候，一个操作一旦开始，就不会被其他线程中断。所谓Atomic类，指的是具有原子操作特征的类。
+ * 根据操作的目标数据类型，可以将JUC包中的原子类分为4类：基本原子类、数组原子类、原子引用类和字段更新原子类。
+ * - 基本原子类的功能是通过原子方式更新Java基础类型变量的值
+ * - 数组原子类的功能是通过原子方式更数组中的某个元素的值
+ * - 引用原子类主要包括以下三个：
+ *   ● AtomicReference：引用类型原子类
+ *   ● AtomicMarkableReference：带有更新标记位的原子引用类型，可以解决使用AtomicBoolean进行原子更新时可能出现的ABA问题
+ *   ● AtomicStampedReference：带有更新版本号的原子引用类型，可以解决使用AtomicInteger进行原子更新时可能出现的ABA问题
+ * - 字段更新原子类，主要包括：
+ *    ● AtomicIntegerFieldUpdater：原子更新整型字段的更新器
+ *    ● AtomicLongFieldUpdater：原子更新长整型字段的更新器
+ *    ● AtomicReferenceFieldUpdater：原子更新引用类型中的字段
+ *
+ * 基础原子类（以AtomicInteger为例）主要通过CAS自旋+volatile的方案实现，既保障了变量操作的线程安全性，又避免了synchronized重量级锁的高开销，使得Java程序的执行效率大为提升。
+ * AtomicInteger源码中的主要方法都是通过CAS自旋实现的。CAS自旋的主要操作为：如果一次CAS操作失败，获取最新的value值后，再次进行CAS操作，直到成功。
+ * 另外，AtomicInteger所包装的内部value成员是一个使用关键字volatile修饰的内部成员。关键字volatile的原理比较复杂，简单地说，该关键字可以保证任何线程在任何时刻总能拿到该变量的最新值，其目的在于保障变量值的线程可见性。
+ */
 public class AtomicTest {
 
     private static final int THREAD_COUNT = 10;
 
+    /**
+     * 基础原子类AtomicInteger常用的方法如下:
+     *    public final int get() //获取当前的值
+     *    public final int getAndSet(int newValue)               //获取当前的值，然后设置新的值
+     *    public final int getAndIncrement()                             //获取当前的值，然后自增
+     *    public final int getAndDecrement()                             //获取当前的值，然后自减
+     *    public final int getAndAdd(int delta)                  //获取当前的值，并加上预期的值
+     *    boolean compareAndSet(int expect, int update)  //通过CAS方式设置整数值
+     */
     @Test
     public void atomicIntegerTest() {
         int temvalue = 0;
@@ -41,6 +68,11 @@ public class AtomicTest {
         Print.fo("flag:" + flag + ";  i:" + i.get());//flag:true;  i:100
     }
 
+    /**
+     * 在多线程环境下，如果涉及基本数据类型的并发操作，不建议采用synchronized重量级锁进行线程同步，而是建议优先使用基础原子类保障并发操作的线程安全性
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(THREAD_COUNT);
         //定义一个整数原子类实例，赋值到变量 i
@@ -62,6 +94,30 @@ public class AtomicTest {
         Print.tco("累加之和：" + atomicInteger.get());
     }
 
+    /**
+     * 数组原子类AtomicIntegerArray的使用示例
+     * //获取 index=i 位置元素的值
+     * public final int get(int i)
+     *
+     * //返回 index=i 位置当前的值，并将其设置为新值：newValue
+     * public final int getAndSet(int i, int newValue)
+     *
+     * //获取 index=i 位置元素的值，并让该位置的元素自增
+     * public final int getAndIncrement(int i)
+     *
+     * //获取 index=i 位置元素的值，并让该位置的元素自减
+     * public final int getAndDecrement(int i)
+     *
+     * //获取 index=i 位置元素的值，并加上预期的值
+     * public final int getAndAdd(int delta)
+     *
+     * //如果输入的数值等于预期值，就以原子方式将位置i的元素值设置为输入值（update）
+     * boolean compareAndSet(int expect, int update)
+     *
+     * //最终将位置i的元素设置为newValue
+     * //lazySet()方法可能导致其他线程在之后的一小段时间内还是可以读到旧的值
+     * public final void lazySet(int i, int newValue)
+     */
     @Test
     public void testAtomicIntegerArray() {
         int tempvalue = 0;
