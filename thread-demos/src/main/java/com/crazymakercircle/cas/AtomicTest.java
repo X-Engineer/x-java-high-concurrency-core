@@ -6,7 +6,12 @@ import com.crazymakercircle.util.ThreadUtil;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicMarkableReference;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicStampedReference;
 
 import static com.crazymakercircle.util.ThreadUtil.sleepMilliSeconds;
 
@@ -264,10 +269,18 @@ public class AtomicTest {
         return markHolder[0];
     }
 
+    /**
+     * 基础的原子类型只能保证一个变量的原子操作，当需要对多个变量进行操作时，CAS无法保证原子性操作，这时可以用AtomicReference（原子引用类型）保证对象引用的原子性。
+     * 简单来说，如果需要同时保障对多个变量操作的原子性，就可以把多个变量放在一个对象中进行操作。
+     * <p>
+     * 使用原子引用类型AtomicReference包装了User对象之后，只能保障User引用的原子操作，对被包装的User对象的字段值修改时不能保证原子性
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testAtomicReference() throws InterruptedException {
         //包装的原子对象
-        AtomicReference<User> userRef = new AtomicReference<User>();
+        AtomicReference<User> userRef = new AtomicReference<>();
         //待包装的User对象
         User user = new User("1", "张三");
         //为原子对象设置值
@@ -282,15 +295,25 @@ public class AtomicTest {
         Print.tco(" after cas,userRef is:" + userRef.get());
     }
 
+    /**
+     * 如果需要保障对象某个字段（或者属性）更新操作的原子性，就需要用到属性更新原子类。属性更新原子类有以下三个：
+     * ● AtomicIntegerFieldUpdater：保障整型字段的更新操作的原子性
+     * ● AtomicLongFieldUpdater：保障长整型字段的更新操作的原子性
+     * ● AtomicReferenceFieldUpdater：保障引用字段的更新操作的原子性。
+     * <p>
+     * 使用属性更新原子类保障属性安全更新的流程大致需要两步：
+     * 第一步，更新的对象属性必须使用public volatile修饰符
+     * 第二步，因为对象的属性修改类型原子类都是抽象类，所以每次使用都必须调用静态方法newUpdater()创建一个更新器，并且需要设置想要更新的类和属性。
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testAtomicIntegerFieldUpdater() throws InterruptedException {
-        AtomicIntegerFieldUpdater<User> a =
-                AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
-
+        AtomicIntegerFieldUpdater<User> integerFieldUpdater = AtomicIntegerFieldUpdater.newUpdater(User.class, "age");
         User user = new User("1", "张三");
-        Print.tco(a.getAndIncrement(user));// 1
-        Print.tco(a.getAndAdd(user, 100));// 101
-        Print.tco(a.get(user));// 101
+        Print.tco(integerFieldUpdater.getAndIncrement(user)); // age 初始为 0，该行代码之后，age = 1
+        Print.tco(integerFieldUpdater.getAndAdd(user, 100));//1
+        Print.tco(integerFieldUpdater.get(user));// 101
     }
 
 }
