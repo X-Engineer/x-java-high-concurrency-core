@@ -147,13 +147,29 @@ public class AtomicTest {
         Print.fo("tempvalue:" + tempvalue + ";  i:" + i);
     }
 
+    /**
+     * 什么是ABA问题？
+     * 举一个例子来说明。比如一个线程A从内存位置M中取出V1，另一个线程B也取出V1。现在假设线程B进行了一些操作之后将M位置的数据V1变成了V2，然后又在一些操作之后将V2变成了V1。
+     * 之后，线程A进行CAS操作，但是线程A发现M位置的数据仍然是V1，然后线程A操作成功。尽管线程A的CAS操作成功，但是不代表这个过程是没有问题的，
+     * 线程A操作的数据V1可能已经不是之前的V1，而是被线程B替换过的V1，这就是ABA问题。
+     *
+     * 很多乐观锁的实现版本都是使用版本号（Version）方式来解决ABA问题。乐观锁每次在执行数据的修改操作时都会带上一个版本号，版本号和数据的版本号一致就可以执行修改操作并对版本号执行加1操作，否则执行失败。
+     * 因为每次操作的版本号都会随之增加，所以不会出现ABA问题，因为版本号只会增加，不会减少。
+     *
+     * 参考乐观锁的版本号，JDK提供了一个AtomicStampedReference类来解决ABA问题。
+     * AtomicStampReference的compareAndSet()方法首先检查当前的对象引用值是否等于预期引用，并且当前印戳（Stamp）标志是否等于预期标志，如果全部相等，就以原子方式将引用值和印戳（Stamp）标志的值更新为给定的更新值。
+     *
+     * AtomicStampedReference使用示例，通过两个线程分别带上印戳更新同一个atomicStampedRef实例的值，第一个线程会更新成功，而第二个线程会更新失败
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testAtomicStampedReference() throws InterruptedException {
 
         CountDownLatch latch = new CountDownLatch(2);
 
         AtomicStampedReference<Integer> atomicStampedRef =
-                new AtomicStampedReference<Integer>(1, 0);
+                new AtomicStampedReference<>(1, 0);
 
         ThreadUtil.getMixedTargetThreadPool().submit(new Runnable() {
             @Override
@@ -209,6 +225,12 @@ public class AtomicTest {
 
     }
 
+    /**
+     * AtomicMarkableReference使用示例，通过两个线程分别更新同一个atomicRef的值，第一个线程会更新成功，而第二个线程会更新失败
+     * AtomicMarkableReference是AtomicStampedReference的简化版，不关心修改过几次，只关心是否修改过。因此，其标记属性mark是boolean类型，而不是数字类型，标记属性mark仅记录值是否修改过。
+     * AtomicMarkableReference适用于只要知道对象是否被修改过，而不适用于对象被反复修改的场景。
+     * @throws InterruptedException
+     */
     @Test
     public void testAtomicMarkableReference() throws InterruptedException {
 
